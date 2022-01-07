@@ -1,0 +1,571 @@
+---
+title: "Computer Modeling (Biol 551/L)"
+subtitle: "Introduction to reproducible and transparent data science"
+author: "Dr. Nyssa Silbiger"
+institute: "CSUN Spring 2022"
+date: "(updated: `r Sys.Date()`)"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      highlightSpans: true
+      countIncrementalSlides: false
+      beforeInit: "macros.js"
+      ratio: '15:10'
+---
+
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE, htmltools.preserve.raw = FALSE)
+```
+<div style = "position:fixed; visibility: hidden">
+$$\require{color}\definecolor{yellow}{rgb}{1, 0.8, 0.16078431372549}$$
+$$\require{color}\definecolor{orange}{rgb}{0.96078431372549, 0.525490196078431, 0.203921568627451}$$
+$$\require{color}\definecolor{green}{rgb}{0, 0.474509803921569, 0.396078431372549}$$
+</div>
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  TeX: {
+    Macros: {
+      yellow: ["{\\color{yellow}{#1}}", 1],
+      orange: ["{\\color{orange}{#1}}", 1],
+      green: ["{\\color{green}{#1}}", 1]
+    },
+    loader: {load: ['[tex]/color']},
+    tex: {packages: {'[+]': ['color']}}
+  }
+});
+</script>
+
+<style>
+.yellow {color: #FFCC29;}
+.orange {color: #F58634;}
+.green {color: #007965;}
+</style>
+
+
+```{r flair_color, echo=FALSE}
+library(flair)
+yellow <- "#FFCC29"
+orange <- "#F58634"
+green <- "#007965"
+```
+
+---
+
+<img src="https://njsilbiger.github.io/images/NyssaMath.jpg" width=25%, align="right" />
+# Welcome to Computer Modeling
+
+Class times: 1 - 1:50 & 2:00 - 4:50 T/R
+
+Dr. Nyssa Silbiger
+- Office hours: Thursday 11:00 - 12:00 (MG4109) 
+
+TA is Danielle Barnas
+- Office hours: Tuesday 10:00 - 11:00 (MG4109)
+ 
+--
+
+.center[
+_please email us if you plan to come so we don't look like..._
+
+<img src="https://media.giphy.com/media/xUOxf9lJKcBDrE6qmk/giphy.gif" width="35%" align="center" />
+
+]
+
+
+---
+
+# Outline of class
+
+
+Welcome to computer Modeling!
+
+
+
+1. What are data?
+2. What is your coding background?
+3. Introduction to the class.
+4. Data structures.
+
+
+Lab 
+1. R intro/refresher
+  
+---
+
+# Data are everywhere!
+
+<img src="https://www.al.com/resizer/DcQxQ5Gud_G5hq2lCfxSjt2es2o=/450x0/smart/cloudfront-us-east-1.images.arcpublishing.com/advancelocal/UQLTE52XYFDUBJE76YLVJL23II.jpg" width=100%, align="center" />
+
+---
+
+# Data are everywhere!
+
+<img src="https://media.idownloadblog.com/wp-content/uploads/2018/11/Health-App-Activity-Steps-iPhone.jpg" width=100%, align="center" />
+
+---
+# Data are everywhere!
+
+<img src="https://ichef.bbci.co.uk/news/2048/cpsprodpb/3479/production/_122233431_optimised-sa_daily_cases15dec-nc.png", align = "center"/>
+
+---
+
+# Data are everywhere!
+
+<img src="https://miro.medium.com/max/810/0*VpUIWouoCIgggZ_Q." width=100%, align="center" />
+
+---
+
+# Data are everywhere!
+
+<img src="https://pbs.twimg.com/media/DUU0UOMU8AAwh0-.jpg" width=100%, align="center" />
+
+---
+
+# Data are everywhere!
+
+<img src="https://www.smrfoundation.org/wp-content/uploads/2009/09/2009-September-Bernie-Hogan-Facebook-Network-Visualization.png" width=100%, align="center" />
+
+---
+
+# We live in a data filled world
+
+
+## Data can take make forms
+<img src="https://businessoverbroadway.com/wp-content/uploads/2014/09/big-data.jpg" width=50%, align="right" />
+- Althetic performance
+- Timeseries of polls
+- Sequence Data
+- Measurements of physical properties
+- Spatial data (e.g., Maps)
+- Timing of events
+- Images
+- Networks
+- Plain Text 
+- So much more....
+
+---
+class: inverse, middle, center
+
+# Data is at the center of biology
+
+---
+# Data is at the center of biology
+
+<img src = "https://emea.illumina.com/content/dam/illumina-marketing/images/informatics/v2/web-graphics/data-analysis-web-graphic.png"/>
+
+---
+
+# Data is at the center of biology
+
+<img src = "https://media.fugro.com/media/images/default-source/expertise/our-world/seawatch-headere3a882f1f3db67859f9dff250019aa6e.jpg?sfvrsn=d673e51a_11"/>
+
+---
+# Data is at the center of biology
+
+<img src = "https://newheavenreefconservation.org/templates/yootheme/cache/MarineCourses_13-62f353dd.jpeg"/>
+
+---
+
+# This semester, we will all become data scientists!
+
+<img src = "https://media1.tenor.com/images/c0c2264911d8cd4a688acd0542240f95/tenor.gif?itemid=7603564", align="center" />
+
+---
+# What is your experience?
+
+```{r, echo=FALSE, warning=FALSE, message = FALSE}
+library(tidyverse)
+library(patchwork)
+
+survey<-read_csv("libs/Data/survey.csv")
+
+# make barplots for eachs question
+degree<-survey %>%
+  count(Grade) %>%
+  mutate(n = 100*n/20,
+         x = "Grade") %>%
+  ggplot(aes(y = n, fill = Grade, x = x))+
+    geom_bar(position="stack", stat="identity")+
+    labs(title = "Degree",
+         xlab = "")+
+    theme_bw()+
+  theme(axis.title.x=element_blank(),
+        axis.title.y=element_blank(),
+        axis.ticks.x=element_blank(),
+        axis.text.x = element_blank())
+
+Rexper<-survey %>%
+  count(R_experience) %>%
+  mutate(n = 100*n/20,
+         x = "R experience") %>%
+  separate(R_experience, into =c("R", "experience"), sep = "-")%>%
+  ggplot(aes(y = n, fill = R, x = x))+
+    geom_bar(position="stack", stat="identity")+
+    labs(title = "What is your experience with R?",
+         xlab = " ")+
+    theme_bw() +
+  theme(axis.title.x=element_blank(),
+        axis.title.y=element_blank(),
+        axis.ticks.x=element_blank(),
+        axis.text.x = element_blank())
+
+# git hub
+gitexper<-survey %>%
+  count(Github_experience) %>%
+  mutate(n = 100*n/20,
+         x = "Git experience") %>%
+  separate(Github_experience, into =c("Github", "experience"), sep = "-")%>%
+  ggplot(aes(y = n, fill = Github, x = x))+
+    geom_bar(position="stack", stat="identity")+
+    labs(title = "What is your experience with Github?",
+         xlab = " ")+
+    theme_bw() +
+  theme(axis.title.x=element_blank(),
+        axis.title.y=element_blank(),
+        axis.ticks.x=element_blank(),
+        axis.text.x = element_blank())
+
+
+degree
+```
+
+---
+# What is your experience
+
+```{r, echo=FALSE, warning=FALSE, message = FALSE}
+Rexper
+```
+
+---
+# What is your experience
+
+```{r, echo=FALSE, warning=FALSE, message = FALSE}
+gitexper
+```
+
+---
+# What do you want to learn?
+
+.center[
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+library(wordcloud2)
+library(tidyverse)
+
+stop_words <- c('a', 'and', 'for', 'the', 'to', 'in','be','i','it','of','that','with','can','about','if')
+
+ words<-survey %>% select(text = `WantToDo\n`) %>%
+   mutate(text = tolower(text)) %>% 
+   mutate(text = str_remove_all(text, '[[:punct:]]')) %>% 
+   mutate(tokens = str_split(text, "\\s+")) %>%
+   unnest(cols = c(tokens)) %>% 
+   count(tokens) %>% 
+   filter(!tokens %in% stop_words) %>% 
+  # mutate(freq = n / sum(n)) %>% 
+   arrange(desc(n)) %>%
+   select(words = tokens, freq = n)
+
+ wordcloud2(words, color = "random-light", backgroundColor = "grey")
+```
+]
+---
+
+# But, first, tell me about you...
+Ice Breaker: 
+1. tell us your name 
+1. why you wanted to take this class 
+1. if you could create any function in the world what would it be?
+
+---
+# Our semester: venturing into the wonderful world of reproducible and transparent data
+
+--
+
+This class is **NOT**:
+- A statistics course (check out Biometry)
+- A bioinformtics course (check out bioinformatics)
+
+--
+
+We **will**:
+
+- Learn best practices for data entry
+- Learn how to create clean and reproducible scripts in the program *R*
+- Learn to share code and data on a public version-controlled repository
+- Work collaboratively on a project
+- Create high quality visuals using *R*
+- Learn to love working with Data!
+
+--
+
+<img src = "https://i.imgflip.com/2ll45k.jpg", width=50%, align="right" />
+
+
+---
+# Our semester: venturing into the wonderful world of reproducible and transparent data
+
+
+<img src = "https://d33wubrfki0l68.cloudfront.net/571b056757d68e6df81a3e3853f54d3c76ad6efc/32d37/diagrams/data-science.png", align="center", width=120% />
+
+---
+
+# Our semester: venturing into the wonderful world of reproducible and transparent data
+
+### We will learn **R** and **Markdown** languages
+
+<img src="https://github.com/allisonhorst/stats-illustrations/raw/master/rstats-artwork/r_rollercoaster.png", width=80%, align="center" />  
+
+Image credit: [Allison Horst](https://github.com/allisonhorst/stats-illustrations)
+---
+
+# Our semester: venturing into the wonderful world of reproducible and transparent data
+
+### We will create beautiful graphics that enable us to better understand our data using #TidyTuesday (details to follow)
+
+```{r, echo=FALSE, fig.width = 1}
+library(tweetrmd)
+tweet_screenshot(tweet_url("nsilbiger", "1219857312807940096"),
+  #maxwidth = 100,
+  theme = "dark",
+  scale = 0.5
+)
+
+
+tweet_screenshot(tweet_url("dbarnas", "1260379224608669696"),
+  #maxwidth = 100,
+  theme = "dark",
+  scale = 0.5
+)
+
+
+```
+
+
+
+---
+class: center
+
+# Grading
+
+
+| Component   |      Percent      |  
+|----------|:-------------:|------:|
+| Tidy Tuesday Plots |  10% | 
+| Lab Assignments |    30%   | 
+| Group R Package Presentation | 20% | 
+| Group Assessment | 5% | 
+| Final Independent Project | 25%| 
+| Short Quizzes|  10% | 
+
+--
+
+I will go over each of these components in future lectures.   
+
+
+All rubrics are on Canvas and details on syllabus.
+
+<img src = "https://media1.tenor.com/images/bdf4fc8b29583b18c9f4723c5d587bc5/tenor.gif?itemid=10873905", align="center", width=50% />
+
+
+---
+# Communication
+<img src = "https://seekvectorlogo.com/wp-content/uploads/2019/05/slack-technologies-vector-logo.png", width=50%, align="center" />
+
+I created a class slack channel that you all can use to easily ask your classmates for help, give advice, and share resources.
+
+[Click Here to Join](https://join.slack.com/t/biol551csun/shared_invite/zt-kgyyp4k3-lvbGUeyNnvqC1YFgb5h1FA) or see in the syllabus.
+
+What is slack? [See here](https://slack.com/intl/en-pf/)
+
+Is it free? **YES**
+
+---
+
+# How to get class assignments and lectures?
+
+This week, everything will be on Canvas.
+Starting next week all assignments and lecture slides will be on Github (a free online repository).  
+
+- We will have weekly lab assignments that can be started (even completed!) during lab time.
+
+--
+
+
+
+What is Github?
+
+<img src ="https://miro.medium.com/max/719/1*WaaXnUvhvrswhBJSw4YTuQ.png", align="right", width=50% />
+--
+
+Stay tuned....
+
+---
+# Readings
+
+All textbooks are free and online for this class.
+
+- Links for the books are in the syllabus.  
+
+--
+
+- All required reading (listed each week) should be completed **before** class.  
+
+--
+
+- Use active reading. Most readings come with code. If you do it before class then it will be much easier to work through and understand the content in class  
+
+
+
+<img src="https://d33wubrfki0l68.cloudfront.net/b88ef926a004b0fce72b2526b0b5c4413666a4cb/24a30/cover.png", width=20% /> 
+ <img src = "https://leotechpress.com/wp-content/uploads/2019/05/9789352138111.jpg",  width=20% /> 
+ <img src ="https://image.ebooks.com/previews/096/096295/096295629/096295629-hq-168-80.jpg", width=20% />
+ <img src="https://d33wubrfki0l68.cloudfront.net/0c97eee3d8fc820f3a8d670c08b286e8a524257b/e426c/cover.png", width=20%/>
+
+
+---
+# Projects
+
+### Group Project
+- Present an R package that we did not discuss in class and present it to your peers
+
+--
+
+### Independent Final Project
+- Visualization and explanation of a data set of your choosing (from your own work or found data)
+- Bringing together multiple data sets are encouraged!
+- In the coming weeks start thinking about what data you would like to use and what questions you would like to answer. You will propose your ideas with me for approval.
+
+---
+class: inverse, middle, center
+
+# What is data?
+
+---
+
+# Data comes in lots of forms
+
+### There are several **Data Types** in R that you will need to know
+
+--
+.orange[character] : Can be a letter or a combination of letters enclosed by quotes is considered as a character data type by R. It can be alphabets or numbers  
+- ex: "a", "my name is Dr. Silbiger"
+
+--
+
+.orange[numeric]: Numbers that have a decimal value or are a fraction in nature have a data type as a numeric (also called "double")  
+- ex: 2.0, 14.573849 
+
+--
+
+.orange[integer]: Numbers that do not contain decimal values have a data type as an integer  
+- ex: 1, 2, 3, 4
+
+--
+
+.orange[logical]: A variable that can have a value of True and False  
+- ex: TRUE, FALSE
+
+---
+
+# Data types con't
+
+.orange[complex]: An imaginary number.
+- ex: 1+4i
+
+--
+
+.orange[factor]: They are a data type that is used to refer to a qualitative relationship like colors, good & bad, course or movie ratings, etc. They are useful in statistical modeling.
+- ex: "Good", "Better", "Best"
+
+--
+
+### Knowing the names of all these data types and what they mean is important
+
+---
+# Data can also come in many *structures*
+
+<img src ="https://res.cloudinary.com/dyd911kmh/image/upload/f_auto,q_auto:best/v1579700665/datatypesR_skztbb.png"/>
+---
+# Data can also come in many *structures*
+
+| Dims   |      Homogeneous (same data type)     |   Heterogeneous (diff data type) |  
+|----------|:-------------:|:------:|
+|1D |  Atomic vector |    List     |
+|2D |    Matrix   | DataFrame |
+| ND | Array |    |
+ 
+ --
+ 
+.pull-left[
+ ```{r, echo=FALSE}
+ Vector<-c(1,2,3,4)
+ print(Vector)
+   ```
+]
+
+--
+
+.pull-right[
+```{r, echo=FALSE}
+List<-list(1, "a" ,"TRUE")
+ print(List)
+```
+]
+
+---
+# Data can also come in many *structures*
+
+| Dims   |      Homogeneous (same data type)     |   Heterogeneous (diff data type) |  
+|----------|:-------------:|:------:|
+|1D |  Atomic vector |    List     |
+|2D |    Matrix   | DataFrame |
+| ND | Array |    |
+ 
+ 
+--
+ 
+.pull-left[
+ ```{r, echo=FALSE}
+matrix(1:6, ncol = 3, nrow = 2)
+ 
+   ```
+]
+
+--
+
+.pull-right[
+```{r, echo=FALSE}
+data.frame(
+  x = 1:3,
+  y = c("a", "b", "c"),
+  stringsAsFactors = FALSE)
+```
+]
+
+--
+
+```{r, echo=FALSE}
+data.frame(x = 1:3, y = I(matrix(1:9, nrow = 3)))
+```
+---
+class: center, middle
+
+### Our first lab is an intro to R/R refresher. 
+
+### But, first, a 10 minute break!
+
+### Next class is all about making data sheets. Don't forget to read the assignment before class.
+
+---
+
+class: center, middle
+
+# Thanks!
+
+Slides created via the R package [**xaringan**](https://github.com/yihui/xaringan).
+
+

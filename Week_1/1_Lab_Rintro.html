@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Lab 1</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Dr. Nyssa Silbiger" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link href="libs/remark-css/default.css" rel="stylesheet" />
+    <link href="libs/remark-css/default-fonts.css" rel="stylesheet" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Lab 1
+## Introduction to R and RStudio
+### Dr. Nyssa Silbiger
+### CSUN Spring 2021
+### (updated: 2022-01-07)
+
+---
+
+
+
+
+&lt;div style = "position:fixed; visibility: hidden"&gt;
+`$$\require{color}\definecolor{yellow}{rgb}{1, 0.8, 0.16078431372549}$$`
+`$$\require{color}\definecolor{orange}{rgb}{0.96078431372549, 0.525490196078431, 0.203921568627451}$$`
+`$$\require{color}\definecolor{green}{rgb}{0, 0.474509803921569, 0.396078431372549}$$`
+&lt;/div&gt;
+
+&lt;script type="text/x-mathjax-config"&gt;
+MathJax.Hub.Config({
+  TeX: {
+    Macros: {
+      yellow: ["{\\color{yellow}{#1}}", 1],
+      orange: ["{\\color{orange}{#1}}", 1],
+      green: ["{\\color{green}{#1}}", 1]
+    },
+    loader: {load: ['[tex]/color']},
+    tex: {packages: {'[+]': ['color']}}
+  }
+});
+&lt;/script&gt;
+
+&lt;style&gt;
+.yellow {color: #FFCC29;}
+.orange {color: #F58634;}
+.green {color: #007965;}
+&lt;/style&gt;
+
+
+
+
+---
+# Outline for lab
+
+- What is R?
+- What is coding?
+- Benefits and constraints to R
+- How to interact with R
+- Examples in R
+- Work on your own
+
+
+---
+
+# What is R?
+
+- “R is a language and an environment for statistical computing and graphics”
+- R is a FREE program and completely open-source (you can see all the source code)
+- R is an object-oriented and functional language
+
+&lt;img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTd0hVdSDaMedkPjum7M1Qs5dgJ-7Y_ufudGA&amp;usqp=CAU" /&gt;
+
+
+---
+
+# What is coding?
+
+- **Coding** is a way of directly telling the computer what to do.  
+
+- Every command you execute in an existing program (like hitting the save button on a document) has a line of code that tells the computer "when this button is clicked, do this action“.  
+
+- Coding allows you to manipulate the computer exactly how you want.  
+
+- You can create a **“script”** which has multiple lines of code and allows you to execute several commands all at once.
+
+
+&lt;img src="https://www.rstudio.com/images/docs/codefolding_regions.png" /&gt;
+
+---
+
+# Benefits of using R
+
+- FREE! (JMP: $1,540.00, PRIMER: $500, Minitab:$1,495)  
+- Powerful and flexible  
+- Publication quality graphics  
+- Runs on all computer platforms  
+- Superb data management and manipulation capabilities  
+- Reproducibility and transparency: R uses scripts instead of clicking on things with a mouse  
+- You can write functions for specific needs  
+- You will become a better statistician because you will be forced to learn the inner workings of the models rather than just clicking a button  
+- A lots of help available: Google knows everything about R  
+
+
+---
+
+# Publication quality graphics
+
+--
+
+.pull-left[## From simple...
+&lt;img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRi7omo9p2Lqt_rhZMOg7lxhs3XwzgUkPR4_A&amp;usqp=CAU", width=75% /&gt;]
+
+--
+.pull-right[## To more complex... 
+&lt;img src="https://image.slidesharecdn.com/r-basics-and-best-practices-141003191750-conversion-gate01/95/r-basics-and-best-practices-6-638.jpg?cb=1412381711", width=90% /&gt;]
+
+
+---
+
+# Constraints 
+.pull-left[
+
+- It’s an uphill battle, but totally worth it and YOU CAN DO IT  
+
+- It’s open source (in my opinion this is good and bad)  
+
+- Multiple functions to do the same thing (because it is open source)
+]
+
+.pull-right[
+&lt;img src="https://github.com/allisonhorst/stats-illustrations/raw/master/rstats-artwork/r_rollercoaster.png", width=100%, align="center" /&gt;  
+
+Image credit: [Allison Horst](https://github.com/allisonhorst/stats-illustrations)]
+
+---
+
+# Rstudio: Integrated Development Enviroment
+
+![Rstudio](libs/images/Rstudio.png)
+
+---
+# Rstudio
+
+.pull-left[
+![Console](libs/images/console_script.PNG)
+]
+
+.pull-right[
+- Two main ways to interact with R: Console and using scripts
+
+- **Console**: the place where R is waiting for you to tell it what to do. You can type commands directly into the console, but the command will be forgotten once you close R.
+
+- **Script**: A place to create and save code. You can send the code that you write in a script to the console in a few different ways. 
+
+]
+
+---
+# Interacting with R
+
+- **"&gt;"**   This symbol in the console means that R is ready for you. If you do not see this sign, R is busy doing something else that you told it to do.     
+
+--
+
+- If R is still waiting for you to enter more data because it isn’t complete yet, the console with show a **“+”**.  It means that you haven’t finished entering data.  
+
+--
+
+- To assign an object (i.e. give something a name so that you can save it and use it later) use **“&lt;-”**.  An **“=“** will work for simple things, but for reasons we won’t discuss in class today it is incorrect and will cause you lots of problems when you get into more complicated coding.  
+
+--
+
+
+```r
+X&lt;- 3 #means the value of x is 3
+```
+
+--
+
+- **#** is used for comments. Anything to the right of the # is ignored by R
+
+--
+
+- R is a literal language. For example, a&lt;-4 means something completely different than A&lt;-4. Spelling, capitalization, and punctuation all matter. The computer only knows what you tell it and it assumes that you mean exactly what you say.
+
+---
+
+# Functions
+
+- Functions are “canned scripts” that automate something complicated or convenient or both.  
+
+--
+
+- Example: you can use the function sum() to add together a bunch of objects instead of writing out a long equation  
+
+
+```r
+sum(1,4,3)
+```
+
+```
+## [1] 8
+```
+
+--
+
+.pull-left[
+- plot(x,y) will create a simple plot]
+
+.pull-right[
+
+```r
+plot(1:5, 5:9)
+```
+
+![](1_Lab_Rintro_files/figure-html/unnamed-chunk-3-1.png)&lt;!-- --&gt;
+]
+
+
+---
+# Asking for help
+
+- Put **?** in front of a function that you don’t understand and R will tell you what it is  
+
+
+```r
+?plot
+```
+
+--
+
+- If you are looking for a function to do a particular task use help.search() 
+
+
+```r
+help.search("ANOVA")
+```
+
+--
+
+- When you can’t even remember what it is called…..apropos(“nova”)
+
+
+```r
+apropos("nova")
+```
+
+```
+## [1] "anova"            "manova"           "power.anova.test" "stat.anova"      
+## [5] "summary.manova"
+```
+
+--
+- Google is your best friend!!
+
+
+---
+
+# R as a calculator
+
+.pull-left[
+
+```r
+1+1
+```
+
+```
+## [1] 2
+```
+]
+
+--
+
+.pull-left[
+
+
+```r
+answer&lt;-1+1 # save it as answer
+answer
+```
+
+```
+## [1] 2
+```
+
+]
+--
+.center[
+
+### Functions and Equations]
+
+.pull-left[
+
+
+
+```r
+a&lt;-sqrt(10)
+a
+```
+
+```
+## [1] 3.162278
+```
+]
+
+--
+
+.pull-right[
+
+```r
+b&lt;-a*log(10)
+b
+```
+
+```
+## [1] 7.281413
+```
+]
+---
+# Getting started with R
+
+### Run through these data carpentry lessons before Tuesday for an intro/refresher in R.
+
+Even if you are already intermediate, still do it because practice makes perfect!  
+
+Click on the links below
+
+[Home](https://datacarpentry.org/R-ecology-lesson/index.html)  
+[Before we start](https://datacarpentry.org/R-ecology-lesson/00-before-we-start.html)  
+[Introduction to R](https://datacarpentry.org/R-ecology-lesson/01-intro-to-r.html)  
+[Starting with data](https://datacarpentry.org/R-ecology-lesson/02-starting-with-data.html)  
+
+
+---
+
+class: center, middle
+
+# Thanks!
+
+Slides created via the R package [**xaringan**](https://github.com/yihui/xaringan).
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script src="macros.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"highlightSpans": true,
+"countIncrementalSlides": false,
+"ratio": "15:10"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
