@@ -1,2 +1,7 @@
-# Spring-2022
-All lecture and lab files for Spring 2022 computer modeling class
+# BIOL 551/L Computer Modeling Spring-2022
+Course information for BIOL 551 Spring 2022 at CSUN  
+Here you will find all the labs, lectures, and assignment for each week.  
+There is one unique folder per week with all the information needed for that week.
+
+- [Syllabus and Schedule](https://github.com/Biol551-CSUN/Spring-2022/tree/main/Syllabus_and_Schedule)
+- [Week 1](https://github.com/Biol551-CSUN/Spring-2022/tree/main/Week_1)
