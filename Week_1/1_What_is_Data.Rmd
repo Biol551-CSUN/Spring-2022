@@ -404,6 +404,15 @@ What is Github?
 Stay tuned....
 
 ---
+# Group work
+
+This class is structured on the principle that you learn just as much from your peers (both teaching and listening) as you do from me.  Therefore, while all your assignments are to be turned in independently you will be assigned to a group to work with for the entire semester that ranges in skill level.  At the beginning, the more advanced students will learn to be better coders by helping to mentor the beginners, while the beginners will be brought up to speed more quickly by having advanced coders to ask questions.  
+
+You will also have make "think-pair-share" opportunities during lectures.  I encourage you to "pair" with different students each class because every one things differently.  Learning from different thinkers will help you think more broadly about coding.
+
+<img src = "https://l4stars.files.wordpress.com/2015/04/sharing-is-caring.jpg", align = "center", width = 50%/>
+
+---
 # Readings
 
 All textbooks are free and online for this class.
@@ -438,6 +447,7 @@ All textbooks are free and online for this class.
 - Visualization and explanation of a data set of your choosing (from your own work or found data)
 - Bringing together multiple data sets are encouraged!
 - In the coming weeks start thinking about what data you would like to use and what questions you would like to answer. You will propose your ideas with me for approval.
+
 
 ---
 class: inverse, middle, center
