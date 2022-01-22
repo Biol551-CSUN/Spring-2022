@@ -183,11 +183,12 @@ library(tidyverse)
 library(patchwork)
 
 survey<-read_csv("libs/Data/survey.csv")
+nr<-nrow(survey)
 
 # make barplots for eachs question
 degree<-survey %>%
   count(Grade) %>%
-  mutate(n = 100*n/20,
+  mutate(n = 100*n/nr,
          x = "Grade") %>%
   ggplot(aes(y = n, fill = Grade, x = x))+
     geom_bar(position="stack", stat="identity")+
@@ -201,7 +202,7 @@ degree<-survey %>%
 
 Rexper<-survey %>%
   count(R_experience) %>%
-  mutate(n = 100*n/20,
+  mutate(n = 100*n/nr,
          x = "R experience") %>%
   separate(R_experience, into =c("R", "experience"), sep = "-")%>%
   ggplot(aes(y = n, fill = R, x = x))+
@@ -217,7 +218,7 @@ Rexper<-survey %>%
 # git hub
 gitexper<-survey %>%
   count(Github_experience) %>%
-  mutate(n = 100*n/20,
+  mutate(n = 100*n/nr,
          x = "Git experience") %>%
   separate(Github_experience, into =c("Github", "experience"), sep = "-")%>%
   ggplot(aes(y = n, fill = Github, x = x))+
@@ -408,7 +409,7 @@ Stay tuned....
 
 This class is structured on the principle that you learn just as much from your peers (both teaching and listening) as you do from me.  Therefore, while all your assignments are to be turned in independently you will be assigned to a group to work with for the entire semester that ranges in skill level.  At the beginning, the more advanced students will learn to be better coders by helping to mentor the beginners, while the beginners will be brought up to speed more quickly by having advanced coders to ask questions.  
 
-You will also have make "think-pair-share" opportunities during lectures.  I encourage you to "pair" with different students each class because every one things differently.  Learning from different thinkers will help you think more broadly about coding.
+You will also have many "think-pair-share" opportunities during lectures.  I encourage you to "pair" with different students each class because every one thinks differently.  Learning from different thinkers will help you think more broadly about coding.
 
 <img src = "https://l4stars.files.wordpress.com/2015/04/sharing-is-caring.jpg", align = "center", width = 50%/>
 
@@ -434,6 +435,15 @@ All textbooks are free and online for this class.
  <img src ="https://image.ebooks.com/previews/096/096295/096295629/096295629-hq-168-80.jpg", width=20% />
  <img src="https://d33wubrfki0l68.cloudfront.net/0c97eee3d8fc820f3a8d670c08b286e8a524257b/e426c/cover.png", width=20%/>
 
+
+---
+# Short quizzes
+
+### 10 min quiz, every two weeks  
+
+- Concepts from required readings, labs, and lectures
+- Open notes, but no discussing with classmates (but the quiz is only 10 mins... so make sure to prepare)
+- Lowest grade dropped
 
 ---
 # Projects
