@@ -18,7 +18,7 @@ output:
 
 
 ```{r setup, include=FALSE}
-options(htmltools.dir.version = FALSE)
+options(htmltools.dir.version = FALSE, htmltools.preserve.raw = FALSE)
 ```
 <div style = "position:fixed; visibility: hidden">
 $$\require{color}\definecolor{yellow}{rgb}{1, 0.8, 0.16078431372549}$$
@@ -142,7 +142,7 @@ Image credit: [Allison Horst](https://github.com/allisonhorst/stats-illustration
 # Rstudio: Integrated Development Enviroment
 
 
-<img src="libs/images/Rstudio.png">
+<img src="libs/images/Rstudio.png", width=90% />
 
 
 ---
