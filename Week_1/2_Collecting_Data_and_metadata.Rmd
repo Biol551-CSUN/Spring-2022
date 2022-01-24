@@ -2,7 +2,7 @@
 title: "Week 1b"
 subtitle: "Collecting and recording data"
 author: "Dr. Nyssa Silbiger"
-institute: "CSUN Spring 2021"
+institute: "CSUN Spring 2022"
 date: "(updated: `r Sys.Date()`)"
 output:
   xaringan::moon_reader:
