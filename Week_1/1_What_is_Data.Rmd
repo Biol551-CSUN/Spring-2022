@@ -259,7 +259,7 @@ library(tidyverse)
 
 stop_words <- c('a', 'and', 'for', 'the', 'to', 'in','be','i','it','of','that','with','can','about','if')
 
- words<-survey %>% select(text = `WantToDo\n`) %>%
+ words<-survey %>% select(text = WantToDo) %>%
    mutate(text = tolower(text)) %>% 
    mutate(text = str_remove_all(text, '[[:punct:]]')) %>% 
    mutate(tokens = str_split(text, "\\s+")) %>%
@@ -518,7 +518,7 @@ class: inverse, middle, center
 |2D |    Matrix   | DataFrame |
 | ND | Array |    |
  
- --
+--
  
 .pull-left[
  ```{r, echo=FALSE}
