@@ -2,7 +2,7 @@
 title: "Lab 1"
 subtitle: "Introduction to R and RStudio"
 author: "Dr. Nyssa Silbiger"
-institute: "CSUN Spring 2021"
+institute: "CSUN Spring 2022"
 date: "(updated: `r Sys.Date()`)"
 output:
   xaringan::moon_reader:
