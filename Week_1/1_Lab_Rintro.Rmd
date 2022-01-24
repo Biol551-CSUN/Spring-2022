@@ -142,8 +142,7 @@ Image credit: [Allison Horst](https://github.com/allisonhorst/stats-illustration
 # Rstudio: Integrated Development Enviroment
 
 
-<img src="libs/images/Rstudio.png", width=90% />
-
+![Console1](libs/images/Rstudio.PNG)
 
 ---
 # Rstudio
