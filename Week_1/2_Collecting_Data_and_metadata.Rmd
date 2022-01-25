@@ -387,6 +387,8 @@ Keep names *short, but meaningful*
 .center[
 <img src="https://imgs.xkcd.com/comics/iso_8601_2x.png"/, width= 50%>
 ]
+
+
 ---
 
 # 4. No empty cells in your word doc
