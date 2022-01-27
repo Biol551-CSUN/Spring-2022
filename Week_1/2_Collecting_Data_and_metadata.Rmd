@@ -381,7 +381,7 @@ Keep names *short, but meaningful*
 ]
 ---
 # 3. Write dates in ISO 8601 format
-- YYYY-MM-DD (2021-23-01)
+- YYYY-MM-DD (2021-01-23)
 - excel can make lots of mistakes with different date formats
 
 .center[
