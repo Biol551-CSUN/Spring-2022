@@ -2,7 +2,7 @@
 title: "Week 2a"
 subtitle: "What is reproducible research and why is it important?"
 author: "Dr. Nyssa Silbiger"
-institute: "CSUN Spring 2021"
+institute: "CSUN Spring 2022"
 date: "(updated: `r Sys.Date()`)"
 output:
   xaringan::moon_reader:
@@ -66,7 +66,7 @@ DOI: 10.1126/scitranslmed.aaf5027
 
 --
 
-“**Empirical reproducibility**: when detailed information is provided about non-computational empirical scientific experiments and observations. In practise this is enabled by making data freely available, as well as details of how the data was collected.”
+“**Empirical reproducibility**: when detailed information is provided about non-computational empirical scientific experiments and observations. In practice this is enabled by making data freely available, as well as details of how the data was collected.”
 
 --
 
@@ -111,7 +111,10 @@ DOI: 10.1126/scitranslmed.aaf5027
 
 --
 
-- Note all the slides I make for this class are.... in R!
+- Note all the slides I make for this class are.... in R!  
+
+--
+<img src = "https://c.tenor.com/6K79yKr1dnIAAAAM/so-extra-sponge-bob.gif">
 
 ---
 # Why does this matter?
