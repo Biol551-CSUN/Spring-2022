@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Week 2b</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Dr. Nyssa Silbiger" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link href="libs/remark-css/default.css" rel="stylesheet" />
+    <link href="libs/remark-css/default-fonts.css" rel="stylesheet" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Week 2b
+## Reproducible Scripts and Workflow
+### Dr. Nyssa Silbiger
+### CSUN Spring 2022
+### (updated: 2022-02-01)
+
+---
+
+
+
+
+
+---
+# Outline of class
+
+1. Clone class repos
+
+1. Proper file structure
+
+1. Proper script structure
+
+1. Reminder on R packages
+
+1. Import Data
+  
+Lab 
+1. Create file structure for class 
+
+1. Basic markdown for Readme files
+
+
+
+---
+
+# Git Organizations
+
+- Last class you learned how to create your own repo as an individual. Another cool think about GitHub is you can be part of an **organization** where you can keep lots of repos from one group together.
+
+- You have all been added to GitHub Organization **Biol551_CSUN**. 
+- You should have received an email asking you to accept (please do if you haven't already)
+![Org Photo](libs/Images/OrgPhoto.PNG)
+
+---
+# Git Organizations
+- Everything for our class will be in this organization.
+- You will clone **two** repositories from our class organization today.
+
+--
+
+1. Spring-2022  
+  - This is where all the information for the class will be.
+  - You **DO NOT** have access to push to this repo so that you do not accidentally change the lecture slides. You can only **pull**
+  - Every day before class use *git pull* to download all the class materials
+
+--
+
+2. Your Last Name  
+  - This is where you will turn in all your assignments.  You, and currently only you, have access to **push** changes to your own repo.
+
+--
+
+Who wants to show us how to clone both of these repos onto their local computer?
+
+
+---
+# Working in git for this class
+
+1.  Before class starts, navigate to "Spring-2022" in your projects (upper right-hand corner of RStudio) and **pull.**
+
+--
+1.   Next navigate to your personal repository and **pull**.  
+
+### This is the repo you will work in during class.
+
+
+
+
+
+
+---
+ # Proper file structure
+ 
+ This is a photo of one of my past working directories
+ 
+ &lt;img src="https://njsilbiger.github.io/images/Week1/BadDirectory.png?raw=true%20=100x100"/&gt;
+ 
+ There is **NO** organization here.... It is impossible to find anything...
+ 
+ 
+---
+ # Don't be past me...
+ In general, your repos should be set-up to have At least 3 subfolders: **Data**, **Scripts**, and **Output**.  
+ 
+ Think of one repo as one project or publication or chapter.  Do not put everything you do in one single repo.
+ 
+.center[ 
+ &lt;img src="https://i0.wp.com/raw.githubusercontent.com/martinctc/blog/master/images/RPROJECT_2000dpi.png?w=578&amp;ssl=1", width=40%/&gt;
+]
+
+---
+# File structure for this class...
+
+In this class, we will have one more level of structure to keep everything tidy and easy to find.
+
+1. Have one folder for every week
+
+1. Within that weekly folder have a folder named *Data*, *Scripts*, and *Output*. 
+
+It will look like this...
+
+--
+
+- Week_3
+  - Data
+  - Scripts
+  - Output
+  
+- Week_4
+  - Data
+  - Scripts
+  - Output
+
+- so on....
+---
+
+# Adding folders to Git
+
+You can add all the contents in a folder at once by adding the folder
+
+- *git add Week_3/*  will add all the contents in the *Week_3* folder so that you do not have to do it one by one
+
+- Note, git will **not** put an empty folder on GitHub (because there is nothing inside). So, do not worry if you go to add your folder now and don't see anything on GitHub. There is nothing for git to save. 
+
+---
+# Reproducible Projects require clear readme files.
+
+Some examples:
+
+- [Jennifer Fields](https://github.com/jenniferfields/EcoFunORTidepools)
+
+- [Danielle Becker](https://github.com/daniellembecker/Nutrient_sediment_loading_affect_coral_functionality)
+
+
+ 
+---
+# Readme files
+
+1. Give an overview of what the reader will find
+
+2. List the contents of the repository
+
+3. If this is for a **publication**, list authors, journal information, funding (if relevant), citation, and content.
+
+![Maunalua](libs/Images/Maunalua.PNG)
+
+
+ 
+---
+# How to edit a readme file
+
+### Intro to Markdown - "Markdown is a lightweight markup language with plain text formatting syntax."
+
+--
+
+Why write with Markdown when you can press buttons in an interface to format your text? 
+
+1. Markdown can be used for everything. People use it to create websites, documents, notes, books, presentations, email messages, and technical documentation.
+
+--
+
+2. Markdown is portable. Files containing Markdown-formatted text can be opened using virtually any application. If you decide you don’t like the Markdown application you’re currently using, you can import your Markdown files into another Markdown application. That’s in stark contrast to word processing applications like Microsoft Word that lock your content into a proprietary file format.
+
+--
+
+3. Markdown is platform independent. You can create Markdown-formatted text on any device running any operating system.
+
+---
+### Intro to Markdown - "Markdown is a lightweight markup language with plain text formatting syntax."
+
+
+4) Markdown is future proof. Even if the application you’re using stops working at some point in the future, you’ll still be able to read your Markdown-formatted text using a text editing application. 
+
+--
+
+5) Markdown is everywhere. Websites like Reddit and GitHub support Markdown, and lots of desktop and web-based applications support it.
+
+--
+
+## How to learn
+
+- Markdown guides [Markdown Basics](https://www.markdownguide.org/basic-syntax/)
+- Free online tutorials [Online tutorial](https://www.markdowntutorial.com/)
+- Free online Markdown editor [dillinger](https://dillinger.io/)
+
+You will practice using Markdown in lab today.
+
+---
+# Creating a transparent script
+
+- Do your collaborators know what you did?
+- Do **you** know what you did? Can you go back to the code in a year after a reviewer asked you to change your analysis?
+
+--
+
+Your script should be divided into 5 (ish) subsections (depending on what you are doing)
+
+--
+
+1. A short **intro** to the purpose of the code  
+
+--
+
+2. Loading the **libraries** that you use in the script  
+
+--
+
+3. A list of important **functions** (we won't use these until later in the semester)  
+
+--
+
+4. Read in your **data**  
+
+--
+
+5. Code for your **data analysis**  
+  - This will be divided further based on your own personal analysis  
+
+
+---
+# Creating a transparent script
+
+![Scripts](libs/Images/script.PNG)
+
+
+---
+# Creating a transparent script
+
+Section 1: Start with a short intro of what your intend to do with your script. Say who you are, the date you created it, and when you last edited it.
+
+Section 2: Load the libraries. Here, I load all the libraries that I need for my code to run.
+
+Section 3: Functions. If you will be creating your own functions it is best to put them all right up front so that they are available for the whole script. If I have lots of functions, sometimes I will put them in their own script and then source them in so that it is not so messy. More on that later.
+
+Section 4: Load data. This is where you load all your data files.
+
+Section 5 and beyond: All your analyses, which can also be subset into different sections.
+
+***Probably the most important advice that I can give you is to comment, comment, comment, and comment some more on your code.***
+
+
+---
+# Let's create our first simple script
+
+- Navigate to the project with your last name
+- Create a folder titled "Week_2" and 3 subfolders titled "Scripts", "Data", and "Output"
+  - You can do this directly in the folder on your computer, in RStudio by clicking "New folder", or in the terminal by typing *mkdir foldername*
+
+--
+
+### Before we make our script we are going to install two packages.
+
+--
+
+- A package is a library of canned functions. 
+- You download and install them onto your local harddrive in order to use them.
+- To install a package you type **in the console**:
+
+
+```r
+install.packages("PackageName")
+```
+
+- You **do not** need to put this in your script because you only ever do it once (unless you need to update the package). Think of it as installing a program. You only install it once. You do not need to install it again everytime you open it.
+
+---
+# Install packages 
+
+.center[
+### The {here} package helps us easily navigate around our projects.   
+We will use this to make unbreakable file paths.
+
+
+```r
+install.packages("here")
+```
+
+![here](libs/Images/here.png)]
+
+---
+# What do we mean by "unbreakable file paths"?
+
+### **Consider**: an absolute file path
+
+
+```r
+my_data &lt;- read_csv("usr/nsilbiger/My Documents/ComputerModeling/Spring 2021/Lab 1/data/some_data.csv”)
+```
+
+Note: the code to read in data is *read_csv("file path to data")*. The file name in this example is **some_data.csv**.  
+
+In this example, we have named our new dataframe *my_data*.
+--
+
+### **How does it break?**
+Let us count the ways...
+
+---
+class: center, middle
+
+![file path 1](libs/Images/filepath1.png)
+
+---
+class: center, middle
+
+![file path 2](libs/Images/filepath2.png)
+
+---
+![a better way](libs/Images/a better way.png)
+---
+# Let try an example with an appropriate R project, file structure, and {here}
+
+.center[
+
+![file structure](libs/Images/file structure.png)]
+
+---
+### If I am working within my project, then to read in the sb_temp.csv file (which is in the data folder), I can use the **here::here()** function: 
+
+(the left of the :: is the *package name* and to the right is the *function name*.  In this case, they are both *here*)
+
+
+```r
+my_data&lt;-read_csv(here("data","sb_temp.csv"))
+```
+
+--
+This code says "read the csv file named sb_temp.csv that is in the folder data." 
+
+--
+.center[
+&lt;img src="libs/Images/robustfile.png", width=70% /&gt;
+]
+
+---
+# Install Tidyverse 
+
+.center[
+### “The tidyverse is a coherent system of packages for data manipulation, exploration and visualization that share a common design philosophy.”]
+
+
+
+.pull-left[&lt;img src="https://gblobscdn.gitbook.com/assets%2F-M38c0s4s0YCM6dGwrz1%2F-M7RetZBh2Wf7TnfLhKs%2F-M7RkjP-fqIgI8ZsDmKh%2Ftidyverse2.png?alt=media&amp;token=73bf5842-1ae0-4ca4-8622-ec2ae9063a7a", width=50%/&gt;]
+
+.foot-note[Joseph Rickert  
+[What is the tidyverse](https://rviews.rstudio.com/2017/06/08/what-is-the-tidyverse/?)  
+RStudio Community Blog
+]
+
+
+
+.center[
+
+```r
+install.packages("tidyverse")
+```
+]
+---
+# Let's create our first simple script
+
+- You should now have {here} and the {tidyverse} installed on your computer.  
+
+- Today, we are just going to load some libraries and read in a simple .csv file.  
+
+--
+
+- Copy the **"weightdata.csv"** file from the Spring-2022 repo into your own private repo.  Put it in the **data** folder within **Week_2**.  
+
+--
+
+- Open a new script and save it in your **scripts** folder within **Week_2**. You can name it whatever you want. 
+
+---
+# Let's create our first simple script
+
+The first thing we do is make a header
+
+
+```r
+### This is my first script.  I am learning how to import data
+### Created by: Dr. Nyssa Silbiger
+### Created on: 2021-02-03
+###############################################
+```
+
+---
+# Let's create our first simple script
+
+Next, we want to load the libraries that we plan to use.  
+Adding the extra hashtags after load libraries makes a new section (notice the little carrot that appears)
+
+
+```r
+### Load libraries ########## 
+library(tidyverse)
+```
+
+```
+## -- Attaching packages --------------------------------------- tidyverse 1.3.1 --
+```
+
+```
+## v ggplot2 3.3.5     v purrr   0.3.4
+## v tibble  3.1.6     v dplyr   1.0.7
+## v tidyr   1.1.4     v stringr 1.4.0
+## v readr   2.1.1     v forcats 0.5.1
+```
+
+```
+## -- Conflicts ------------------------------------------ tidyverse_conflicts() --
+## x dplyr::filter() masks stats::filter()
+## x dplyr::lag()    masks stats::lag()
+```
+
+```r
+library(here)
+```
+
+```
+## here() starts at C:/Users/nyssa/Desktop/Repositories/Spring-2022
+```
+---
+# Let's create our first simple script
+
+Next, let's read in our data using the {here} package.
+weightdata.csv is in folder data, which is in folder Week_2
+
+
+```r
+### Read in data ###
+WeightData&lt;-read_csv(here("Week_2","data","weightdata.csv"))
+```
+
+```
+## Rows: 10 Columns: 3
+```
+
+```
+## -- Column specification --------------------------------------------------------
+## Delimiter: ","
+## chr (1): Treatment
+## dbl (2): SampleID, Weight
+```
+
+```
+## 
+## i Use `spec()` to retrieve the full column specification for this data.
+## i Specify the column types or set `show_col_types = FALSE` to quiet this message.
+```
+
+---
+# Let's create our first simple script
+
+Lastly, for today, some analysis.  
+We will simply look at the data.
+
+
+```r
+### Data Analysis #####
+
+head(WeightData) # Looks at the top 6 lines of the dataframe
+```
+
+```
+## # A tibble: 6 x 3
+##   SampleID Treatment Weight
+##      &lt;dbl&gt; &lt;chr&gt;      &lt;dbl&gt;
+## 1        1 High         1.3
+## 2        2 Low          5.4
+## 3        3 High         2.6
+## 4        4 Low          7.2
+## 5        5 High         4.6
+## 6        6 Low          9.5
+```
+
+---
+# Let's create our first simple script
+
+
+```r
+tail(WeightData) # Looks at the bottom 6 lines of the dataframe
+```
+
+```
+## # A tibble: 6 x 3
+##   SampleID Treatment Weight
+##      &lt;dbl&gt; &lt;chr&gt;      &lt;dbl&gt;
+## 1        5 High         4.6
+## 2        6 Low          9.5
+## 3        7 High         2.2
+## 4        8 Low          5.1
+## 5        9 High         4.6
+## 6       10 Low          8.7
+```
+
+```r
+View(WeightData) # opens a new window to look at the entire dataframe
+```
+
+
+---
+# For lab today you have three tasks
+
+1. Push the Week 2 folder with your first script and associated data onto your personal GitHub repository
+
+1. Complete the [Online Markdown tutorial](https://www.markdowntutorial.com/)
+
+1. Edit your readme file to say something useful about your repository.
+
+Complete all 3 before Tuesday at 1pm.  Feel free to ask your classmates for help
+
+---
+class: center, middle
+
+# Thanks!
+
+Slides created via the R package [**xaringan**](https://github.com/yihui/xaringan).
+
+Some slides modified from Allison Horst, Jarret Byrnes
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script src="macros.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
