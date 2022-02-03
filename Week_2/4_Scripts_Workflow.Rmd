@@ -21,6 +21,7 @@ options(htmltools.dir.version = FALSE)
 
 ---
 # Outline of class
+1. Quiz 1
 
 1. Clone class repos
 
@@ -392,7 +393,7 @@ The first thing we do is make a header
 ```{r, eval=FALSE}
 ### This is my first script.  I am learning how to import data
 ### Created by: Dr. Nyssa Silbiger
-### Created on: 2021-02-03
+### Created on: 2022-02-03
 ###############################################
 
 ```
