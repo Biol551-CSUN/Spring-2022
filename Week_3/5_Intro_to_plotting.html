@@ -1,0 +1,1239 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Week 3a</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Dr. Nyssa Silbiger" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link href="libs/remark-css/default.css" rel="stylesheet" />
+    <link href="libs/remark-css/default-fonts.css" rel="stylesheet" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Week 3a
+## Intro to plotting
+### Dr. Nyssa Silbiger
+### CSUN Spring 2022
+### (updated: 2022-02-03)
+
+---
+
+
+
+
+&lt;div style = "position:fixed; visibility: hidden"&gt;
+`$$\require{color}\definecolor{yellow}{rgb}{1, 0.8, 0.16078431372549}$$`
+`$$\require{color}\definecolor{orange}{rgb}{0.96078431372549, 0.525490196078431, 0.203921568627451}$$`
+`$$\require{color}\definecolor{green}{rgb}{0, 0.474509803921569, 0.396078431372549}$$`
+&lt;/div&gt;
+
+&lt;script type="text/x-mathjax-config"&gt;
+MathJax.Hub.Config({
+  TeX: {
+    Macros: {
+      yellow: ["{\\color{yellow}{#1}}", 1],
+      orange: ["{\\color{orange}{#1}}", 1],
+      green: ["{\\color{green}{#1}}", 1]
+    },
+    loader: {load: ['[tex]/color']},
+    tex: {packages: {'[+]': ['color']}}
+  }
+});
+&lt;/script&gt;
+
+&lt;style&gt;
+.yellow {color: #FFCC29;}
+.orange {color: #F58634;}
+.green {color: #007965;}
+&lt;/style&gt;
+
+
+
+
+---
+# Outline of class
+
+1. Responsible plotting
+
+1. Intro to ggplot2
+
+
+  
+Lab 
+1. Make your first plot
+
+
+---
+# Review
+
+What are the 5 sections you should always have in your scripts?
+
+---
+
+# Why you should always look at your data
+
+We have to really understand our data to be able to decide on the appropriate analyses to answer our research questions. It can also lead to unexpected &amp; interesting research questions. That requires first **looking** at your data, usually in a number of ways, to ask questions like: 
+
+--
+
+- Are there interesting patterns, groups, trends or relationships?  
+- How are observations distributed?  
+- Are there outliers?  
+- Is there notable bias in observations or missing observations?  
+
+--
+
+**When do I need to look at my data and think about it really hard before analyzing it?**  
+
+--
+
+***EVERY TIME***
+
+--
+
+**When can I just make assumptions about the data and some some regression or hypothesis testing or anything else without exploring it?**
+
+--
+
+***NEVER***
+
+---
+# Start exploring with visualizations that don't hide or assume anything about the data
+
+.center[
+&lt;img src="https://github.com/allisonhorst/stats-illustrations/raw/master/rstats-artwork/ggplot2_exploratory.png", width="50%"/&gt;
+]
+
+---
+# For continuous (measured) observations you might start with:
+
+- Jitter plots (if logical groups exist)  
+- Beeswarm plots (ggbeeswarm)  
+- Scatterplots (2 variables, or map additional)  
+- More variables: map w/ colors, size?
+
+
+---
+# Jitter plots:   
+Show values of observations within a group, adding some amount of “jitter” so that they don’t all overlap 
+
+.pull-left[
+
+```r
+library(tidyverse)
+ggplot(chickwts, aes(x = feed, y = weight))+
+  geom_jitter(aes(color = feed),
+              alpha = 0.4,
+              width = 0.1,
+              height = 0,
+              size = 3,
+              show.legend = FALSE)+
+  scale_color_brewer(palette = "Dark2")+
+  theme_light()
+```
+]
+
+.pull-right[
+![](5_Intro_to_plotting_files/figure-html/plot-label-out-1.png)&lt;!-- --&gt;
+]
+
+---
+# Sawrm plots:   
+Show values of observations within a group, with amount of jitter dependent on density around values
+
+.pull-left[
+
+```r
+library(ggbeeswarm)
+ggplot(iris, aes(x = Species, y = Petal.Length))+
+  geom_jitter(aes(color = Species),
+              alpha = 0.5,
+              show.legend = FALSE)+
+  scale_color_manual(values = c("purple",
+                                "black",
+                                "orange"))+
+  theme_minimal()+
+  labs(y = "Petal Length (cm)")
+```
+]
+
+.pull-right[
+![](5_Intro_to_plotting_files/figure-html/plot-label2-out-1.png)&lt;!-- --&gt;
+]
+
+---
+# Scatter plots:
+Show relationship between two measured variables
+
+.pull-left[
+
+```r
+ggplot(faithful, aes(x = waiting, y = eruptions))+
+  geom_point(aes(color = eruptions),
+             show.legend = FALSE,
+             size=2)+
+  scale_color_gradient(low = "black",
+                       high = "purple")+
+  theme_bw()+
+  labs(x = "Waiting time (min)",
+       y = "Eruption duration (min)",
+       title = "Old Faithful eruption patterns")
+```
+]
+
+.pull-right[
+![](5_Intro_to_plotting_files/figure-html/plot-label3-out-1.png)&lt;!-- --&gt;
+]
+---
+# Why can’t we just look at summary statistics?
+
+.center[
+&lt;img src="https://socviz.co/dataviz-pdfl_files/figure-html4/ch-01-correlations-1.png", width = 70%/&gt;
+]
+
+---
+# Why can’t we just look at summary statistics?
+
+&lt;img src="https://nbisweden.github.io/RaukR-2019/GeneralStats/Presentation_GeneralStats/DataSaurus.gif.png", width =70%/&gt;
+
+### Summary statistics hide important information!!
+
+.foot-note[Originally created by Alberto Cairo in [Download the Datasaurus: Never trust summary statistics alone; always visualize your data](http://www.thefunctionalart.com/2016/08/download-datasaurus-never-trust-summary.html)
+]
+
+---
+# Don't hide your data 
+
+Weissgerber TL, Milic NM, Winham SJ, Garovic VD (2015) **Beyond Bar and Line Graphs: Time for a New Data Presentation Paradigm.** PLoS Biol 13(4): e1002128. https://doi.org/10.1371/journal.pbio.1002128  
+
+
+![bar plot](libs/Images/barplot.png)
+
+Would you draw the same conclusions with each of these datasets? 
+
+
+
+
+---
+# The hierarchy of data viz (according to Allison Horst)
+
+1. Is it **correct**?
+
+1. Is it **clear**?
+
+1. Does it communicate data **responsibly**?
+
+1. Does it look **awesome**?
+
+---
+# 1. Is it **correct**?
+
+--
+
+- Observations and experimental design
+
+--
+
+- Avoid data wrangling and calculation mistakes
+  - Keep raw data raw
+  - Check...check.. quadruple check data wrangling/cleaning
+  - Look at your data frames at every step 
+  - Compare your outcomes to expected results
+  - Reproducibility and detailed annotation
+  - Get an outside reviewer to check your code
+  
+--
+
+- Units/labels
+
+---
+
+# 2. Is it **clear**?
+
+-- 
+
+- Too many points, variables, or series
+
+- Overwhelming legends
+
+- Lack of useful emphasis
+
+- Are things put in context?
+
+- Is it a pie graph? (Don't do it)
+
+- Overmapping aesthetics
+
+- Is it 3D? (please no)
+
+---
+# Too many poinnts, variables or series
+
+![Too many points](libs/Images/toomanypoints.png)
+
+---
+# Too many everything
+
+![too many everything](libs/Images/toomanyeverything.png)
+---
+# **Emphasize** the things you want the audience or readers to remember
+
+.center[![line1](libs/Images/lineplot1.png)]
+
+---
+# **Emphasize** the things you want the audience or readers to remember
+
+.center[![line2](libs/Images/lineplot2.png)]
+
+---
+# **Legends:**  
+## Put them somewhere that reduces eyes jumping back and forth across the whole page
+
+.center[![legend](libs/Images/legend1.png)]
+
+.foot-note[[Fundamentals of Data Visualization by Claus O. Wilke 
+](https://serialmentor.com/dataviz/)]
+---
+
+# Often for clarity, **labels are often easier than legends**
+ 
+
+.center[![legend2](libs/Images/legend2.png)]
+
+.foot-note[[Fundamentals of Data Visualization by Claus O. Wilke 
+](https://serialmentor.com/dataviz/)]
+---
+
+# Often for clarity, **labels are often easier than legends**
+ 
+
+.center[![legend3](libs/Images/legend3.png)]
+
+
+.foot-note[[Depict Data Studio Directly Labeling Your Line Graphs](https://depictdatastudio.com/directly-labeling-line-graphs/)]
+---
+# Your legends should **definitely** follow a logical order
+
+.center[
+![legend4](libs/Images/legend4.png)]
+
+---
+
+## Consider putting things in **context** if visualizing across plots, for easier comparison
+
+![context](libs/Images/context.png)
+
+.foot-note[[Fundamentals of Data Visualization by Claus O. Wilke 
+](https://serialmentor.com/dataviz/)]
+---
+# 3. Is it **responsible**?
+
+- Is your graph type/model/presentation even appropriate? 
+
+- Misleading axes ranges or direction  
+
+- Masking data within summary statistics  
+
+- Does it include a measure of uncertainty (if applicable)?  
+
+---
+# Misleading axes ranges or direction
+
+- Reversing scale direction  
+- Manipulating scale increments or data to make differences seem larger/less than they are  
+- Cropping value scale to exaggerate differences   
+
+---
+# Reversing scale direction
+
+.center[
+![gun death](libs/Images/gun death.png)]
+
+.footnote[[https://viz.wtf/](https://viz.wtf/)]
+---
+# Manipulating scales
+
+.center[
+![Q growth](libs/Images/Q4growth.png)]
+
+.footnote[[https://viz.wtf/](https://viz.wtf/)]
+
+---
+
+# Manipulating scales
+
+.center[
+&lt;img src="https://64.media.tumblr.com/fe84cf0265eb2890800a9a34507b9fc2/tumblr_q6rmcbb7ph1sgh0voo1_1280.jpg", width="50%"/&gt;
+]
+
+.footnote[[https://viz.wtf/](https://viz.wtf/)]
+
+---
+# Show me the data
+Adding summary statistics, models, etc. is good - but try to also show me the *actual data*
+
+.center[
+&lt;img src="libs/Images/violin.png", width=75%/&gt;]
+
+---
+# Show me the data
+Adding summary statistics, models, etc. is good - but try to also show me the *actual data*
+
+.center[
+&lt;img src="libs/Images/jitter2.png", width=75%/&gt;]
+
+
+---
+# Show me the data
+Another option to show data + summary: **Marginal Plots**
+
+&lt;img src="libs/Images/marginalplots.png"/&gt;
+
+.footnote[[Datanovia.com ggplot examples](https://www.datanovia.com/en/blog/ggplot-examples-best-reference/#scatter-plot)]
+
+---
+# Does it look **awesome**?
+
+- Never sacrifice clarity for creativity  
+
+- Decluttering your graphs  
+
+- Empty &amp; inked space balance  
+
+- Thoughtful color schemes (always clarity &gt; beauty)  
+
+---
+
+# Declutter your graphs
+### Every element should exist to improve audience understanding
+
+.pull-left[
+![Kondo](libs/Images/kondo.png)]
+
+.pull-right[&lt;img src="https://i.pinimg.com/originals/b1/5e/7c/b15e7c5fafcbae55bc45d1878f74edc5.jpg"&gt;]
+
+---
+### **For each element and design decision, ask:**
+- Is this element necessary/helpful for **audience understanding**?
+- Is it presented in the **best way** to encourage audience understanding &amp; retention of the things that I have decided are the most critical?
+
+--
+
+### ** This includes:**
+- Gridlines  
+- Symbols/images  
+- Tick marks &amp; increments  
+- Axis labels &amp; tick mark labels  
+- Angled text  
+- Points, columns, lines, etc.  
+- Legends (avoid redundancy)  
+- Value labels &amp; annotation  
+- Colors &amp; formatting  
+
+
+---
+# This is not awesome
+
+![piechart](libs/Images/piechart.png)
+
+---
+## And ggplot2 defaults have their own issues
+
+.pull-left[
+
+```r
+ggplot(midwest, aes(x = state, y = percbelowpoverty))+
+  geom_jitter()
+```
+
+#### Things you **must** change here:
+- Update axis labels
+- Reduce width of each groups
+
+#### Things you should **consider** changing:
+- BG color  
+- X &amp; Y limits &amp; expansion  
+- Often overused/unnecessary gridlines  
+- Not prompted to auto-update axis labels  
+- Abbreviations are hard 
+]
+
+.pull-right[
+![](5_Intro_to_plotting_files/figure-html/plot-label4-out-1.png)&lt;!-- --&gt;
+]
+
+---
+# Make it better
+
+![jitter plot 3](libs/Images/jotter3.png)
+
+---
+
+### Things that are **almost always bad**, or a symptom of badness:
+- Color gradients with a single element  
+- Shadows. Why are there shadows?  
+- 3D. With rare exceptions.  
+
+--
+
+### Things that **can be bad**, or a symptom of badness:
+- Multiple legends (probably means you've plotted too much)
+- Overuse of colors  
+- Many symbols of line types  
+- Labels for values (esp. if many) - consider a table of exact value is important
+- Really creative fonts
+
+---
+# What needs changing?
+
+![michigan1](libs/Images/michigan1.png)
+---
+# A possible update
+
+![michigan2](libs/Images/michigan2.png)
+
+
+---
+class: center, middle
+
+# 10 minute break
+
+---
+
+# Let's ggplot!
+
+&lt;img src="https://rstudio-education.github.io/datascience-box/course-materials/slides/u2-d02-ggplot2/img/ggplot2-part-of-tidyverse.png", width="50%"/&gt;
+
+
+---
+# Grammar of graphics (ggplot2)
+.green[ggplot2] is a data visualization package  
+
+Structure of the plot can be summarized like this:
+
+
+```r
+ggplot(data = [dataset], 
+       mapping = aes(x = [x-variable], 
+                     y = [y-variable])) +
+   geom_xxx() +
+   other options
+```
+
+*aes()* means *aesthetics*  
+*geom_xx* means *geometry*
+
+---
+
+# Data: Palmer Penguins
+### Measurements for penguin species, island in Palmer Archipelago, size (flipper length, body mass, bill dimensions), and sex.
+
+.pull-left[
+&lt;img src="https://rstudio-education.github.io/datascience-box/course-materials/slides/u2-d02-ggplot2/img/penguins.png", width="75%" /&gt;
+]
+
+
+```r
+install.packages("palmerpenguins")
+```
+
+
+```r
+library(palmerpenguins)
+glimpse(penguins)
+```
+
+```
+## Rows: 344
+## Columns: 8
+## $ species           &lt;fct&gt; Adelie, Adelie, Adelie, Adelie, Adelie, Adelie, Adel~
+## $ island            &lt;fct&gt; Torgersen, Torgersen, Torgersen, Torgersen, Torgerse~
+## $ bill_length_mm    &lt;dbl&gt; 39.1, 39.5, 40.3, NA, 36.7, 39.3, 38.9, 39.2, 34.1, ~
+## $ bill_depth_mm     &lt;dbl&gt; 18.7, 17.4, 18.0, NA, 19.3, 20.6, 17.8, 19.6, 18.1, ~
+## $ flipper_length_mm &lt;int&gt; 181, 186, 195, NA, 193, 190, 181, 195, 193, 190, 186~
+## $ body_mass_g       &lt;int&gt; 3750, 3800, 3250, NA, 3450, 3650, 3625, 4675, 3475, ~
+## $ sex               &lt;fct&gt; male, female, female, NA, female, male, female, male~
+## $ year              &lt;int&gt; 2007, 2007, 2007, 2007, 2007, 2007, 2007, 2007, 2007~
+```
+
+
+---
+# We will make this plot
+
+&lt;img src ="https://rstudio-education.github.io/datascience-box/course-materials/slides/u2-d02-ggplot2/u2-d02-ggplot2_files/figure-html/unnamed-chunk-6-1.png"/&gt;
+
+---
+#### Start with the .orange[penguin] dataframe
+
+.pull-left[
+
+```r
+*ggplot(data=penguins)
+```
+]
+
+.pull-right[
+![](5_Intro_to_plotting_files/figure-html/plot-label5-out-1.png)&lt;!-- --&gt;
+]
+
+---
+#### Start with the .orange[penguin] dataframe, .yellow[map bill depth to the x-axis]
+
+.pull-left[
+
+```r
+ggplot(data=penguins, 
+* mapping = aes(x = bill_depth_mm))
+```
+]
+
+.pull-right[
+![](5_Intro_to_plotting_files/figure-html/plot-label6-out-1.png)&lt;!-- --&gt;
+]
+
+---
+#### Start with the .orange[penguin] dataframe, map bill depth to the x-axis .yellow[and map bill length to the y-axis.]
+
+.pull-left[
+
+```r
+ggplot(data=penguins, 
+  mapping = aes(x = bill_depth_mm,
+*               y = bill_length_mm))
+```
+]
+
+.pull-right[
+![](5_Intro_to_plotting_files/figure-html/plot-label7-out-1.png)&lt;!-- --&gt;
+]
+---
+
+#### Start with the .orange[penguin] dataframe, map bill depth to the x-axis and map bill length to the y-axis. .yellow[Represent each observation with a point.]
+
+.pull-left[
+
+```r
+ggplot(data=penguins, 
+  mapping = aes(x = bill_depth_mm,
+                y = bill_length_mm)) +
+* geom_point()
+```
+]
+
+.pull-right[
+![](5_Intro_to_plotting_files/figure-html/plot-label8-out-1.png)&lt;!-- --&gt;
+]
+
+
+---
+
+#### Start with the .orange[penguin] dataframe, map bill depth to the x-axis and map bill length to the y-axis. Represent each observation with a point .yellow[and map species to the colour of each point.]
+
+.pull-left[
+
+```r
+ggplot(data=penguins, 
+  mapping = aes(x = bill_depth_mm,
+                y = bill_length_mm,
+*               color = species)) +
+  geom_point()
+```
+]
+
+.pull-right[
+![](5_Intro_to_plotting_files/figure-html/plot-label9-out-1.png)&lt;!-- --&gt;
+]
+
+
+---
+
+#### Start with the .orange[penguin] dataframe, map bill depth to the x-axis and map bill length to the y-axis. Represent each observation with a point and map species to the colour of each point. .yellow[Title the plot "Bill depth and length"]
+
+.pull-left[
+
+```r
+ggplot(data=penguins, 
+  mapping = aes(x = bill_depth_mm,
+                y = bill_length_mm,
+                color = species)) +
+  geom_point()+
+*  labs(title = "Bill depth and length")
+```
+]
+
+.pull-right[
+![](5_Intro_to_plotting_files/figure-html/plot-label10-out-1.png)&lt;!-- --&gt;
+]
+
+---
+
+#### Start with the .orange[penguin] dataframe, map bill depth to the x-axis and map bill length to the y-axis. Represent each observation with a point and map species to the colour of each point. Title the plot "Bill depth and length". .yellow[Add the subtitle "Dimensions for Adelie, Chinstrap, and Gentoo Penguins"]
+
+.pull-left[
+
+```r
+ggplot(data=penguins, 
+  mapping = aes(x = bill_depth_mm,
+                y = bill_length_mm,
+                color = species)) +
+  geom_point()+
+   labs(title = "Bill depth and length",
+*       subtitle = "Dimensions for Adelie, Chinstrap, and Gentoo Penguins")
+```
+]
+
+.pull-right[
+![](5_Intro_to_plotting_files/figure-html/plot-label11-out-1.png)&lt;!-- --&gt;
+]
+
+---
+
+#### Start with the .orange[penguin] dataframe, map bill depth to the x-axis and map bill length to the y-axis. Represent each observation with a point and map species to the colour of each point. Title the plot "Bill depth and length". Add the subtitle "Dimensions for Adelie, Chinstrap, and Gentoo Penguins", .yellow[label the x and y axes as "Bill depth (mm)" and "Bill length (mm)", respectively.]
+
+.pull-left[
+
+```r
+ggplot(data=penguins, 
+  mapping = aes(x = bill_depth_mm,
+                y = bill_length_mm,
+                color = species)) +
+  geom_point()+
+   labs(title = "Bill depth and length",
+        subtitle = "Dimensions for Adelie, Chinstrap, and Gentoo Penguins",
+*       x = "Bill depth (mm)", y = "Bill length (mm)")
+```
+]
+
+.pull-right[
+![](5_Intro_to_plotting_files/figure-html/plot-label12-out-1.png)&lt;!-- --&gt;
+]
+
+---
+#### Start with the .orange[penguin] dataframe, map bill depth to the x-axis and map bill length to the y-axis. Represent each observation with a point and map species to the colour of each point. Title the plot "Bill depth and length". Add the subtitle "Dimensions for Adelie, Chinstrap, and Gentoo Penguins", label the x and y axes as "Bill depth (mm)" and "Bill length (mm)", respectively. .yellow[Label the legend "Species.]
+
+.pull-left[
+
+```r
+ggplot(data=penguins, 
+  mapping = aes(x = bill_depth_mm,
+                y = bill_length_mm,
+                color = species)) +
+  geom_point()+
+   labs(title = "Bill depth and length",
+        subtitle = "Dimensions for Adelie, Chinstrap, and Gentoo Penguins",
+        x = "Bill depth (mm)", y = "Bill length (mm)",
+*       color = "Species")
+```
+]
+
+.pull-right[
+![](5_Intro_to_plotting_files/figure-html/plot-label13-out-1.png)&lt;!-- --&gt;
+]
+
+---
+#### Start with the .orange[penguin] dataframe, map bill depth to the x-axis and map bill length to the y-axis. Represent each observation with a point and map species to the colour of each point. Title the plot "Bill depth and length". Add the subtitle "Dimensions for Adelie, Chinstrap, and Gentoo Penguins", label the x and y axes as "Bill depth (mm)" and "Bill length (mm)", respectively. Label the legend "Species. .yellow[Add a caption for the source of the data.]
+
+.pull-left[
+
+```r
+ggplot(data=penguins, 
+  mapping = aes(x = bill_depth_mm,
+                y = bill_length_mm,
+                color = species)) +
+  geom_point()+
+   labs(title = "Bill depth and length",
+        subtitle = "Dimensions for Adelie, Chinstrap, and Gentoo Penguins",
+        x = "Bill depth (mm)", y = "Bill length (mm)",
+        color = "Species",
+*       caption = "Source: Palmer Station LTER / palmerpenguins package")
+```
+]
+
+.pull-right[
+![](5_Intro_to_plotting_files/figure-html/plot-label14-out-1.png)&lt;!-- --&gt;
+]
+
+
+---
+#### Start with the .orange[penguin] dataframe, map bill depth to the x-axis and map bill length to the y-axis. Represent each observation with a point and map species to the colour of each point. Title the plot "Bill depth and length". Add the subtitle "Dimensions for Adelie, Chinstrap, and Gentoo Penguins", label the x and y axes as "Bill depth (mm)" and "Bill length (mm)", respectively. Label the legend "Species. Add a caption for the source of the data. .yellow[Finally, use a discrete color scale that is designed to be preceived by viewers with common forms of color blindness.]
+
+.pull-left[
+
+```r
+ggplot(data=penguins, 
+  mapping = aes(x = bill_depth_mm,
+                y = bill_length_mm,
+                color = species)) +
+  geom_point()+
+   labs(title = "Bill depth and length",
+        subtitle = "Dimensions for Adelie, Chinstrap, and Gentoo Penguins",
+        x = "Bill depth (mm)", y = "Bill length (mm)",
+        color = "Species",
+        caption = "Source: Palmer Station LTER / palmerpenguins package")+
+* scale_color_viridis_d()
+```
+]
+
+.pull-right[
+![](5_Intro_to_plotting_files/figure-html/plot-label15-out-1.png)&lt;!-- --&gt;
+]
+
+---
+.center[
+![](5_Intro_to_plotting_files/figure-html/plot-label15-out-1.png)&lt;!-- --&gt;
+]
+
+---
+# Aesthetic options
+Commonly used characteristics of plotting characters that can be .orange[mapped to a specific variable] in the data are:
+
+- color (or colour)
+- shape
+- size
+- alpha (transparency)
+
+---
+# Color
+.pull-left[
+
+```r
+ggplot(data=penguins, 
+  mapping = aes(x = bill_depth_mm,
+                y = bill_length_mm,
+                color = species)) +
+  geom_point()+
+   labs(title = "Bill depth and length",
+        subtitle = "Dimensions for Adelie, Chinstrap, and Gentoo Penguins",
+        x = "Bill depth (mm)", y = "Bill length (mm)",
+*       color = "Species") +
+  scale_color_viridis_d()
+```
+]
+
+.pull-right[
+![](5_Intro_to_plotting_files/figure-html/plot-label17-out-1.png)&lt;!-- --&gt;
+]
+
+---
+# Shape
+
+Mapped to a different variable than .orange[color].
+
+.pull-left[
+
+```r
+ggplot(data=penguins, 
+  mapping = aes(x = bill_depth_mm,
+                y = bill_length_mm,
+                color = species,
+*               shape = island
+                )) +
+  geom_point()+
+   labs(title = "Bill depth and length",
+        subtitle = "Dimensions for Adelie, Chinstrap, and Gentoo Penguins",
+        x = "Bill depth (mm)", y = "Bill length (mm)",
+        color = "Species") +
+  scale_color_viridis_d()
+```
+]
+
+.pull-right[
+![](5_Intro_to_plotting_files/figure-html/plot-label18-out-1.png)&lt;!-- --&gt;
+]
+
+---
+
+# Shape
+
+Mapped to the same variable than .orange[color].
+
+.pull-left[
+
+```r
+ggplot(data=penguins, 
+  mapping = aes(x = bill_depth_mm,
+                y = bill_length_mm,
+                color = species,
+*               shape = species
+                )) +
+  geom_point()+
+  scale_color_viridis_d()
+```
+]
+
+.pull-right[
+![](5_Intro_to_plotting_files/figure-html/plot-label19-out-1.png)&lt;!-- --&gt;
+]
+
+
+---
+
+# Size
+
+
+.pull-left[
+
+```r
+ggplot(data=penguins, 
+  mapping = aes(x = bill_depth_mm,
+                y = bill_length_mm,
+                color = species,
+*               size = body_mass_g
+                )) +
+  geom_point()+
+  scale_color_viridis_d()
+```
+]
+
+.pull-right[
+![](5_Intro_to_plotting_files/figure-html/plot-label20-out-1.png)&lt;!-- --&gt;
+]
+
+---
+# Alpha (transparency)
+
+
+.pull-left[
+
+```r
+ggplot(data=penguins, 
+  mapping = aes(x = bill_depth_mm,
+                y = bill_length_mm,
+                color = species,
+                size = body_mass_g,
+*               alpha = flipper_length_mm
+                )) +
+  geom_point()+
+  scale_color_viridis_d()
+```
+]
+
+.pull-right[
+![](5_Intro_to_plotting_files/figure-html/plot-label21-out-1.png)&lt;!-- --&gt;
+]
+
+---
+# Mapping vs setting 
+
+- .orange[Mapping:] Determine the size, shape, alpha, etc. of points **based on the values of a variable** in the data
+  - goes into .orange[aes()]
+  
+--
+
+- .orange[Setting:] Determine the size, shape, alpha, etc. of points **not** based on the values of a variable in the data
+  - goes into .orange[geom_*()]. This was geom_point() in the previous example, but we will learn more geoms soon.
+
+---
+
+.pull-left[
+
+### Mapping
+
+```r
+ggplot(data=penguins, 
+  mapping = aes(x = bill_depth_mm,
+                y = bill_length_mm,
+*               size = body_mass_g,
+*               alpha = flipper_length_mm
+                )) +
+  geom_point()
+```
+
+![](5_Intro_to_plotting_files/figure-html/unnamed-chunk-4-1.png)&lt;!-- --&gt;
+]
+
+.pull-right[
+
+### Setting
+
+```r
+ggplot(data=penguins, 
+  mapping = aes(x = bill_depth_mm,
+                y = bill_length_mm)) +
+* geom_point(size = 2, alpha = 0.5)
+```
+
+![](5_Intro_to_plotting_files/figure-html/unnamed-chunk-5-1.png)&lt;!-- --&gt;
+]
+
+---
+class: center, middle
+
+# Faceting
+
+---
+# Faceting
+
+- Smaller plots that display different subsets of the data
+- Useful for exploring conditional relationships and large data
+
+
+--
+## Note:
+In the next few slides I do not put proper titles, axis labels, etc. because I am focusing on faceting. However, remember to always label your plots!
+
+---
+
+
+
+```r
+ggplot(penguins, 
+       aes(x = bill_depth_mm,
+           y = bill_length_mm))+
+  geom_point()+
+* facet_grid(species~sex)
+```
+
+![](5_Intro_to_plotting_files/figure-html/unnamed-chunk-6-1.png)&lt;!-- --&gt;
+
+```r
+# make multiple plots groups by species on the y (rows) and and sex on the x (columns) 
+```
+
+Notice there is a section labeled **NA** for sex. This is because there were some birds where they did not know the sex.  We will learn how to clean this up next week.
+
+---
+
+```r
+ggplot(penguins, 
+       aes(x = bill_depth_mm,
+           y = bill_length_mm))+
+  geom_point()+
+* facet_grid(sex~species)
+```
+
+![](5_Intro_to_plotting_files/figure-html/unnamed-chunk-7-1.png)&lt;!-- --&gt;
+
+```r
+# make multiple plots groups by sex on the y (rows) and and species on the x (columns) 
+```
+
+---
+
+
+```r
+ggplot(penguins, aes(x = bill_depth_mm, y = bill_length_mm)) + 
+  geom_point() +
+* facet_wrap(~ species)
+```
+
+![](5_Intro_to_plotting_files/figure-html/unnamed-chunk-8-1.png)&lt;!-- --&gt;
+
+---
+
+
+```r
+ggplot(penguins, aes(x = bill_depth_mm, y = bill_length_mm)) + 
+  geom_point() +
+* facet_wrap(~ species, ncol=2) # make it two columns
+```
+
+![](5_Intro_to_plotting_files/figure-html/unnamed-chunk-9-1.png)&lt;!-- --&gt;
+---
+
+# Faceting summary
+
+- facet_grid():
+  - 2D grid
+  - rows ~ columns
+
+- facet_wrap(): 1d ribbon wrapped according to numbers of rows and columns specified or available plotting area
+
+---
+# Facet and color
+
+.pull-left[
+
+```r
+ggplot(data=penguins, 
+  mapping = aes(x = bill_depth_mm,
+                y = bill_length_mm,
+*               color = species,
+                )) +
+  geom_point()+
+  scale_color_viridis_d()+
+  facet_grid(species~sex)
+```
+]
+
+.pull-right[
+![](5_Intro_to_plotting_files/figure-html/plot-label22-out-1.png)&lt;!-- --&gt;
+]
+
+
+---
+# Facet and color, no legend
+
+.pull-left[
+
+```r
+ggplot(data=penguins, 
+  mapping = aes(x = bill_depth_mm,
+                y = bill_length_mm,
+*               color = species,
+                )) +
+  geom_point()+
+  scale_color_viridis_d()+
+  facet_grid(species~sex)+
+* guides(color = FALSE)
+```
+]
+
+.pull-right[
+![](5_Intro_to_plotting_files/figure-html/plot-label23-out-1.png)&lt;!-- --&gt;
+]
+---
+# ggplot2 resources
+
+[Data to viz](https://www.data-to-viz.com/#histogram)  
+[ggplot2 cheatsheet](https://github.com/rstudio/cheatsheets/blob/master/data-visualization-2.1.pdf)  
+[All the geoms](https://ggplot2.tidyverse.org/reference/)  
+[A master list of visuals](http://r-statistics.co/Top50-Ggplot2-Visualizations-MasterList-R-Code.html)   
+[Practical ggplot](https://wilkelab.org/practicalgg/)   
+[R graph gallery](https://www.r-graph-gallery.com/)  
+
+--
+## More plotting fun and details on "Tidy Tuesday" next class.
+
+
+---
+class: center, middle
+
+# Thanks!
+
+Slides created via the R package [**xaringan**](https://github.com/yihui/xaringan).
+
+Some slides modified from Allison Horst, Data Science Box
+
+[Allison Horst ESM 206](https://docs.google.com/presentation/d/1IlQlBbZo53C_NUl-A9MHxQZZiubiiyFKV_nf1hFwAeM/edit#slide=id.g9c1b4376f4_0_211)  
+[Data Science Box](https://rstudio-education.github.io/datascience-box/course-materials/slides/u2-d02-ggplot2/u2-d02-ggplot2.html#1)
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script src="macros.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"highlightSpans": true,
+"countIncrementalSlides": false,
+"ratio": "15:10"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
