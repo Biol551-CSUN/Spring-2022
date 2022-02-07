@@ -16,7 +16,7 @@ class: center, middle, inverse, title-slide
 ## Intro to plotting
 ### Dr. Nyssa Silbiger
 ### CSUN Spring 2022
-### (updated: 2022-02-03)
+### (updated: 2022-02-06)
 
 ---
 
@@ -112,6 +112,7 @@ We have to really understand our data to be able to decide on the appropriate an
 - Jitter plots (if logical groups exist)  
 - Beeswarm plots (ggbeeswarm)  
 - Scatterplots (2 variables, or map additional)  
+- Histograms or density plots  
 - More variables: map w/ colors, size?
 
 
@@ -140,7 +141,7 @@ ggplot(chickwts, aes(x = feed, y = weight))+
 ]
 
 ---
-# Sawrm plots:   
+# Swarm plots:   
 Show values of observations within a group, with amount of jitter dependent on density around values
 
 .pull-left[
@@ -164,6 +165,36 @@ ggplot(iris, aes(x = Species, y = Petal.Length))+
 ]
 
 ---
+# Density plots:   
+Show values of observations within a group
+
+.pull-left[
+
+```r
+library(ggridges)
+ggplot(iris, aes(y = Species, x = Petal.Length))+
+  geom_density_ridges(aes(fill = Species),
+              alpha = 0.5,
+              show.legend = FALSE)+
+  scale_fill_manual(values = c("purple",
+                                "black",
+                                "orange"))+
+  theme_minimal()+
+  labs(x = "Petal Length (cm)")
+```
+]
+
+.pull-right[
+
+```
+## Picking joint bandwidth of 0.155
+```
+
+![](5_Intro_to_plotting_files/figure-html/plot-label2b-out-1.png)&lt;!-- --&gt;
+]
+
+---
+
 # Scatter plots:
 Show relationship between two measured variables
 
@@ -250,7 +281,7 @@ Would you draw the same conclusions with each of these datasets?
 
 ---
 
-# 2. Is it **clear**?
+# 2. Is it **clear**?  
 
 -- 
 
@@ -269,7 +300,7 @@ Would you draw the same conclusions with each of these datasets?
 - Is it 3D? (please no)
 
 ---
-# Too many poinnts, variables or series
+# Too many points, variables or series
 
 ![Too many points](libs/Images/toomanypoints.png)
 
@@ -528,7 +559,9 @@ ggplot(data = [dataset],
 ---
 
 # Data: Palmer Penguins
-### Measurements for penguin species, island in Palmer Archipelago, size (flipper length, body mass, bill dimensions), and sex.
+### Measurements for penguin species, island in Palmer Archipelago, size (flipper length, body mass, bill dimensions), and sex.  
+- Set-up your script and don't forget to comment.
+
 
 .pull-left[
 &lt;img src="https://rstudio-education.github.io/datascience-box/course-materials/slides/u2-d02-ggplot2/img/penguins.png", width="75%" /&gt;
