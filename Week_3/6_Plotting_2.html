@@ -1,0 +1,1204 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Week 3b</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Dr. Nyssa Silbiger" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link href="libs/remark-css/default.css" rel="stylesheet" />
+    <link href="libs/remark-css/default-fonts.css" rel="stylesheet" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Week 3b
+## Plotting 2
+### Dr. Nyssa Silbiger
+### CSUN Spring 2022
+### (updated: 2022-02-07)
+
+---
+
+
+
+
+&lt;div style = "position:fixed; visibility: hidden"&gt;
+`$$\require{color}\definecolor{yellow}{rgb}{1, 0.8, 0.16078431372549}$$`
+`$$\require{color}\definecolor{orange}{rgb}{0.96078431372549, 0.525490196078431, 0.203921568627451}$$`
+`$$\require{color}\definecolor{green}{rgb}{0, 0.474509803921569, 0.396078431372549}$$`
+&lt;/div&gt;
+
+&lt;script type="text/x-mathjax-config"&gt;
+MathJax.Hub.Config({
+  TeX: {
+    Macros: {
+      yellow: ["{\\color{yellow}{#1}}", 1],
+      orange: ["{\\color{orange}{#1}}", 1],
+      green: ["{\\color{green}{#1}}", 1]
+    },
+    loader: {load: ['[tex]/color']},
+    tex: {packages: {'[+]': ['color']}}
+  }
+});
+&lt;/script&gt;
+
+&lt;style&gt;
+.yellow {color: #FFCC29;}
+.orange {color: #F58634;}
+.green {color: #007965;}
+&lt;/style&gt;
+
+
+
+
+---
+# Outline of class
+
+1. Adding multiple geoms
+
+1. Scales
+
+1. Coordinates
+
+1. Themes
+
+1. Save your plots
+
+1. ggplot extensions
+
+
+  
+Lab 
+1. Make your own plot
+
+
+---
+# Review
+
+What are some do's and don'ts for good visuals?
+
+---
+# Review: Grammar of graphics (ggplot2)
+.green[ggplot2] is a data visualization package  
+
+Structure of the plot can be summarized like this:
+
+
+```r
+ggplot(data = [dataset], 
+       mapping = aes(x = [x-variable], 
+                     y = [y-variable])) +
+   geom_xxx() +
+   other options
+```
+
+*aes()* means *aesthetics*  
+*geom_xx* means *geometry*
+
+--
+  
+    
+    
+### What is the difference between **mapping** and **setting**?
+
+---
+# Penguin data. Let's start our script
+
+
+```r
+### Today we are going to plot penguin data ####
+### Created by: Dr. Nyssa Silbiger #############
+### Updated on: 2022-02-10 ####################
+
+
+#### Load Libraries ######
+library(palmerpenguins)
+library(tidyverse)
+library(here)
+
+
+### Load data ######
+# The data is part of the package and is called penguins
+# How else besides glimpse can we inspect the data?
+glimpse(penguins) 
+```
+
+```
+## Rows: 344
+## Columns: 8
+## $ species           &lt;fct&gt; Adelie, Adelie, Adelie, Adelie, Adelie, Adelie, Adel~
+## $ island            &lt;fct&gt; Torgersen, Torgersen, Torgersen, Torgersen, Torgerse~
+## $ bill_length_mm    &lt;dbl&gt; 39.1, 39.5, 40.3, NA, 36.7, 39.3, 38.9, 39.2, 34.1, ~
+## $ bill_depth_mm     &lt;dbl&gt; 18.7, 17.4, 18.0, NA, 19.3, 20.6, 17.8, 19.6, 18.1, ~
+## $ flipper_length_mm &lt;int&gt; 181, 186, 195, NA, 193, 190, 181, 195, 193, 190, 186~
+## $ body_mass_g       &lt;int&gt; 3750, 3800, 3250, NA, 3450, 3650, 3625, 4675, 3475, ~
+## $ sex               &lt;fct&gt; male, female, female, NA, female, male, female, male~
+## $ year              &lt;int&gt; 2007, 2007, 2007, 2007, 2007, 2007, 2007, 2007, 2007~
+```
+
+---
+# Make a simple plot
+.pull-left[
+
+```r
+ggplot(data=penguins, 
+  mapping = aes(x = bill_depth_mm,
+                y = bill_length_mm)) +
+  geom_point()+
+   labs(x = "Bill depth (mm)", 
+        y = "Bill length (mm)"
+        ) 
+```
+]
+
+.pull-right[
+![](6_Plotting_2_files/figure-html/plot-labela-out-1.png)&lt;!-- --&gt;
+]
+
+---
+# Add a best fit line
+.pull-left[
+
+```r
+ggplot(data=penguins, 
+  mapping = aes(x = bill_depth_mm,
+                y = bill_length_mm)) +
+  geom_point()+ 
+* geom_smooth()+
+   labs(x = "Bill depth (mm)", 
+        y = "Bill length (mm)"
+        ) 
+```
+Look up all the different methods  
+?geom_smooth() 
+
+]
+
+.pull-right[
+![](6_Plotting_2_files/figure-html/plot-labelb-out-1.png)&lt;!-- --&gt;
+]
+
+---
+# Add a best fit line: .orange[Make it a linear model]
+
+.pull-left[
+
+```r
+ggplot(data=penguins, 
+  mapping = aes(x = bill_depth_mm,
+                y = bill_length_mm)) +
+  geom_point()+ 
+* geom_smooth(method = "lm")+
+   labs(x = "Bill depth (mm)", 
+        y = "Bill length (mm)"
+        ) 
+
+# Note you can put any formula here to make it specific to your analysis
+```
+
+There are 3 different species in this data, how do you think we should view the model?
+]
+
+.pull-right[
+![](6_Plotting_2_files/figure-html/plot-labelc-out-1.png)&lt;!-- --&gt;
+]
+
+
+---
+# Add a best fit line. Make it a linear model. .orange[Group by species.]
+
+.pull-left[
+
+```r
+ggplot(data=penguins, 
+  mapping = aes(x = bill_depth_mm,
+                y = bill_length_mm,
+*               group = species)) +
+  geom_point()+ 
+  geom_smooth(method = "lm")+ 
+   labs(x = "Bill depth (mm)", 
+        y = "Bill length (mm)"
+        ) 
+
+# Note you can put any formula here to make it specific to your analysis
+```
+
+]
+
+.pull-right[
+![](6_Plotting_2_files/figure-html/plot-labeld-out-1.png)&lt;!-- --&gt;
+]
+
+---
+# Add a best fit line. Make it a linear model. Group by species. .orange[Add some colors by species.]
+
+.pull-left[
+
+```r
+ggplot(data=penguins, 
+  mapping = aes(x = bill_depth_mm,
+                y = bill_length_mm,
+                group = species,
+*               color = species)) +
+  geom_point()+ 
+  geom_smooth(method = "lm")+ 
+   labs(x = "Bill depth (mm)", 
+        y = "Bill length (mm)"
+        ) +
+* scale_color_viridis_d()
+
+# Note you can put any formula here to make it specific to your analysis
+```
+
+]
+
+.pull-right[
+![](6_Plotting_2_files/figure-html/plot-labele-out-1.png)&lt;!-- --&gt;
+]
+
+---
+class: center, middle
+
+&lt;img src="https://i.pinimg.com/originals/ea/0c/b5/ea0cb5a48e3337523ffe8d60f177879d.gif"/&gt;
+
+
+---
+# Aside....
+
+### Celebrate your R victories with the *{praise}* package
+
+
+```r
+install.packages("praise")
+```
+
+
+```r
+library(praise)
+praise()
+```
+
+```
+## [1] "You are great!"
+```
+
+
+```r
+praise()
+```
+
+```
+## [1] "You are phenomenal!"
+```
+
+
+```r
+praise()
+```
+
+```
+## [1] "You are kickass!"
+```
+---
+# Scales
+# Back to penguins....
+
+The naming scheme for *scale* has 3 parts:
+
+1. scale  
+1. The name of the primary aesthetic (e.g., color, shape, or x)
+1. The name of the scale (e.g., continuous, discrete, manual).
+
+--
+
+If I want to change the scale of a continuous color it would be:
+
+```r
+scale_color_continuous()
+```
+
+--
+
+If I want to change the scale of a continuous x-axis it would be:
+
+```r
+scale_x_continuous()
+```
+
+---
+# Change scales. .orange[Change x scale limits (0,20).]
+
+.pull-left[
+
+```r
+ggplot(data=penguins, 
+  mapping = aes(x = bill_depth_mm,
+                y = bill_length_mm,
+                group = species,
+                color = species)) + 
+  geom_point()+ 
+  geom_smooth(method = "lm")+ 
+   labs(x = "Bill depth (mm)", 
+        y = "Bill length (mm)"
+        ) +
+  scale_color_viridis_d()+
+* scale_x_continuous(limits = c(0,20)) # set x limits from 0 to 20
+
+# Note anytime you make a vector you need to put "c" which means "concatenate
+```
+
+]
+
+.pull-right[
+![](6_Plotting_2_files/figure-html/plot-labelg-out-1.png)&lt;!-- --&gt;
+]
+
+---
+# Change scales. Change x scale limits (0,20). .orange[Change y scale limits (0,50).]  
+Obviously, this is a terrible figure.... but this is how you change the limits
+
+.pull-left[
+
+```r
+ggplot(data=penguins, 
+  mapping = aes(x = bill_depth_mm,
+                y = bill_length_mm,
+                group = species,
+                color = species)) + 
+  geom_point()+ 
+  geom_smooth(method = "lm")+ 
+   labs(x = "Bill depth (mm)", 
+        y = "Bill length (mm)"
+        ) +
+  scale_color_viridis_d()+
+  scale_x_continuous(limits = c(0,20)) + # set x limits from 0 to 20 
+* scale_y_continuous(limits = c(0,50))
+
+# Note anytime you make a vector you need to put "c" which means "concatenate
+```
+
+]
+
+.pull-right[
+![](6_Plotting_2_files/figure-html/plot-labelg-out-1.png)&lt;!-- --&gt;
+]
+
+---
+# Change scales: .orange[Change x breaks.]
+
+.pull-left[
+
+```r
+ggplot(data=penguins, 
+  mapping = aes(x = bill_depth_mm,
+                y = bill_length_mm,
+                group = species,
+                color = species)) + 
+  geom_point()+ 
+  geom_smooth(method = "lm")+ 
+   labs(x = "Bill depth (mm)", 
+        y = "Bill length (mm)"
+        ) +
+  scale_color_viridis_d()+
+* scale_x_continuous(breaks = c(14, 17, 21))
+ 
+
+# Note anytime you make a vector you need to put "c" which means "concatenate
+```
+
+]
+
+.pull-right[
+![](6_Plotting_2_files/figure-html/plot-labelh-out-1.png)&lt;!-- --&gt;
+]
+
+---
+
+# Change scales: Change x breaks. .orange[Change x break labels]
+
+.pull-left[
+
+```r
+ggplot(data=penguins, 
+  mapping = aes(x = bill_depth_mm,
+                y = bill_length_mm,
+                group = species,
+                color = species)) + 
+  geom_point()+ 
+  geom_smooth(method = "lm")+ 
+   labs(x = "Bill depth (mm)", 
+        y = "Bill length (mm)"
+        ) +
+  scale_color_viridis_d()+
+  scale_x_continuous(breaks = c(14, 17, 21), 
+*                    labels = c("low", "medium", "high"))
+ 
+
+# Note anytime you make a vector you need to put "c" which means "concatenate
+```
+
+]
+
+.pull-right[
+![](6_Plotting_2_files/figure-html/plot-labeli-out-1.png)&lt;!-- --&gt;
+]
+
+---
+# Change scales: .orange[Manually change color scale.]
+
+.pull-left[
+
+```r
+ggplot(data=penguins, 
+  mapping = aes(x = bill_depth_mm,
+                y = bill_length_mm,
+                group = species,
+                color = species)) + 
+  geom_point()+ 
+  geom_smooth(method = "lm")+ 
+   labs(x = "Bill depth (mm)", 
+        y = "Bill length (mm)"
+        ) +
+* #scale_color_viridis_d()
+* scale_color_manual(values = c("orange", "purple", "green"))
+ 
+
+# Note anytime you make a vector you need to put "c" which means "concatenate
+```
+
+]
+
+.pull-right[
+![](6_Plotting_2_files/figure-html/plot-labelj-out-1.png)&lt;!-- --&gt;
+]
+
+---
+# Custom color scales
+
+### There are .orange[**so many**] custom color palettes to play with.
+
+[Most popular color palettes](https://www.datanovia.com/en/blog/top-r-color-palettes-to-know-for-great-data-visualization/) [Beyonce - tumblr!!!](https://beyoncepalettes.tumblr.com/)  
+[Beyonce - color palette](https://github.com/dill/beyonce)  
+[Colors of California](https://github.com/an-bui/calecopal)                     
+[Colors of the Pacific Northwest](https://github.com/jakelawlor/PNWColors)    
+
+---
+
+### Aside on downloading packages that are *in development*.
+There are several packages on GitHub that are not yet published and are still being developed.  You can still use them, but you need to install them directly from github.  
+
+First, you need to install the *{devtools}* package (Development tools) 
+
+
+```r
+install.packages('devtools')
+```
+
+--
+
+Instead of using *install.packages("PackageName")*, we use *install_github("username/packagename")*.
+
+--
+
+Let's download the beyonce color palette.
+
+1. Ask google where the "Beyonce color palette in R" is. 
+1. Go to the [github page](https://github.com/dill/beyonce) and follow the directions
+
+.center[
+&lt;img src="libs/Images/Beyonce.PNG", width=40%/&gt;]
+
+
+---
+### Aside on downloading packages that are *in development*.
+There are several packages on GitHub that are not yet published and are still being developed.  You can still use them, but you need to install them directly from github.  
+
+First, you need to install the *{devtools}* package (Development tools) 
+
+
+```r
+install.packages('devtools')
+```
+
+
+
+Instead of using *install.packages("PackageName")*, we use *install_github("username/packagename")*.
+
+
+
+Let's download the beyonce color palette.
+
+1. Ask google where the "Beyonce color palette in R" is. 
+1. Go to the [github page](https://github.com/dill/beyonce) and follow the directions
+1. In your **console** (not your script): copy and paste:
+
+
+```r
+devtools::install_github("dill/beyonce")
+```
+
+---
+### Aside on downloading packages that are *in development*.
+There are several packages on GitHub that are not yet published and are still being developed.  You can still use them, but you need to install them directly from github.  
+
+First, you need to install the *{devtools}* package (Development tools) 
+
+
+```r
+install.packages('devtools')
+```
+
+
+
+Instead of using *install.packages("PackageName")*, we use *install_github("username/packagename")*.
+
+
+
+Let's download the beyonce color palette.
+
+1. Ask google where the "Beyonce color palette in R" is. 
+1. Go to the [github page](https://github.com/dill/beyonce) and follow the directions
+1. In your **console** (not your script): copy and paste:
+1. In the **libraries section of your script**: copy and paste
+
+
+```r
+library(beyonce)
+```
+
+---
+# Change scales: .orange[Use one of the Beyonce color palettes.]
+
+.pull-left[
+
+```r
+ggplot(data=penguins, 
+  mapping = aes(x = bill_depth_mm,
+                y = bill_length_mm,
+                group = species,
+                color = species)) + 
+  geom_point()+ 
+  geom_smooth(method = "lm")+ 
+   labs(x = "Bill depth (mm)", 
+        y = "Bill length (mm)"
+        ) +
+* scale_color_manual(values = beyonce_palette(2))
+```
+
+]
+
+.pull-right[
+![](6_Plotting_2_files/figure-html/plot-labelk-out-1.png)&lt;!-- --&gt;
+]
+
+
+---
+# Change scales: .orange[Use one of the Beyonce color palettes.]
+
+.pull-left[
+
+```r
+ggplot(data=penguins, 
+  mapping = aes(x = bill_depth_mm,
+                y = bill_length_mm,
+                group = species,
+                color = species)) + 
+  geom_point()+ 
+  geom_smooth(method = "lm")+ 
+   labs(x = "Bill depth (mm)", 
+        y = "Bill length (mm)"
+        ) +
+* scale_color_manual(values = beyonce_palette(10))
+```
+
+]
+
+.pull-right[
+![](6_Plotting_2_files/figure-html/plot-labell-out-1.png)&lt;!-- --&gt;
+]
+
+---
+# Coordinates
+
+The default coordinates for ggplot is *cartesian*, where the 2D position of an element is given by the x and y position in *aes()*.
+
+We can manipulate the coordinates system in a few different ways.
+
+We will run through the following examples
+
+- coord_flip(): Cartesian coordinate system with x and y axes flipped.
+
+- coord_fixed(): Cartesian coordinate system with a fixed aspect ratio.
+
+- coord_trans(): Apply arbitrary transformations to x and y positions, after the data has been processed by the stat.
+
+- coord_polar(): Polar coordinates.
+
+Later when we learn how to make a map  
+
+- coord_map()/coord_quickmap()/coord_sf(): Map projections.
+
+---
+# Change coordinates: .orange[Flip the axes.]
+
+.pull-left[
+
+```r
+ggplot(data=penguins, 
+  mapping = aes(x = bill_depth_mm,
+                y = bill_length_mm,
+                group = species,
+                color = species)) + 
+  geom_point()+ 
+  geom_smooth(method = "lm")+ 
+   labs(x = "Bill depth (mm)", 
+        y = "Bill length (mm)"
+        ) +
+  scale_color_manual(values = beyonce_palette(10)) +
+* coord_flip() # flip x and y axes
+```
+
+]
+
+.pull-right[
+![](6_Plotting_2_files/figure-html/plot-labelm-out-1.png)&lt;!-- --&gt;
+]
+
+---
+# Change coordinates: .orange[Fix the axes.]
+
+.pull-left[
+
+```r
+ggplot(data=penguins, 
+  mapping = aes(x = bill_depth_mm,
+                y = bill_length_mm,
+                group = species,
+                color = species)) + 
+  geom_point()+ 
+  geom_smooth(method = "lm")+ 
+   labs(x = "Bill depth (mm)", 
+        y = "Bill length (mm)"
+        ) +
+  scale_color_manual(values = beyonce_palette(10)) +
+* coord_fixed() # fix axes
+```
+
+]
+
+.pull-right[
+![](6_Plotting_2_files/figure-html/plot-labeln-out-1.png)&lt;!-- --&gt;
+]
+
+---
+# Change coordinates: .orange[Transform the x and y-axis (log10)]
+
+I am going to use a different example with exponential data so it shows more clearly
+
+.pull-left[
+
+```r
+ggplot(diamonds, aes(carat, price)) +
+  geom_point() 
+```
+
+![](6_Plotting_2_files/figure-html/unnamed-chunk-14-1.png)&lt;!-- --&gt;
+]
+
+.pull-right[
+
+```r
+ggplot(diamonds, aes(carat, price)) +
+  geom_point() +
+  coord_trans(x = "log10", y = "log10")
+```
+
+![](6_Plotting_2_files/figure-html/unnamed-chunk-15-1.png)&lt;!-- --&gt;
+]
+---
+# Change coordinates: .orange[make them polar]
+
+.pull-left[
+
+```r
+ggplot(data=penguins, 
+  mapping = aes(x = bill_depth_mm,
+                y = bill_length_mm,
+                group = species,
+                color = species)) + 
+  geom_point()+ 
+  geom_smooth(method = "lm")+ 
+   labs(x = "Bill depth (mm)", 
+        y = "Bill length (mm)"
+        ) +
+  scale_color_manual(values = beyonce_palette(10)) +
+* coord_polar("x") # make the polar
+```
+
+]
+
+.pull-right[
+![](6_Plotting_2_files/figure-html/plot-labelo-out-1.png)&lt;!-- --&gt;
+]
+
+---
+
+# Themes
+The theming system is composed of four main components:
+
+--
+
+- Theme **elements** specify the non-data elements that you can control. For example, the plot.title element controls the appearance of the plot title; axis.ticks.x, the ticks on the x axis; legend.key.height, the height of the keys in the legend.
+
+--
+
+- Each element is associated with an **element function**, which describes the visual properties of the element. For example, element_text() sets the font size, color and face of text elements like plot.title.
+
+--
+
+- The theme() function which allows you to override the default theme elements by calling element functions, like theme(plot.title = element_text(color = "red")). This will make the plot title red
+
+--
+
+- **Complete themes**, like theme_grey() set all of the theme elements to values designed to work together harmoniously. These are nicely packaged themes where you do not have to change much to make it look good.
+
+---
+# Complete themes
+
+![theme 1](libs/Images/theme1.PNG)
+
+[https://www.datanovia.com/en/blog/ggplot-themes-gallery/](https://www.datanovia.com/en/blog/ggplot-themes-gallery/)
+---
+# Complete themes
+
+![theme 2](libs/Images/theme2.PNG)
+
+[https://www.datanovia.com/en/blog/ggplot-themes-gallery/](https://www.datanovia.com/en/blog/ggplot-themes-gallery/)
+
+---
+# Change theme: .orange[Make it theme_classic()]
+
+.pull-left[
+
+```r
+ggplot(data=penguins, 
+  mapping = aes(x = bill_depth_mm,
+                y = bill_length_mm,
+                group = species,
+                color = species)) + 
+  geom_point()+ 
+  geom_smooth(method = "lm")+ 
+   labs(x = "Bill depth (mm)", 
+        y = "Bill length (mm)"
+        ) +
+  scale_color_manual(values = beyonce_palette(10)) +
+* theme_classic()
+```
+]
+
+.pull-right[
+![](6_Plotting_2_files/figure-html/plot-labelp-out-1.png)&lt;!-- --&gt;
+]
+---
+# Change theme: .orange[Make it theme_bw()]
+
+.pull-left[
+
+```r
+ggplot(data=penguins, 
+  mapping = aes(x = bill_depth_mm,
+                y = bill_length_mm,
+                group = species,
+                color = species)) + 
+  geom_point()+ 
+  geom_smooth(method = "lm")+ 
+   labs(x = "Bill depth (mm)", 
+        y = "Bill length (mm)"
+        ) +
+  scale_color_manual(values = beyonce_palette(10)) +
+* theme_bw()
+```
+]
+
+.pull-right[
+![](6_Plotting_2_files/figure-html/plot-labelq-out-1.png)&lt;!-- --&gt;
+]
+
+---
+# Custom themes
+
+
+```r
+install.packages("ggthemes") # do this in the console
+
+# put the code below in the libraries section of your script
+library(ggthemes)
+```
+
+[See here for ggthemes](https://yutannihilation.github.io/allYourFigureAreBelongToUs/ggthemes/)
+
+
+---
+# Themes: You can customize your theme further
+#### .orange[Change the font size for the axis labels]
+
+.pull-left[
+
+```r
+ggplot(data=penguins, 
+  mapping = aes(x = bill_depth_mm,
+                y = bill_length_mm,
+                group = species,
+                color = species)) + 
+  geom_point()+ 
+  geom_smooth(method = "lm")+ 
+   labs(x = "Bill depth (mm)", 
+        y = "Bill length (mm)"
+        ) +
+  scale_color_manual(values = beyonce_palette(10)) +
+  theme_bw() +
+* theme(axis.title = element_text(size = 20))
+```
+]
+
+.pull-right[
+![](6_Plotting_2_files/figure-html/plot-labelr-out-1.png)&lt;!-- --&gt;
+]
+
+---
+# Themes: You can customize your theme further
+#### Change the font size for the axis labels. .orange[Change the color of the axis labels.]
+
+.pull-left[
+
+```r
+ggplot(data=penguins, 
+  mapping = aes(x = bill_depth_mm,
+                y = bill_length_mm,
+                group = species,
+                color = species)) + 
+  geom_point()+ 
+  geom_smooth(method = "lm")+ 
+   labs(x = "Bill depth (mm)", 
+        y = "Bill length (mm)"
+        ) +
+  scale_color_manual(values = beyonce_palette(10)) +
+  theme_bw() +
+  theme(axis.title = element_text(size = 20,
+*                                 color = "red"))
+```
+]
+
+.pull-right[
+![](6_Plotting_2_files/figure-html/plot-labels-out-1.png)&lt;!-- --&gt;
+]
+
+---
+# Themes: You can customize your theme further
+#### Change the font size for the axis labels. Change the color of the axis labels. .orange[Change the background color.]
+
+.pull-left[
+
+```r
+ggplot(data=penguins, 
+  mapping = aes(x = bill_depth_mm,
+                y = bill_length_mm,
+                group = species,
+                color = species)) + 
+  geom_point()+ 
+  geom_smooth(method = "lm")+ 
+   labs(x = "Bill depth (mm)", 
+        y = "Bill length (mm)"
+        ) +
+  scale_color_manual(values = beyonce_palette(10)) +
+  theme_bw() +
+  theme(axis.title = element_text(size = 20,
+                                  color = "red"),
+*       panel.background = element_rect(fill = "linen"))
+```
+]
+
+.pull-right[
+![](6_Plotting_2_files/figure-html/plot-labelt-out-1.png)&lt;!-- --&gt;
+]
+
+---
+class: center, middle
+
+Type ?theme() to see all the different elements that you can change.
+
+Play around with your plot for ~ 2 minutes and change the theme in a way that you want.
+---
+# Save your plot
+.pull-left[
+
+```r
+ggplot(data=penguins, 
+  mapping = aes(x = bill_depth_mm,
+                y = bill_length_mm,
+                group = species,
+                color = species)) + 
+  geom_point()+ 
+  geom_smooth(method = "lm")+ 
+   labs(x = "Bill depth (mm)", 
+        y = "Bill length (mm)"
+        ) +
+  scale_color_manual(values = beyonce_palette(2)) +
+  theme_bw() +
+  theme(axis.title = element_text(size = 20),
+        panel.background = element_rect(fill = "linen")) 
+
+* ggsave(here("Week_3","output","penguin.png"))
+```
+]
+
+.pull-right[
+![](6_Plotting_2_files/figure-html/plot-labelu-out-1.png)&lt;!-- --&gt;
+]
+
+---
+# Save your plot: .orange[change the width and height]
+.pull-left[
+
+```r
+ggplot(data=penguins, 
+  mapping = aes(x = bill_depth_mm,
+                y = bill_length_mm,
+                group = species,
+                color = species)) + 
+  geom_point()+ 
+  geom_smooth(method = "lm")+ 
+   labs(x = "Bill depth (mm)", 
+        y = "Bill length (mm)"
+        ) +
+  scale_color_manual(values = beyonce_palette(2)) +
+  theme_bw() +
+  theme(axis.title = element_text(size = 20),
+        panel.background = element_rect(fill = "linen")) 
+
+  ggsave(here("Week_3","output","penguin.png"),
+*        width = 7, height = 5) # in inches
+```
+]
+
+.pull-right[
+![](6_Plotting_2_files/figure-html/plot-labelw-out-1.png)&lt;!-- --&gt;
+]
+---
+# Save your plot as an object
+This allows you to modify the plot further later.
+
+.pull-left[
+
+```r
+*plot1&lt;-ggplot(data=penguins,
+  mapping = aes(x = bill_depth_mm,
+                y = bill_length_mm,
+                group = species,
+                color = species)) + 
+  geom_point()+ 
+  geom_smooth(method = "lm")+ 
+   labs(x = "Bill depth (mm)", 
+        y = "Bill length (mm)"
+        ) +
+  scale_color_manual(values = beyonce_palette(2)) +
+  theme_bw() +
+  theme(axis.title = element_text(size = 20),
+        panel.background = element_rect(fill = "linen")) 
+```
+]
+.pull-right[
+
+```r
+plot1 # you need to type it out to view it now
+```
+
+]
+
+---
+# ggplot2 extensions
+
+.center[
+[There are over 80 ggplot2 extentions](https://exts.ggplot2.tidyverse.org/gallery/)  
+[Great resource for ggploting](https://ggplot2-book.org/index.html)
+]
+
+---
+# Lab/homework
+
+I will put you in breakout groups and your team will come up with the best possible plot with the penguin data that you can in **1 hour**.  
+
+- It CANNOT be the same plot that we just made. Look through the data and make a new visual.
+- Make something other than a scatter plot. Look at the other possible geoms from the resources I have given you over the past two classes.  
+- Your script must be formatted correctly (according to the lecture on transparent scripts).  
+- Comment your code appropriately
+- Push to github in the appropriate folders (you will only need a scripts and output folder for this week).  
+  ------------------------------------
+- In an hour you will show the class your plot and step us through your code.
+
+- **Due on github by Tuesday at 1pm.**
+
+
+
+---
+# Tidy Tuesday
+
+[Link for data](https://github.com/rfordatascience/tidytuesday)
+
+Tidy Tuesday is an international community of R enthusiasts that create visuals from the same dataset.  The **goal** is the practice plotting and learn something new every week. It is amazing to see how many different ways you can visualize the same data.
+
+- You must complete **8** tidy tuesday submissions by the end of the semester (there are 12 weeks left).  
+- You do not have to submit it on Tuesday (although most people do). I will be checking for weekly submissions at the end of each week.
+- For full credit you must:
+  - Create a new repo to submit all your tidy tuesday plots. [Here is mine as a example.](https://github.com/njsilbiger/TidyTuesday_CSUN)
+  - You must have proper script structure and file structure.
+  - You must save your visual in the output folder.  
+  - Only spend 2 hours working in your visuals. It does not have to be perfect every time.  Try to learn a new thing each week.
+
+You *should* (but are not required to) post to Twitter under #TidyTuesday and #TidyDors 
+If you do you will learn **so much** from the R community. They are very kind and helpful. 
+
+  
+  
+
+
+
+
+
+---
+class: center, middle
+
+# Thanks!
+
+Slides created via the R package [**xaringan**](https://github.com/yihui/xaringan).
+
+Some slides modified from [ggplot2-book](https://ggplot2-book.org/polishing.html)
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script src="macros.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"highlightSpans": true,
+"countIncrementalSlides": false,
+"ratio": "15:10"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
