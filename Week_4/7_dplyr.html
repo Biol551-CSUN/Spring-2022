@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Week 4a</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Dr. Nyssa Silbiger" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link href="libs/remark-css/default.css" rel="stylesheet" />
+    <link href="libs/remark-css/default-fonts.css" rel="stylesheet" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Week 4a
+## Data wrangling: dplyr
+### Dr. Nyssa Silbiger
+### CSUN Spring 2022
+### (updated: 2022-02-14)
+
+---
+
+
+
+
+&lt;div style = "position:fixed; visibility: hidden"&gt;
+`$$\require{color}\definecolor{yellow}{rgb}{1, 0.8, 0.16078431372549}$$`
+`$$\require{color}\definecolor{orange}{rgb}{0.96078431372549, 0.525490196078431, 0.203921568627451}$$`
+`$$\require{color}\definecolor{green}{rgb}{0, 0.474509803921569, 0.396078431372549}$$`
+&lt;/div&gt;
+
+&lt;script type="text/x-mathjax-config"&gt;
+MathJax.Hub.Config({
+  TeX: {
+    Macros: {
+      yellow: ["{\\color{yellow}{#1}}", 1],
+      orange: ["{\\color{orange}{#1}}", 1],
+      green: ["{\\color{green}{#1}}", 1]
+    },
+    loader: {load: ['[tex]/color']},
+    tex: {packages: {'[+]': ['color']}}
+  }
+});
+&lt;/script&gt;
+
+&lt;style&gt;
+.yellow {color: #FFCC29;}
+.orange {color: #F58634;}
+.green {color: #007965;}
+&lt;/style&gt;
+
+
+
+
+---
+# Outline of class
+
+1. Intro to {dplyr}
+ - a set of verbs for manipulating data:
+  - filtering rows, selecting columns, grouping by objects, getting summary statistics, mutating columns, removing NAs
+
+Lab 
+1. Practice with dplyr
+
+[dplyr cheat sheet.](https://github.com/rstudio/cheatsheets/raw/master/data-transformation.pdf) Download this now to use as a resource.
+
+
+---
+# Review
+
+1. Where do I change the font size of my x and y labels?
+
+1. How do I save my plot?
+---
+# Intro to the {dplyr} package (part of the TidyVerse)
+
+.center[
+&lt;img src = "https://github.com/allisonhorst/stats-illustrations/raw/master/rstats-artwork/dplyr_wrangling.png", width=70% /&gt;
+]
+
+
+---
+# dplyr: verbs for manipulating data
+![verbs](libs/images/dplyr_verbs.PNG)
+---
+# Penguin data again.
+
+
+```r
+### Today we are going to plot penguin data ####
+### Created by: Dr. Nyssa Silbiger #############
+### Updated on: 2022-02-15 ####################
+
+
+#### Load Libraries ######
+library(palmerpenguins)
+library(tidyverse)
+library(here)
+
+
+### Load data ######
+# The data is part of the package and is called penguins
+glimpse(penguins) 
+```
+
+```
+## Rows: 344
+## Columns: 8
+## $ species           &lt;fct&gt; Adelie, Adelie, Adelie, Adelie, Adelie, Adelie, Adel~
+## $ island            &lt;fct&gt; Torgersen, Torgersen, Torgersen, Torgersen, Torgerse~
+## $ bill_length_mm    &lt;dbl&gt; 39.1, 39.5, 40.3, NA, 36.7, 39.3, 38.9, 39.2, 34.1, ~
+## $ bill_depth_mm     &lt;dbl&gt; 18.7, 17.4, 18.0, NA, 19.3, 20.6, 17.8, 19.6, 18.1, ~
+## $ flipper_length_mm &lt;int&gt; 181, 186, 195, NA, 193, 190, 181, 195, 193, 190, 186~
+## $ body_mass_g       &lt;int&gt; 3750, 3800, 3250, NA, 3450, 3650, 3625, 4675, 3475, ~
+## $ sex               &lt;fct&gt; male, female, female, NA, female, male, female, male~
+## $ year              &lt;int&gt; 2007, 2007, 2007, 2007, 2007, 2007, 2007, 2007, 2007~
+```
+
+---
+# Filter
+
+&lt;img src ="https://github.com/allisonhorst/stats-illustrations/raw/master/rstats-artwork/dplyr_filter.jpg"/&gt;
+
+---
+#Filter 
+### Extract rows that meet some critera
+
+.pull-left[
+
+```r
+filter(.data = DATA, ...)
+```
+]
+
+.pull-right[
+- .orange[DATA] = Data frame to transform  
+
+- .orange[...] = One or more criteria  
+filter() returns each row for which the criteria is TRUE
+]
+
+---
+# filter only the female penguins
+### As always, exact spelling and capitalization matters
+
+Before filtering
+
+```r
+head(penguins)
+```
+
+```
+## # A tibble: 6 x 8
+##   species island bill_length_mm bill_depth_mm flipper_length_~ body_mass_g sex  
+##   &lt;fct&gt;   &lt;fct&gt;           &lt;dbl&gt;         &lt;dbl&gt;            &lt;int&gt;       &lt;int&gt; &lt;fct&gt;
+## 1 Adelie  Torge~           39.1          18.7              181        3750 male 
+## 2 Adelie  Torge~           39.5          17.4              186        3800 fema~
+## 3 Adelie  Torge~           40.3          18                195        3250 fema~
+## 4 Adelie  Torge~           NA            NA                 NA          NA &lt;NA&gt; 
+## 5 Adelie  Torge~           36.7          19.3              193        3450 fema~
+## 6 Adelie  Torge~           39.3          20.6              190        3650 male 
+## # ... with 1 more variable: year &lt;int&gt;
+```
+
+---
+# filter only the female penguins
+### As always, exact spelling and capitalization matters
+
+After filtering
+
+```r
+filter(.data = penguins, sex == "female" )
+```
+
+```
+## # A tibble: 165 x 8
+##    species island    bill_length_mm bill_depth_mm flipper_length_mm body_mass_g
+##    &lt;fct&gt;   &lt;fct&gt;              &lt;dbl&gt;         &lt;dbl&gt;             &lt;int&gt;       &lt;int&gt;
+##  1 Adelie  Torgersen           39.5          17.4               186        3800
+##  2 Adelie  Torgersen           40.3          18                 195        3250
+##  3 Adelie  Torgersen           36.7          19.3               193        3450
+##  4 Adelie  Torgersen           38.9          17.8               181        3625
+##  5 Adelie  Torgersen           41.1          17.6               182        3200
+##  6 Adelie  Torgersen           36.6          17.8               185        3700
+##  7 Adelie  Torgersen           38.7          19                 195        3450
+##  8 Adelie  Torgersen           34.4          18.4               184        3325
+##  9 Adelie  Biscoe              37.8          18.3               174        3400
+## 10 Adelie  Biscoe              35.9          19.2               189        3800
+## # ... with 155 more rows, and 2 more variables: sex &lt;fct&gt;, year &lt;int&gt;
+```
+
+---
+# filter
+
+.pull-left[
+
+
+```r
+filter(.data = penguins, 
+*      sex == "female" )
+```
+]
+
+.pull-right[
+One .green[=] sets an argument in the function  
+
+Two .green[==] reads as "is exactly equal to." It is a question that returns a TRUE or FALSE.  Here, filter keeps every TRUE
+]
+
+---
+# A list of logical expressions 
+
+![logicals](libs/images/logical_test.PNG)
+
+
+---
+# How would I use filter to...
+
+1. Penguins measured in the year 2008?
+
+1. Penguins that have a body mass greater than 5000
+
+--
+
+# Think, pair, share.  
+
+Spend 60 seconds to *think* about it. Spend 60 seconds *paired* in a breakout room to discuss your answers. *Share* with the class.
+
+---
+# Common mistakes
+
+.pull-left[
+## Using .orange[=] instead of .orange[==]
+
+
+
+
+&lt;code class ='r hljs remark-code'&gt;#filter(.data &lt;span style='background-color:#FF851B'&gt;=&lt;/span&gt; penguins,&lt;br&gt;&amp;nbsp;&amp;nbsp;#sex &lt;span style='background-color:#FF851B'&gt;=&lt;/span&gt; "females")&lt;br&gt;&lt;br&gt;filter(.data &lt;span style='background-color:#FF851B'&gt;=&lt;/span&gt; penguins, &lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;sex &lt;span style='background-color:#FF851B'&gt;=&lt;/span&gt;&lt;span style='background-color:#FF851B'&gt;=&lt;/span&gt; "females")&lt;/code&gt;
+]  
+
+--
+.pull-right[
+
+## Forgetting quotes  
+
+
+```r
+filter(.data == penguins, 
+*       sex == females)
+
+filter(.data = penguins, 
+       sex == "females")
+```
+
+
+]
+
+---
+
+# Filter with multiple conditions
+
+Select .orange[females] that are also .green[greater than 5000 g]
+
+
+```r
+filter(.data = penguins, sex == "female", body_mass_g &gt;5000)
+```
+
+```
+## # A tibble: 5 x 8
+##   species island bill_length_mm bill_depth_mm flipper_length_~ body_mass_g sex  
+##   &lt;fct&gt;   &lt;fct&gt;           &lt;dbl&gt;         &lt;dbl&gt;            &lt;int&gt;       &lt;int&gt; &lt;fct&gt;
+## 1 Gentoo  Biscoe           45.1          14.5              207        5050 fema~
+## 2 Gentoo  Biscoe           49.1          14.8              220        5150 fema~
+## 3 Gentoo  Biscoe           44.9          13.3              213        5100 fema~
+## 4 Gentoo  Biscoe           46.5          14.8              217        5200 fema~
+## 5 Gentoo  Biscoe           45.2          14.8              212        5200 fema~
+## # ... with 1 more variable: year &lt;int&gt;
+```
+
+---
+![operators](libs/images/operators.PNG)
+
+---
+# Default for filter is **&amp;**
+
+These do the same exact thing
+
+
+```r
+filter(.data = penguins, sex == "female", body_mass_g &gt;5000)
+
+filter(.data = penguins, sex == "female" &amp; body_mass_g &gt;5000)
+```
+
+---
+
+# Think, pair, share
+
+Use filter and boolean logical to show:
+
+1. Penguins that were collected in *either* 2008 *or* 2009
+
+1. Penguins that *are not* from the island Dream
+
+1. Penguins in the species Adelie and Gentoo
+
+---
+# Common mistakes
+
+.pull-left[
+### Collapsing multiple tests into one 
+penguins between 3000 and 5000 g
+
+```r
+#Wrong
+filter(.data = penguins,
+*      3000 &lt; body_mass_g &lt;5000)
+
+#Right
+filter(.data = penguins, 
+*      body_mass_g &lt;5000,
+*      body_mass_g &gt;3000
+```
+]
+
+--
+
+.pull-right[
+### Using multiple tests instead of %in%
+penguins in dream and biscoe
+
+
+```r
+# Wrong
+filter(.data = penguins,
+*      island == "Dream",
+*      island == "Biscoe")
+
+# Right
+filter(.data = penguins,
+*      island %in% c("Dream","Biscoe"))
+```
+
+]
+
+---
+![syntax](libs/images/syntax.PNG)
+
+---
+# mutate: add new columns
+
+.center[
+&lt;img src ="https://github.com/allisonhorst/stats-illustrations/raw/master/rstats-artwork/dplyr_mutate.png", width=70%/&gt;
+]
+
+---
+# mutate
+
+![mutate](libs/images/mutate.PNG)
+
+---
+# mutate
+
+Add a new column converting body mass in g to kg and save the new dataframe
+
+
+```r
+data2&lt;-mutate(.data = penguins, 
+*      body_mass_kg = body_mass_g/1000)
+
+View(data2)
+```
+
+--
+
+### Change multiple columns at once
+
+```r
+data2&lt;-mutate(.data = penguins, 
+*      body_mass_kg = body_mass_g/1000,
+*      bill_length_depth = bill_length_mm/bill_depth_mm)
+
+# convert mass to kg 
+# calculate the ratio of bill length to depth
+
+View(data2)
+```
+---
+## Mutating multiple columns at once based on some criteron (i.e. mutate all the numeric columns in one line)?
+
+On your own, look up *mutate_if()*, *mutate_at()*, *mutate_all()*
+
+[Some examples here](https://dplyr.tidyverse.org/reference/mutate_all.html)
+
+---
+![ifelse](libs/images/ifelse.PNG)
+
+---
+# mutate with ifelse
+
+
+```r
+data2&lt;- mutate(.data = penguins,
+               after_2008 = ifelse(year&gt;2008, "After 2008", "Before 2008"))
+
+View(data2)
+```
+
+
+
+---
+# Think, pair, share
+
+1. Use mutate to create a new column to add flipper length and body mass together
+
+1. Use mutate and ifelse to create a new column where body mass greater than 4000 is labeled as big and everything else is small 
+
+---
+# What if you have multiple verbs that you want to do to the same dataframe?
+
+--
+
+.center[
+.orange[# The pipe  
+# %&gt;%]
+]
+
+## The "pipe" says "and then do"
+
+Dataframe %&gt;%  # select the dataframe **and then** 
+&gt; verb1() %&gt;%  # do verb 1 **and then** 
+
+&gt;verb2()      # do verb 2
+
+---
+# %&gt;%
+
+
+```r
+me %&gt;%
+  wake_up(time = "6:00") %&gt;%
+  music(turn = "on", to = "Beyonce") %&gt;%
+  shower(wash_hair = TRUE) %&gt;%
+  get_dressed(pants = TRUE, shirt = TRUE) %&gt;%
+  leave_house(car = TRUE)
+```
+
+---
+# %&gt;%
+
+Filter only female penguins and add a new column that calculates the log body mass  
+When you use %&gt;% the dataframe carries over so you don't need to write it out anymore
+
+
+
+```r
+penguins %&gt;% # use penguin dataframe
+  filter(sex == "female") %&gt;% #select females
+  mutate(log_mass = log(body_mass_g)) #calculate log biomass
+```
+
+```
+## # A tibble: 165 x 9
+##    species island    bill_length_mm bill_depth_mm flipper_length_mm body_mass_g
+##    &lt;fct&gt;   &lt;fct&gt;              &lt;dbl&gt;         &lt;dbl&gt;             &lt;int&gt;       &lt;int&gt;
+##  1 Adelie  Torgersen           39.5          17.4               186        3800
+##  2 Adelie  Torgersen           40.3          18                 195        3250
+##  3 Adelie  Torgersen           36.7          19.3               193        3450
+##  4 Adelie  Torgersen           38.9          17.8               181        3625
+##  5 Adelie  Torgersen           41.1          17.6               182        3200
+##  6 Adelie  Torgersen           36.6          17.8               185        3700
+##  7 Adelie  Torgersen           38.7          19                 195        3450
+##  8 Adelie  Torgersen           34.4          18.4               184        3325
+##  9 Adelie  Biscoe              37.8          18.3               174        3400
+## 10 Adelie  Biscoe              35.9          19.2               189        3800
+## # ... with 155 more rows, and 3 more variables: sex &lt;fct&gt;, year &lt;int&gt;,
+## #   log_mass &lt;dbl&gt;
+```
+
+---
+# Select
+
+Use select() to select certain columns to remain in the dataframe
+
+
+```r
+penguins %&gt;% # use penguin dataframe
+  filter(sex == "female") %&gt;% #select females
+  mutate(log_mass = log(body_mass_g)) %&gt;% #calculate log biomass
+  select(species, island, sex, log_mass)
+```
+
+```
+## # A tibble: 165 x 4
+##    species island    sex    log_mass
+##    &lt;fct&gt;   &lt;fct&gt;     &lt;fct&gt;     &lt;dbl&gt;
+##  1 Adelie  Torgersen female     8.24
+##  2 Adelie  Torgersen female     8.09
+##  3 Adelie  Torgersen female     8.15
+##  4 Adelie  Torgersen female     8.20
+##  5 Adelie  Torgersen female     8.07
+##  6 Adelie  Torgersen female     8.22
+##  7 Adelie  Torgersen female     8.15
+##  8 Adelie  Torgersen female     8.11
+##  9 Adelie  Biscoe    female     8.13
+## 10 Adelie  Biscoe    female     8.24
+## # ... with 155 more rows
+```
+
+---
+# Select
+
+You can also use select() to rename columns.  
+Here, we are renaming species to have a capital S
+
+
+```r
+penguins %&gt;% # use penguin dataframe
+  filter(sex == "female") %&gt;% #select females
+  mutate(log_mass = log(body_mass_g)) %&gt;% #calculate log biomass
+  select(Species = species, island, sex, log_mass)
+```
+
+```
+## # A tibble: 165 x 4
+##    Species island    sex    log_mass
+##    &lt;fct&gt;   &lt;fct&gt;     &lt;fct&gt;     &lt;dbl&gt;
+##  1 Adelie  Torgersen female     8.24
+##  2 Adelie  Torgersen female     8.09
+##  3 Adelie  Torgersen female     8.15
+##  4 Adelie  Torgersen female     8.20
+##  5 Adelie  Torgersen female     8.07
+##  6 Adelie  Torgersen female     8.22
+##  7 Adelie  Torgersen female     8.15
+##  8 Adelie  Torgersen female     8.11
+##  9 Adelie  Biscoe    female     8.13
+## 10 Adelie  Biscoe    female     8.24
+## # ... with 155 more rows
+```
+---
+# Summarize 
+ Computer a table of summarized data  
+  Calculate the mean flipper length (and exclude any NAs)
+ 
+
+```r
+ penguins %&gt;% # 
+* summarise(mean_flipper = mean(flipper_length_mm, na.rm=TRUE))
+```
+
+```
+## # A tibble: 1 x 1
+##   mean_flipper
+##          &lt;dbl&gt;
+## 1         201.
+```
+
+--
+
+Calculate mean and mean flipper length
+ 
+
+```r
+ penguins %&gt;% # 
+* summarise(mean_flipper = mean(flipper_length_mm, na.rm=TRUE),
+*           min_flipper = min(flipper_length_mm, na.rm=TRUE))
+```
+
+```
+## # A tibble: 1 x 2
+##   mean_flipper min_flipper
+##          &lt;dbl&gt;       &lt;int&gt;
+## 1         201.         172
+```
+
+---
+# group_by
+You can summarize values by certain groups.  
+group_by() by itself doesn't do anything, but it is powerful when put before summarize.
+
+
+Let's calculate the mean and max bill length by island
+
+
+```r
+penguins %&gt;%
+* group_by(island) %&gt;%
+  summarise(mean_bill_length = mean(bill_length_mm, na.rm = TRUE),
+            max_bill_length = max(bill_length_mm, na.rm=TRUE))
+```
+
+```
+## # A tibble: 3 x 3
+##   island    mean_bill_length max_bill_length
+##   &lt;fct&gt;                &lt;dbl&gt;           &lt;dbl&gt;
+## 1 Biscoe                45.3            59.6
+## 2 Dream                 44.2            58  
+## 3 Torgersen             39.0            46
+```
+
+---
+# group by
+
+Group by both island **and** sex
+
+
+```r
+penguins %&gt;%
+* group_by(island, sex) %&gt;%
+  summarise(mean_bill_length = mean(bill_length_mm, na.rm = TRUE),
+            max_bill_length = max(bill_length_mm, na.rm=TRUE))
+```
+
+```
+## `summarise()` has grouped output by 'island'. You can override using the `.groups` argument.
+```
+
+```
+## # A tibble: 9 x 4
+## # Groups:   island [3]
+##   island    sex    mean_bill_length max_bill_length
+##   &lt;fct&gt;     &lt;fct&gt;             &lt;dbl&gt;           &lt;dbl&gt;
+## 1 Biscoe    female             43.3            50.5
+## 2 Biscoe    male               47.1            59.6
+## 3 Biscoe    &lt;NA&gt;               45.6            47.3
+## 4 Dream     female             42.3            58  
+## 5 Dream     male               46.1            55.8
+## 6 Dream     &lt;NA&gt;               37.5            37.5
+## 7 Torgersen female             37.6            41.1
+## 8 Torgersen male               40.6            46  
+## 9 Torgersen &lt;NA&gt;               37.9            42
+```
+
+
+---
+# remove NAs
+
+drop_na() 
+  - drops rows with NAs from a specific column
+
+drop all the rows that are missing data on sex
+
+```r
+penguins %&gt;%
+* drop_na(sex)
+```
+
+```
+## # A tibble: 333 x 8
+##    species island    bill_length_mm bill_depth_mm flipper_length_mm body_mass_g
+##    &lt;fct&gt;   &lt;fct&gt;              &lt;dbl&gt;         &lt;dbl&gt;             &lt;int&gt;       &lt;int&gt;
+##  1 Adelie  Torgersen           39.1          18.7               181        3750
+##  2 Adelie  Torgersen           39.5          17.4               186        3800
+##  3 Adelie  Torgersen           40.3          18                 195        3250
+##  4 Adelie  Torgersen           36.7          19.3               193        3450
+##  5 Adelie  Torgersen           39.3          20.6               190        3650
+##  6 Adelie  Torgersen           38.9          17.8               181        3625
+##  7 Adelie  Torgersen           39.2          19.6               195        4675
+##  8 Adelie  Torgersen           41.1          17.6               182        3200
+##  9 Adelie  Torgersen           38.6          21.2               191        3800
+## 10 Adelie  Torgersen           34.6          21.1               198        4400
+## # ... with 323 more rows, and 2 more variables: sex &lt;fct&gt;, year &lt;int&gt;
+```
+---
+# remove NAs
+
+drop_na() 
+  - drops rows with NAs from a specific column
+
+drop all the rows that are missing data on sex
+calculate mean bill length by sex
+
+
+```r
+penguins %&gt;%
+  drop_na(sex) %&gt;%
+* group_by(island, sex) %&gt;%
+  summarise(mean_bill_length = mean(bill_length_mm, na.rm = TRUE))
+```
+
+```
+## `summarise()` has grouped output by 'island'. You can override using the `.groups` argument.
+```
+
+```
+## # A tibble: 6 x 3
+## # Groups:   island [3]
+##   island    sex    mean_bill_length
+##   &lt;fct&gt;     &lt;fct&gt;             &lt;dbl&gt;
+## 1 Biscoe    female             43.3
+## 2 Biscoe    male               47.1
+## 3 Dream     female             42.3
+## 4 Dream     male               46.1
+## 5 Torgersen female             37.6
+## 6 Torgersen male               40.6
+```
+---
+# Pipe into a ggplot
+You can connect your *data wrangling* to a ggplot with the pipe (you won't need to call the dataframe in ggplot if you pipe to it).
+
+Drop NAs from sex, and then plot boxplots of flipper length by sex
+
+
+```r
+penguins %&gt;%
+  drop_na(sex) %&gt;%
+* ggplot(aes(x = sex, y = flipper_length_mm)) +
+  geom_boxplot()
+```
+
+![](7_dplyr_files/figure-html/unnamed-chunk-24-1.png)&lt;!-- --&gt;
+
+---
+# Before homeworks... "Totally Awesome R package of the day"
+
+
+```r
+library(devtools) # load the development tools library
+devtools::install_github("jhollist/dadjoke")
+```
+
+
+```r
+library(dadjoke)
+dadjoke()
+```
+
+```
+## 
+## 
+## I just went to an emotional wedding.
+## 
+## Even the cake was in tiers.
+```
+
+---
+# Find your group
+
+Write a script that:
+
+1. calculates the mean and variance of body mass by species, island, and sex without any NAs
+
+1. filters out (i.e. excludes) male penguins, then calculates the log body mass, then selects only the columns for species, island, sex, and log body mass, then use these data to make any plot. Make sure the plot has clean and clear labels and follows best practices. Save the plot in the correct output folder.
+
+Include both part 1 and part 2 in your script and push it to github in the appropriate folders.
+
+---
+class: center, middle
+
+# Thanks!
+
+Slides created via the R package [**xaringan**](https://github.com/yihui/xaringan).
+
+Some slides modified from [Andrew Wheiss ](https://evalsp21.classes.andrewheiss.com/projects/01_lab/slides/01_lab.html#73)
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script src="macros.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"highlightSpans": true,
+"countIncrementalSlides": false,
+"ratio": "15:10"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
