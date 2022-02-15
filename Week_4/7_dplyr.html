@@ -16,7 +16,7 @@ class: center, middle, inverse, title-slide
 ## Data wrangling: dplyr
 ### Dr. Nyssa Silbiger
 ### CSUN Spring 2022
-### (updated: 2022-02-14)
+### (updated: 2022-02-15)
 
 ---
 
@@ -62,7 +62,7 @@ MathJax.Hub.Config({
 Lab 
 1. Practice with dplyr
 
-[dplyr cheat sheet.](https://github.com/rstudio/cheatsheets/raw/master/data-transformation.pdf) Download this now to use as a resource.
+[dplyr cheat sheet.](https://raw.githubusercontent.com/rstudio/cheatsheets/main/data-transformation.pdf) Download this now to use as a resource.
 
 
 ---
@@ -224,7 +224,7 @@ Two .green[==] reads as "is exactly equal to." It is a question that returns a T
 
 # Think, pair, share.  
 
-Spend 60 seconds to *think* about it. Spend 60 seconds *paired* in a breakout room to discuss your answers. *Share* with the class.
+Spend 2 minutes to *think* about it. Spend 2 minutes *paired* with a neighbor to discuss your answers. *Share* with the class.
 
 ---
 # Common mistakes
@@ -235,7 +235,20 @@ Spend 60 seconds to *think* about it. Spend 60 seconds *paired* in a breakout ro
 
 
 
-&lt;code class ='r hljs remark-code'&gt;#filter(.data &lt;span style='background-color:#FF851B'&gt;=&lt;/span&gt; penguins,&lt;br&gt;&amp;nbsp;&amp;nbsp;#sex &lt;span style='background-color:#FF851B'&gt;=&lt;/span&gt; "females")&lt;br&gt;&lt;br&gt;filter(.data &lt;span style='background-color:#FF851B'&gt;=&lt;/span&gt; penguins, &lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;sex &lt;span style='background-color:#FF851B'&gt;=&lt;/span&gt;&lt;span style='background-color:#FF851B'&gt;=&lt;/span&gt; "females")&lt;/code&gt;
+&lt;code class ='r hljs remark-code'&gt;filter(.data &lt;span style='background-color:#FF851B'&gt;=&lt;/span&gt; penguins,&lt;br&gt;&amp;nbsp;&amp;nbsp;sex &lt;span style='background-color:#FF851B'&gt;=&lt;/span&gt; "females")&lt;/code&gt;
+
+```
+
+## Error: Problem with `filter()` input `..1`.
+## x Input `..1` is named.
+## i This usually means that you've used `=` instead of `==`.
+## i Did you mean `sex == "females"`?
+
+```
+
+
+
+&lt;code class ='r hljs remark-code'&gt;filter(.data &lt;span style='background-color:#FF851B'&gt;=&lt;/span&gt; penguins, &lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;sex &lt;span style='background-color:#FF851B'&gt;=&lt;/span&gt;&lt;span style='background-color:#FF851B'&gt;=&lt;/span&gt; "females")&lt;/code&gt;
 ]  
 
 --
@@ -729,9 +742,9 @@ dadjoke()
 ```
 ## 
 ## 
-## I just went to an emotional wedding.
+## What don't ants get sick?
 ## 
-## Even the cake was in tiers.
+## They have anty-bodies.
 ```
 
 ---

@@ -64,7 +64,7 @@ green <- "#007965"
 Lab 
 1. Practice with dplyr
 
-[dplyr cheat sheet.](https://github.com/rstudio/cheatsheets/raw/master/data-transformation.pdf) Download this now to use as a resource.
+[dplyr cheat sheet.](https://raw.githubusercontent.com/rstudio/cheatsheets/main/data-transformation.pdf) Download this now to use as a resource.
 
 
 ---
@@ -181,7 +181,7 @@ Two .green[==] reads as "is exactly equal to." It is a question that returns a T
 
 # Think, pair, share.  
 
-Spend 60 seconds to *think* about it. Spend 60 seconds *paired* in a breakout room to discuss your answers. *Share* with the class.
+Spend 2 minutes to *think* about it. Spend 2 minutes *paired* with a neighbor to discuss your answers. *Share* with the class.
 
 ---
 # Common mistakes
@@ -189,9 +189,9 @@ Spend 60 seconds to *think* about it. Spend 60 seconds *paired* in a breakout ro
 .pull-left[
 ## Using .orange[=] instead of .orange[==]
 
-```{r example-model, include=FALSE, eval=FALSE, results="hide"}
-#filter(.data = penguins,
-  #sex = "females")
+```{r example-model, include=FALSE, eval=FALSE, results="hide", error = TRUE, warning=FALSE}
+filter(.data = penguins,
+  sex = "females")
 
 filter(.data = penguins, 
        sex == "females")
