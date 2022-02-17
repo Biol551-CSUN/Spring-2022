@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Week 5a</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Dr. Nyssa Silbiger" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link href="libs/remark-css/default.css" rel="stylesheet" />
+    <link href="libs/remark-css/default-fonts.css" rel="stylesheet" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Week 5a
+## Data wrangling: joins
+### Dr. Nyssa Silbiger
+### CSUN Spring 2022
+### (updated: 2022-02-17)
+
+---
+
+
+
+
+&lt;div style = "position:fixed; visibility: hidden"&gt;
+`$$\require{color}\definecolor{yellow}{rgb}{1, 0.8, 0.16078431372549}$$`
+`$$\require{color}\definecolor{orange}{rgb}{0.96078431372549, 0.525490196078431, 0.203921568627451}$$`
+`$$\require{color}\definecolor{green}{rgb}{0, 0.474509803921569, 0.396078431372549}$$`
+&lt;/div&gt;
+
+&lt;script type="text/x-mathjax-config"&gt;
+MathJax.Hub.Config({
+  TeX: {
+    Macros: {
+      yellow: ["{\\color{yellow}{#1}}", 1],
+      orange: ["{\\color{orange}{#1}}", 1],
+      green: ["{\\color{green}{#1}}", 1]
+    },
+    loader: {load: ['[tex]/color']},
+    tex: {packages: {'[+]': ['color']}}
+  }
+});
+&lt;/script&gt;
+
+&lt;style&gt;
+.yellow {color: #FFCC29;}
+.orange {color: #F58634;}
+.green {color: #007965;}
+&lt;/style&gt;
+
+
+
+
+---
+# Outline of class
+
+1. Learning joins (part of the {dplyr} package)
+  - left_join() -- with real data
+
+1. Learn to make a tibble
+
+1. Back to joins (with made up data as examples)
+  - right_join() 
+  - inner_join()
+  - full_join()
+  - semi_join()
+  - anti_join()
+  
+Lab 
+1. Practice with joins
+
+
+
+---
+# Review
+
+1. What function do you use to split up one column into multiple columns?  
+
+1. What function do you use to transition a wide data frame into a long data frame?
+---
+# Intro to different types of join
+
+Let's say you have multiple hierarchies of data and you want to join them into one big data set. Join functions are the way you would do it.
+
+.pull-left[## Data1
+
+| Site_number| Treatment   |      Nitrate      | Temp | 
+|----------|:-------------:|------:|----:|
+| 1 | High|  1.2 | 7.2| 
+| 2 | High|    3.0   | 7.8| 
+| 3 | Low |2.4 | 8.0|
+| 4 | Low |5.1| 8.0| 
+| 5 | Low| 1.1| 7.9| 
+]
+
+.pull-right[## Data2
+
+| Site_Number| Sample_number  |      Biomass    |  
+|----------|:-------------:|------:|
+| 1 | 1| 12.2 | 
+| 1 | 2| 14.0 | 
+| 1 | 3 |11.9 |
+| 1 | 4 |10.0|  
+
+]
+
+---
+# Intro to different types of join
+
+Let's say you have multiple hierarchies of data and you want to join them into one big data set. Join functions are the way you would do it.
+
+.pull-left[## Data1
+
+| Site_Number| Treatment   |      Nitrate      | Temp | 
+|----------|:-------------:|------:|----:|
+|.orange[ 1] | .orange[ High]|  .orange[ 1.2]| .orange[ 7.2]| 
+| 2 | High|    3.0   | 7.8| 
+| 3 | Low |2.4 | 8.0|
+| 4 | Low |5.1| 8.0| 
+| 5 | Low| 1.1| 7.9| 
+]
+
+.pull-right[## Data2
+
+| Site_Number| Sample_number  |      Biomass    |  
+|----------|:-------------:|------:|
+| .orange[1 ]| .orange[1]|  .orange[12.2] | 
+| .orange[ 1]| .orange[2]|    .orange[14.0]   | 
+| .orange[ 1]| .orange[3] |.orange[11.9] |
+| .orange[ 1]| .orange[4] |.orange[10.0]|  
+
+]
+---
+# What we want
+
+| Site_Number| Sample_number  |      Biomass    |  Treatment   |      Nitrate      | Temp | 
+|----------|:-------------:|------:|
+| 1 | 1| 12.2 | .orange[ High]|  .orange[ 1.2]| .orange[ 7.2]| 
+| 1 | 2| 14.0 | .orange[ High]|  .orange[ 1.2]| .orange[ 7.2]| 
+| 1 | 3 |11.9 |.orange[ High]|  .orange[ 1.2]| .orange[ 7.2]| 
+| 1 | 4 |10.0|  .orange[ High]|  .orange[ 1.2]| .orange[ 7.2]|  
+
+
+  
+**What is the column name that stayed consistent between Data1 and Data2 (i.e. what is the key/unique identifier here)?**
+
+--
+
+Whenever you are collecting data make sure to include a unique ID for every sample. This will be extremely helpful when you need to connect multiple data sets together. 
+
+---
+# A more complicated example from your required reading
+
+&lt;img src = "https://d33wubrfki0l68.cloudfront.net/245292d1ea724f6c3fd8a92063dcd7bfb9758d02/5751b/diagrams/relational-nycflights.png", width = 80% /&gt;
+
+
+
+---
+# New dataset!
+
+We are going to use a subset of data from **Becker and Silbiger (2020) Journal of Experimental Biology**.
+
+In the data folder for this week in Spring-2021, you will see three .csv files:
+
+1. site.characteristics.data.csv
+1. Topt_data.csv
+1. Data_dictionary.csv
+
+Move both of them to the data folder of YOUR repo.
+
+Explore the data dictionary to understand what you will be working with.
+
+Basics: Danielle tested how nutrient loading and sedimentation affected thermal performance metrics of corals in Mo'orea, French Polynesia. She collected 10 corals from six sites with wide range in nutrients/sedimentation. Each coral underwent a heat ramping experiment to calculate thermal performance measures for respiration, photosynthesis, and calcification. She also measured several environmental characteristics at each site (nutrients, temperature, light, reef cover, sedimentation rate, etc.).
+---
+# Set up your script for today
+
+```r
+### Today we are going to practice joins with data from Becker and Silbiger (2020) ####
+### Created by: Dr. Nyssa Silbiger #############
+### Updated on: 2022-02-22 ####################
+
+
+#### Load Libraries ######
+library(tidyverse)
+library(here)
+
+
+### Load data ######
+# Environmental data from each site
+EnviroData&lt;-read_csv(here("Week_5","data", "site.characteristics.data.csv"))
+
+#Thermal performance data
+TPCData&lt;-read_csv(here("Week_5","data","Topt_data.csv"))
+```
+
+
+```r
+glimpse(EnviroData)
+glimpse(TPCData)
+# also use View()
+```
+---
+
+```
+## Rows: 78
+## Columns: 5
+## $ name               &lt;chr&gt; "Anemone Heaven", "Hilton High", "Public Beach", "M~
+## $ site.letter        &lt;chr&gt; "F", "C", "B", "E", "D", "A", "F", "C", "B", "E", "~
+## $ site.block         &lt;dbl&gt; 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, ~
+## $ parameter.measured &lt;chr&gt; "light", "light", "light", "light", "light", "light~
+## $ values             &lt;dbl&gt; 1674.241, 1193.230, 2647.890, 1533.245, 2114.013, 2~
+```
+
+```
+## Rows: 144
+## Columns: 8
+## $ fragment.ID &lt;chr&gt; "PA46_C", "PA46_D", "PA46_L", "PA48_C", "PA48_D", "PA48_L"~
+## $ rate.type   &lt;chr&gt; "C", "R", "GP", "C", "R", "GP", "C", "R", "GP", "C", "R", ~
+## $ E           &lt;dbl&gt; 0.34574547, 0.13186318, 0.42213119, 0.13066366, 0.12624104~
+## $ Eh          &lt;dbl&gt; 1.592010, 4.345022, 2.618238, 6.673343, 3.061237, 2.778633~
+## $ lnc         &lt;dbl&gt; 0.6088088, 0.3496112, 1.1845007, 0.2502219, 0.4226268, 1.0~
+## $ Th          &lt;dbl&gt; 307.0864, 316.2855, 307.5880, 310.9201, 316.8937, 308.1798~
+## $ Topt        &lt;dbl&gt; 300.6761, 309.5567, 302.5356, 306.1089, 308.2398, 303.4685~
+## $ site.letter &lt;chr&gt; "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A"~
+```
+---
+# Pivot the data
+
+We notice that the TPCData is in wide format and the EnviroData is in long format.  Let's convert the EnviroData to wide so that they are both in the same format
+
+
+```r
+EnviroData_wide &lt;- EnviroData %&gt;% 
+  pivot_wider(names_from = parameter.measured,
+              values_from = values)
+```
+
+
+```r
+View(EnviroData_wide)
+```
+
+![wide enviro](libs/images/wide_enviro.PNG)
+---
+# Sort the data
+
+Are you OCD like me? Does it bother you that the sites are not in order? If so, you can use the arrange() function to sort the dataframe by site.
+
+
+
+```r
+EnviroData_wide &lt;- EnviroData %&gt;% 
+  pivot_wider(names_from = parameter.measured, # pivot the data wider
+              values_from = values) %&gt;%
+  arrange(site.letter) # arrange the dataframe by site
+```
+
+
+```r
+View(EnviroData_wide)
+```
+
+--
+
+![wide enviro](libs/images/wide2.PNG)
+
+.center[
+&lt;img src ="https://media3.giphy.com/media/Vgldw2H2uRLRXTtWhS/giphy.gif", width=24% /&gt;
+]
+---
+# left_join()
+
+Let's say we want to look at the relationship between nutrient loading from the site and different thermal performance metrics.  I can use *left_join()* to bring the two data frames together into one single data frame. 
+
+.center[
+&lt;img src = "https://github.com/gadenbuie/tidyexplain/blob/main/images/left-join.gif?raw=true" /&gt;
+]
+
+---
+# left_join()
+
+For left_join() to work you need a *key* that is identical in both dataframes (spelling, capitalization, everything). In this case, Danielle has site.letter present in both data frames. This is the variable that will be used to pair both datasets together. 
+
+In our case, there is no missing data. However, if there was an extra site in the *right-hand* data frame it would be excluded from the new dataset. 
+
+
+```r
+FullData_left&lt;- left_join(TPCData, EnviroData_wide)
+```
+
+```
+## Joining, by = "site.letter"
+```
+
+```r
+head(FullData_left)
+```
+
+```
+## # A tibble: 6 x 23
+##   fragment.ID rate.type     E    Eh   lnc    Th  Topt site.letter name       
+##   &lt;chr&gt;       &lt;chr&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt;       &lt;chr&gt;      
+## 1 PA46_C      C         0.346  1.59 0.609  307.  301. A           Creepy Tree
+## 2 PA46_D      R         0.132  4.35 0.350  316.  310. A           Creepy Tree
+## 3 PA46_L      GP        0.422  2.62 1.18   308.  303. A           Creepy Tree
+## 4 PA48_C      C         0.131  6.67 0.250  311.  306. A           Creepy Tree
+## 5 PA48_D      R         0.126  3.06 0.423  317.  308. A           Creepy Tree
+## 6 PA48_L      GP        0.458  2.78 1.01   308.  303. A           Creepy Tree
+## # ... with 14 more variables: site.block &lt;dbl&gt;, light &lt;dbl&gt;, temp &lt;dbl&gt;,
+## #   NH4 &lt;dbl&gt;, N.N &lt;dbl&gt;, P &lt;dbl&gt;, DIN_DIP &lt;dbl&gt;, N &lt;dbl&gt;,
+## #   trap.accumulation.rate &lt;dbl&gt;, CCA.cover &lt;dbl&gt;, algal.cover &lt;dbl&gt;,
+## #   p.acuta.cover &lt;dbl&gt;, coral.cover &lt;dbl&gt;, substrate.cover &lt;dbl&gt;
+```
+
+---
+# relocate
+
+Does it also bother you that the columns are not in a particular order? I like viewing all the character metadata on the left and all the collected numeric data on the right. Here is how to do it.
+
+
+```r
+FullData_left&lt;- left_join(TPCData, EnviroData_wide) %&gt;%
+   relocate(where(is.numeric), .after = where(is.character)) # relocate all the numeric data after the character data
+```
+
+```
+## Joining, by = "site.letter"
+```
+
+```r
+head(FullData_left)
+```
+
+```
+## # A tibble: 6 x 23
+##   fragment.ID rate.type site.letter name            E    Eh   lnc    Th  Topt
+##   &lt;chr&gt;       &lt;chr&gt;     &lt;chr&gt;       &lt;chr&gt;       &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+## 1 PA46_C      C         A           Creepy Tree 0.346  1.59 0.609  307.  301.
+## 2 PA46_D      R         A           Creepy Tree 0.132  4.35 0.350  316.  310.
+## 3 PA46_L      GP        A           Creepy Tree 0.422  2.62 1.18   308.  303.
+## 4 PA48_C      C         A           Creepy Tree 0.131  6.67 0.250  311.  306.
+## 5 PA48_D      R         A           Creepy Tree 0.126  3.06 0.423  317.  308.
+## 6 PA48_L      GP        A           Creepy Tree 0.458  2.78 1.01   308.  303.
+## # ... with 14 more variables: site.block &lt;dbl&gt;, light &lt;dbl&gt;, temp &lt;dbl&gt;,
+## #   NH4 &lt;dbl&gt;, N.N &lt;dbl&gt;, P &lt;dbl&gt;, DIN_DIP &lt;dbl&gt;, N &lt;dbl&gt;,
+## #   trap.accumulation.rate &lt;dbl&gt;, CCA.cover &lt;dbl&gt;, algal.cover &lt;dbl&gt;,
+## #   p.acuta.cover &lt;dbl&gt;, coral.cover &lt;dbl&gt;, substrate.cover &lt;dbl&gt;
+```
+---
+# Think, pair, share
+
+We now have our full data set. In your group, take your data set and calculate the **mean and variance of all collected (TPC and environmental) data by site**. (Hint: you can either use one of the summarise_at() functions or pivot the data longer to do this in less code)
+
+.center[
+&lt;img src = "https://mantra4changeblog.files.wordpress.com/2017/12/9f0e5fee28378215a04056924aca8336.jpg?w=728", width=70% /&gt;
+]
+---
+# So many joins
+
+There are **lots** of different ways to join data together. To demonstrate, we will make up some datasets so that it is easier to highlight what is happening. 
+
+We will also learn:
+  - right_join() 
+  - inner_join()
+  - full_join()
+  - semi_join()
+  - anti_join()
+  
+---
+# Creating your own tibble
+
+What is a tibble? It is a data frame, but simpler. It is what the tidyverse uses as a data frame.
+
+To create a tibble we use *tibble()*
+
+.pull-left[
+
+```r
+# Make 1 tibble
+T1 &lt;- tibble(Site.ID = c("A", "B", "C", "D"), 
+             Temperature = c(14.1, 16.7, 15.3, 12.8))
+
+T1
+```
+
+```
+## # A tibble: 4 x 2
+##   Site.ID Temperature
+##   &lt;chr&gt;         &lt;dbl&gt;
+## 1 A              14.1
+## 2 B              16.7
+## 3 C              15.3
+## 4 D              12.8
+```
+]
+
+--
+
+.pull-right[
+
+```r
+# make another tibble
+T2 &lt;-tibble(Site.ID = c("A", "B", "D", "E"), 
+            pH = c(7.3, 7.8, 8.1, 7.9))
+
+T2
+```
+
+```
+## # A tibble: 4 x 2
+##   Site.ID    pH
+##   &lt;chr&gt;   &lt;dbl&gt;
+## 1 A         7.3
+## 2 B         7.8
+## 3 D         8.1
+## 4 E         7.9
+```
+]
+
+---
+# left_join vs right_join
+
+The only difference is which dataframe is being used as the base.
+
+left_join(T1, T2) - joins to T1  
+right_join(T1, T2) - joins to T2
+
+.center[
+&lt;img src = "https://github.com/gadenbuie/tidyexplain/blob/main/images/right-join.gif?raw=true" /&gt;
+]
+
+---
+# left_join vs right_join
+
+.pull-left[
+
+```r
+left_join(T1, T2)
+```
+
+```
+## Joining, by = "Site.ID"
+```
+
+```
+## # A tibble: 4 x 3
+##   Site.ID Temperature    pH
+##   &lt;chr&gt;         &lt;dbl&gt; &lt;dbl&gt;
+## 1 A              14.1   7.3
+## 2 B              16.7   7.8
+## 3 C              15.3  NA  
+## 4 D              12.8   8.1
+```
+]
+
+.pull-right[
+
+```r
+right_join(T1, T2)
+```
+
+```
+## Joining, by = "Site.ID"
+```
+
+```
+## # A tibble: 4 x 3
+##   Site.ID Temperature    pH
+##   &lt;chr&gt;         &lt;dbl&gt; &lt;dbl&gt;
+## 1 A              14.1   7.3
+## 2 B              16.7   7.8
+## 3 D              12.8   8.1
+## 4 E              NA     7.9
+```
+]
+
+Notice where the missing value is for each data set
+---
+# inner_join vs full_join
+
+Inner join only keeps the data that is complete in both data sets.
+
+.center[
+&lt;img src = "https://github.com/gadenbuie/tidyexplain/blob/main/images/inner-join.gif?raw=true"/&gt;
+]
+
+---
+# inner_join vs full_join
+
+Full join keeps everything.
+
+.center[
+&lt;img src = "https://github.com/gadenbuie/tidyexplain/blob/main/images/full-join.gif?raw=true"/&gt;
+]
+
+
+---
+# inner_join vs full_join
+
+.pull-left[
+
+```r
+inner_join(T1, T2)
+```
+
+```
+## Joining, by = "Site.ID"
+```
+
+```
+## # A tibble: 3 x 3
+##   Site.ID Temperature    pH
+##   &lt;chr&gt;         &lt;dbl&gt; &lt;dbl&gt;
+## 1 A              14.1   7.3
+## 2 B              16.7   7.8
+## 3 D              12.8   8.1
+```
+]
+
+.pull-right[
+
+```r
+full_join(T1, T2)
+```
+
+```
+## Joining, by = "Site.ID"
+```
+
+```
+## # A tibble: 5 x 3
+##   Site.ID Temperature    pH
+##   &lt;chr&gt;         &lt;dbl&gt; &lt;dbl&gt;
+## 1 A              14.1   7.3
+## 2 B              16.7   7.8
+## 3 C              15.3  NA  
+## 4 D              12.8   8.1
+## 5 E              NA     7.9
+```
+]
+
+---
+# semi_join vs anti_join
+
+semi_join keeps all rows from the first data set where there are matching values in the second data set, keeping just columns from the first data set.
+
+.center[
+&lt;img src = "https://github.com/gadenbuie/tidyexplain/blob/main/images/semi-join.gif?raw=true" /&gt;
+]
+
+
+---
+# semi_join vs anti_join
+
+Saves all rows in the first data set that do not match anything in the second data set. This can help you find possible missing data across datasets.
+
+.center[
+&lt;img src = "https://github.com/gadenbuie/tidyexplain/blob/main/images/anti-join.gif?raw=true", width=40% /&gt;
+]
+
+How would I find the extra data in y, in this example?
+---
+# semi_join vs anti_join
+
+.pull-left[
+
+```r
+semi_join(T1, T2)
+```
+
+```
+## Joining, by = "Site.ID"
+```
+
+```
+## # A tibble: 3 x 2
+##   Site.ID Temperature
+##   &lt;chr&gt;         &lt;dbl&gt;
+## 1 A              14.1
+## 2 B              16.7
+## 3 D              12.8
+```
+]
+
+.pull-right[
+
+```r
+anti_join(T1, T2)
+```
+
+```
+## Joining, by = "Site.ID"
+```
+
+```
+## # A tibble: 1 x 2
+##   Site.ID Temperature
+##   &lt;chr&gt;         &lt;dbl&gt;
+## 1 C              15.3
+```
+]
+
+---
+# Today's totally awesome R package: {cowsay}
+
+Have you every wanted an animal to talk to you?  Well now you can.
+
+
+```r
+install.packages("cowsay")
+```
+
+
+```r
+library(cowsay)
+```
+
+---
+
+
+```r
+# I want a shark to say hello
+
+say("hello", by = "shark")
+```
+
+```
+## 
+##  -------------- 
+## hello 
+##  --------------
+##     \
+##       \
+##         \
+##               /""-._
+##               .       '-,
+##                :          '',
+##                 ;      *     '.
+##                  ' *         () '.
+##                    \               \
+##                     \      _.---.._ '.
+##                     :  .' _.--''-''  \ ,'
+##         .._           '/.'             . ;
+##         ; `-.          ,                \'
+##          ;   `,         ;              ._\
+##           ;    \     _,-'                ''--._
+##           :    \_,-'                          '-._
+##           \ ,-'                       .          '-._
+##           .'         __.-'';            \...,__       '.
+##         .'      _,-'        \              \   ''--.,__  '\
+##         /    _,--' ;         \              ;           \^.}
+##         ;_,-' )     \  )\      )            ;
+##              /       \/  \_.,-'             ;
+##             /                              ;
+##          ,-'  _,-'''-.    ,-.,            ;      PFA
+##       ,-' _.-'        \  /    |/'-._...--'
+##      :--``             )/
+##   '
+## 
+```
+
+
+---
+
+
+```r
+# I want a cat to say I want pets
+
+say("I want pets", by = "cat")
+```
+
+```
+## 
+##  -------------- 
+## I want pets 
+##  --------------
+##     \
+##       \
+##         \
+##             |\___/|
+##           ==) ^Y^ (==
+##             \  ^  /
+##              )=*=(
+##             /     \
+##             |     |
+##            /| | | |\
+##            \| | |_|/\
+##       jgs  //_// ___/
+##                \_)
+## 
+```
+
+---
+Lab
+
+Practice joins on your own.  You do not have to turn anything in for this lab. 
+
+Reminder: We are starting RMarkdown next week. If you have not yet completed the markdown lab from week 2, do it now. I will expect that you know the basics from that lab assignment **before** class on Monday.  
+
+
+Who wants to share their Tidy Tuesday from last week before we end?
+
+---
+class: center, middle
+
+# Thanks!
+
+Slides created via the R package [**xaringan**](https://github.com/yihui/xaringan).
+
+Some slides modified from [Tidy Explain ](https://github.com/gadenbuie/tidyexplain#:~:text=A%20mutating%20join%20allows%20you,one%20table%20to%20the%20other.)
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script src="macros.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"highlightSpans": true,
+"countIncrementalSlides": false,
+"ratio": "15:10"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
