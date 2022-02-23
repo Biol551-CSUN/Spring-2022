@@ -9,5 +9,6 @@
 [Ashlee Ochoa](https://github.com/ashochoa25/Tidy-Tuesday)  
 [Cynthia Petrossian](https://github.com/cynthiapetrossian/Tidy-Tuesday.git)  
 [Taylorann Smith](https://github.com/TaylorannSmith/2022TidyTuesday.git)  
+[Tadeo Zungia](https://github.com/Tadeoz/TAZuniga-TidyTuesday_CSUN)  
 
 
