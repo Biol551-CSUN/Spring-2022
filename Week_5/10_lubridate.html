@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Week 5b</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Dr. Nyssa Silbiger" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link href="libs/remark-css/default.css" rel="stylesheet" />
+    <link href="libs/remark-css/default-fonts.css" rel="stylesheet" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Week 5b
+## Data wrangling: lubridate dates and times
+### Dr. Nyssa Silbiger
+### CSUN Spring 2022
+### (updated: 2022-02-22)
+
+---
+
+
+
+
+&lt;div style = "position:fixed; visibility: hidden"&gt;
+`$$\require{color}\definecolor{yellow}{rgb}{1, 0.8, 0.16078431372549}$$`
+`$$\require{color}\definecolor{orange}{rgb}{0.96078431372549, 0.525490196078431, 0.203921568627451}$$`
+`$$\require{color}\definecolor{green}{rgb}{0, 0.474509803921569, 0.396078431372549}$$`
+&lt;/div&gt;
+
+&lt;script type="text/x-mathjax-config"&gt;
+MathJax.Hub.Config({
+  TeX: {
+    Macros: {
+      yellow: ["{\\color{yellow}{#1}}", 1],
+      orange: ["{\\color{orange}{#1}}", 1],
+      green: ["{\\color{green}{#1}}", 1]
+    },
+    loader: {load: ['[tex]/color']},
+    tex: {packages: {'[+]': ['color']}}
+  }
+});
+&lt;/script&gt;
+
+&lt;style&gt;
+.yellow {color: #FFCC29;}
+.orange {color: #F58634;}
+.green {color: #007965;}
+&lt;/style&gt;
+
+
+
+
+---
+# Outline of class
+
+Learning about dates and times from the {lubridate} package 
+
+.center[
+&lt;img src = "http://lubridate.tidyverse.org/logo.png", width=20%/&gt;
+]
+
+
+
+1. Converting and manipulating dates and times using {lubridate}
+
+Lab 
+1. Practice with dates and times
+
+[Download this cheatsheet on lubridate](https://evoldyn.gitlab.io/evomics-2018/ref-sheets/R_lubridate.pdf)
+
+---
+# Review
+
+1. What function do you use to join two dataframes together while preserving everything in the left dataframe?  
+
+---
+# Start your script.  
+You know what to do..... (Copy CondData.csv and DepthData.csv to your data folder)
+
+
+```r
+install.packages("lubridate") # package to deal with dates and times
+```
+
+
+```r
+library(tidyverse)
+library(here)
+library(lubridate)
+```
+
+.center[
+&lt;img src = "https://media4.giphy.com/media/3o7aCTfyhYawdOXcFW/giphy.gif", width=60%/&gt;
+]
+
+---
+# What time is it now?
+
+Even though this may seem silly if you have a clock, it is very helpful if you want to time stamp something in your code.
+
+
+```r
+now() #what time is it now?
+```
+
+```
+## [1] "2022-02-22 16:13:27 PST"
+```
+
+--
+
+ You can also ask the time in other time zones.
+ 
+
+```r
+now(tzone = "EST") # what time is it on the east coast
+```
+
+```
+## [1] "2022-02-22 19:13:28 EST"
+```
+
+```r
+now(tzone = "GMT") # what time in GMT
+```
+
+```
+## [1] "2022-02-23 00:13:28 GMT"
+```
+
+---
+# What time is it now?
+
+If you only want the date and not the time
+
+
+```r
+today()
+```
+
+```
+## [1] "2022-02-22"
+```
+
+
+```r
+today(tzone = "GMT")
+```
+
+```
+## [1] "2022-02-23"
+```
+
+--
+
+ You can also ask if it is morning or night right now and if it is a leap year.
+ 
+
+```r
+am(now()) # is it morning?
+```
+
+```
+## [1] FALSE
+```
+
+```r
+leap_year(now()) # is it a leap year?
+```
+
+```
+## [1] FALSE
+```
+
+---
+# Date specifications for lubridate
+
+{lubridate} does a good job of guessing the format of your date if you give just a little hint.
+
+First, your dates **must be a character**.  
+
+A common mistake is that you get an error trying to convert a date when it is a factor. Always check to make sure it is a character (i.e. put quotes around it).
+
+
+
+| Date| function   |       
+|----------|:-------------:|
+| 2021-02-24 | ymd()|
+| 02/24/2021 | mdy()|
+| February 24 2021 | mdy()|
+| 24/02/2021 | dmy()|
+
+
+y = year  
+m = month  
+d = day  
+
+---
+# Date specifications for lubridate
+
+These will all produce the same results as ISO dates 
+
+```r
+ymd("2021-02-24")
+```
+
+```
+## [1] "2021-02-24"
+```
+
+```r
+mdy("02/24/2021")
+```
+
+```
+## [1] "2021-02-24"
+```
+
+```r
+mdy("February 24 2021")
+```
+
+```
+## [1] "2021-02-24"
+```
+
+```r
+dmy("24/02/2021")
+```
+
+```
+## [1] "2021-02-24"
+```
+
+---
+
+# Date and Time specifications with lubridate
+
+| Time| function   |       
+|----------|:-------------:|
+| 2021-02-24 10:22:20 PM | ymd_hms()|
+|02/24/2021 22:22:20 | mdy_hms()|
+|February 24 2021 10:22 PM | mdy_hm()|
+
+
+y = year   
+m = month (1st m)  
+d = day  
+h = hour  
+m = minute (2nd m)  
+s = second 
+
+---
+
+# Date and Time specifications with lubridate
+
+
+```r
+ymd_hms("2021-02-24 10:22:20 PM")
+```
+
+```
+## [1] "2021-02-24 22:22:20 UTC"
+```
+
+```r
+mdy_hms("02/24/2021 22:22:20")
+```
+
+```
+## [1] "2021-02-24 22:22:20 UTC"
+```
+
+```r
+mdy_hm("February 24 2021 10:22 PM")
+```
+
+```
+## [1] "2021-02-24 22:22:00 UTC"
+```
+---
+# Extracting specific date or time elements from datetimes 
+
+Let's make a vector of dates
+
+
+```r
+# make a character string
+*datetimes&lt;-c("02/24/2021 22:22:20",
+*            "02/25/2021 11:21:10",
+*            "02/26/2021 8:01:52")
+```
+---
+# Extracting specific date or time elements from datetimes 
+
+Let's make a vector of dates .orange[and covert them to datetimes].
+
+
+```r
+# make a character string
+datetimes&lt;-c("02/24/2021 22:22:20", 
+             "02/25/2021 11:21:10", 
+             "02/26/2021 8:01:52") 
+
+# convert to datetimes
+*datetimes &lt;- mdy_hms(datetimes)
+```
+---
+# Extracting specific date or time elements from datetimes 
+
+Let's make a vector of dates and covert them to datetimes. .orange[Extract the months from the character string].
+
+
+```r
+# make a character string
+datetimes&lt;-c("02/24/2021 22:22:20", 
+             "02/25/2021 11:21:10", 
+             "02/26/2021 8:01:52") 
+
+# convert to datetimes
+datetimes &lt;- mdy_hms(datetimes) 
+
+*month(datetimes)
+```
+
+```
+## [1] 2 2 2
+```
+---
+
+# Extracting specific date or time elements from datetimes 
+
+Let's make a vector of dates and covert them to datetimes. .orange[Extract the months from the character string]. You can also save it as the month name.
+
+
+```r
+# make a character string
+datetimes&lt;-c("02/24/2021 22:22:20", 
+             "02/25/2021 11:21:10", 
+             "02/26/2021 8:01:52") 
+
+# convert to datetimes
+datetimes &lt;- mdy_hms(datetimes) 
+
+*month(datetimes, label = TRUE)
+```
+
+```
+## [1] Feb Feb Feb
+## 12 Levels: Jan &lt; Feb &lt; Mar &lt; Apr &lt; May &lt; Jun &lt; Jul &lt; Aug &lt; Sep &lt; ... &lt; Dec
+```
+---
+# Extracting specific date or time elements from datetimes 
+
+Let's make a vector of dates and covert them to datetimes. .orange[Extract the months from the character string]. You can also save it as the month name.
+
+
+```r
+# make a character string
+datetimes&lt;-c("02/24/2021 22:22:20", 
+             "02/25/2021 11:21:10", 
+             "02/26/2021 8:01:52") 
+
+# convert to datetimes
+datetimes &lt;- mdy_hms(datetimes) 
+
+*month(datetimes, label = TRUE, abbr = FALSE) #Spell it out
+```
+
+```
+## [1] February February February
+## 12 Levels: January &lt; February &lt; March &lt; April &lt; May &lt; June &lt; ... &lt; December
+```
+---
+# Extracting specific date or time elements from datetimes 
+
+Let's make a vector of dates and covert them to datetimes. .orange[Extract the days]. 
+
+
+```r
+# make a character string
+datetimes&lt;-c("02/24/2021 22:22:20", 
+             "02/25/2021 11:21:10", 
+             "02/26/2021 8:01:52") 
+
+# convert to datetimes
+datetimes &lt;- mdy_hms(datetimes) 
+month(datetimes, label = TRUE, abbr = FALSE) #Spell it out 
+```
+
+```r
+*day(datetimes) # extract day
+```
+
+```
+## [1] 24 25 26
+```
+
+```r
+*wday(datetimes, label = TRUE) # extract day of week
+```
+
+```
+## [1] Wed Thu Fri
+## Levels: Sun &lt; Mon &lt; Tue &lt; Wed &lt; Thu &lt; Fri &lt; Sat
+```
+---
+# Extracting specific date or time elements from datetimes 
+
+Let's make a vector of dates and covert them to datetimes. .orange[Extract hour, minute, second]. 
+
+
+```r
+# make a character string
+datetimes&lt;-c("02/24/2021 22:22:20", 
+             "02/25/2021 11:21:10", 
+             "02/26/2021 8:01:52") 
+
+# convert to datetimes
+datetimes &lt;- mdy_hms(datetimes) 
+month(datetimes, label = TRUE, abbr = FALSE) #Spell it out 
+day(datetimes) # extract day 
+wday(datetimes, label = TRUE) # extract day of week 
+```
+
+
+```r
+*hour(datetimes)
+*minute(datetimes)
+*second(datetimes)
+```
+
+---
+# Adding dates and times
+
+Let's say you are doing research in Mo'orea and one of your instruments is set to the correct timezone and the other one is not (not from my own experience or anything....).
+
+Let's add 4 hours to all the datetimes
+
+
+```r
+*datetimes + hours(4) # this adds 4 hours
+```
+
+```
+## [1] "2021-02-25 02:22:20 UTC" "2021-02-25 15:21:10 UTC"
+## [3] "2021-02-26 12:01:52 UTC"
+```
+
+Notice the **s** in hour**s**
+
+*hour()* extracts the hour component from a time and *hours()* is used to add hours to a datetime
+
+---
+# Adding dates and times
+
+Let's say you are doing research in Mo'orea and one of your instruments is set to the correct timezone and the other one is not (not from my own experience or anything....).
+
+Let's add 2 days to all the datetimes
+
+
+```r
+datetimes + hours(4) # this adds 4 hours 
+```
+
+```r
+*datetimes + days(2) # this adds 2 days
+```
+
+```
+## [1] "2021-02-26 22:22:20 UTC" "2021-02-27 11:21:10 UTC"
+## [3] "2021-02-28 08:01:52 UTC"
+```
+Notice the **s** in day**s**
+
+*day()* extracts the hour component from a time and *days()* is used to add hours to a datetime  
+
+You can do the same with minutes(), seconds(), months(), years(), etc.
+
+---
+# Rounding dates
+
+Round the dates to the nearest minute and nearest 5 minutes
+
+
+```r
+*round_date(datetimes, "minute") # round to nearest minute
+```
+
+```
+## [1] "2021-02-24 22:22:00 UTC" "2021-02-25 11:21:00 UTC"
+## [3] "2021-02-26 08:02:00 UTC"
+```
+
+```r
+*round_date(datetimes, "5 mins") # round to nearest 5 minute
+```
+
+```
+## [1] "2021-02-24 22:20:00 UTC" "2021-02-25 11:20:00 UTC"
+## [3] "2021-02-26 08:00:00 UTC"
+```
+
+You can do this with any set of times
+
+---
+# Think, pair, share
+
+Read in the conductivity data (CondData.csv) and convert the date column to a datetime. Use the %&gt;% to keep everything clean.
+
+This is temperature and salinity data taken at a site with groundwater while being dragged behind a float. Data were collected every 10 seconds. You will also notice depth data.  That dataset will be used in late during lab. Those data are taken from a pressure sensor, also collected data every 10 seconds. 
+
+---
+# Today's totally awesome R package
+
+Ever wanted to plot with cats? Now you can with {catterplots}!
+
+
+```r
+library(devtools)
+install_github("Gibbsdavidl/CatterPlots") # install the data 
+```
+
+
+```r
+library(CatterPlots)
+x &lt;-c(1:10)# make up some data
+y&lt;-c(1:10)
+catplot(xs=x, ys=y, cat=3, catcolor='blue')
+```
+
+![](10_lubridate_files/figure-html/unnamed-chunk-24-1.png)&lt;!-- --&gt;
+
+```
+## $xs
+##  [1]  1  2  3  4  5  6  7  8  9 10
+## 
+## $ys
+##  [1]  1  2  3  4  5  6  7  8  9 10
+## 
+## $args
+## list()
+## 
+## $canvas
+## [1] 0.0 1.1 0.0 1.1
+```
+---
+#Lab
+
+- Read in both the conductivity and depth data.  
+- Convert date columns appropriately  
+- Round the conductivity data to the nearest 10 seconds so that it matches with the depth data  
+- Join the two dataframes together  (in a way where there will be no NAs... i.e. join in a way where only exact matches between the two dataframes are kept)  
+- take averages of date, depth, temperature, and salinity by minute (hint: easiest way to do this is to make a new column where the hours and minutes are extracted)
+- Make any plot using the averaged data 
+- Do the entire thing using mostly pipes (i.e. you should not have a bunch of different dataframes). Keep it clean. 
+- Don't forget to comment!  
+- Save the output, data, and scripts appropriately
+
+
+---
+class: center, middle
+
+# Thanks!
+
+Slides created via the R package [**xaringan**](https://github.com/yihui/xaringan).
+
+
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script src="macros.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"highlightSpans": true,
+"countIncrementalSlides": false,
+"ratio": "15:10"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

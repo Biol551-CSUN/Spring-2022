@@ -1,0 +1,428 @@
+---
+title: "Week 5b"
+subtitle: "Data wrangling: lubridate dates and times"
+author: "Dr. Nyssa Silbiger"
+institute: "CSUN Spring 2022"
+date: "(updated: `r Sys.Date()`)"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      highlightSpans: true
+      countIncrementalSlides: false
+      beforeInit: "macros.js"
+      ratio: '15:10'
+---
+
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+```
+<div style = "position:fixed; visibility: hidden">
+$$\require{color}\definecolor{yellow}{rgb}{1, 0.8, 0.16078431372549}$$
+$$\require{color}\definecolor{orange}{rgb}{0.96078431372549, 0.525490196078431, 0.203921568627451}$$
+$$\require{color}\definecolor{green}{rgb}{0, 0.474509803921569, 0.396078431372549}$$
+</div>
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  TeX: {
+    Macros: {
+      yellow: ["{\\color{yellow}{#1}}", 1],
+      orange: ["{\\color{orange}{#1}}", 1],
+      green: ["{\\color{green}{#1}}", 1]
+    },
+    loader: {load: ['[tex]/color']},
+    tex: {packages: {'[+]': ['color']}}
+  }
+});
+</script>
+
+<style>
+.yellow {color: #FFCC29;}
+.orange {color: #F58634;}
+.green {color: #007965;}
+</style>
+
+
+```{r flair_color, echo=FALSE}
+library(flair)
+yellow <- "#FFCC29"
+orange <- "#F58634"
+green <- "#007965"
+```
+
+---
+# Outline of class
+
+Learning about dates and times from the {lubridate} package 
+
+.center[
+<img src = "http://lubridate.tidyverse.org/logo.png", width=20%/>
+]
+
+
+
+1. Converting and manipulating dates and times using {lubridate}
+
+Lab 
+1. Practice with dates and times
+
+[Download this cheatsheet on lubridate](https://evoldyn.gitlab.io/evomics-2018/ref-sheets/R_lubridate.pdf)
+
+---
+# Review
+
+1. What function do you use to join two dataframes together while preserving everything in the left dataframe?  
+
+---
+# Start your script.  
+You know what to do..... (Copy CondData.csv and DepthData.csv to your data folder)
+
+```{r, eval = FALSE}
+install.packages("lubridate") # package to deal with dates and times
+```
+
+```{r, message = FALSE, warning = FALSE}
+library(tidyverse)
+library(here)
+library(lubridate)
+```
+
+.center[
+<img src = "https://media4.giphy.com/media/3o7aCTfyhYawdOXcFW/giphy.gif", width=60%/>
+]
+
+---
+# What time is it now?
+
+Even though this may seem silly if you have a clock, it is very helpful if you want to time stamp something in your code.
+
+```{r}
+now() #what time is it now?
+```
+
+--
+
+ You can also ask the time in other time zones.
+ 
+```{r}
+now(tzone = "EST") # what time is it on the east coast
+now(tzone = "GMT") # what time in GMT
+```
+
+---
+# What time is it now?
+
+If you only want the date and not the time
+
+```{r}
+today()
+```
+
+```{r}
+today(tzone = "GMT")
+```
+
+--
+
+ You can also ask if it is morning or night right now and if it is a leap year.
+ 
+```{r}
+am(now()) # is it morning?
+
+leap_year(now()) # is it a leap year?
+```
+
+---
+# Date specifications for lubridate
+
+{lubridate} does a good job of guessing the format of your date if you give just a little hint.
+
+First, your dates **must be a character**.  
+
+A common mistake is that you get an error trying to convert a date when it is a factor. Always check to make sure it is a character (i.e. put quotes around it).
+
+
+
+| Date| function   |       
+|----------|:-------------:|
+| 2021-02-24 | ymd()|
+| 02/24/2021 | mdy()|
+| February 24 2021 | mdy()|
+| 24/02/2021 | dmy()|
+
+
+y = year  
+m = month  
+d = day  
+
+---
+# Date specifications for lubridate
+
+These will all produce the same results as ISO dates 
+```{r}
+ymd("2021-02-24")
+mdy("02/24/2021")
+mdy("February 24 2021")
+dmy("24/02/2021")
+
+```
+
+---
+
+# Date and Time specifications with lubridate
+
+| Time| function   |       
+|----------|:-------------:|
+| 2021-02-24 10:22:20 PM | ymd_hms()|
+|02/24/2021 22:22:20 | mdy_hms()|
+|February 24 2021 10:22 PM | mdy_hm()|
+
+
+y = year   
+m = month (1st m)  
+d = day  
+h = hour  
+m = minute (2nd m)  
+s = second 
+
+---
+
+# Date and Time specifications with lubridate
+
+```{r}
+ymd_hms("2021-02-24 10:22:20 PM")
+
+mdy_hms("02/24/2021 22:22:20")
+
+mdy_hm("February 24 2021 10:22 PM")
+
+```
+---
+# Extracting specific date or time elements from datetimes 
+
+Let's make a vector of dates
+
+```{r}
+# make a character string
+datetimes<-c("02/24/2021 22:22:20", #<<
+             "02/25/2021 11:21:10", #<<
+             "02/26/2021 8:01:52") #<<
+
+
+
+```
+---
+# Extracting specific date or time elements from datetimes 
+
+Let's make a vector of dates .orange[and covert them to datetimes].
+
+```{r}
+# make a character string
+datetimes<-c("02/24/2021 22:22:20", 
+             "02/25/2021 11:21:10", 
+             "02/26/2021 8:01:52") 
+
+# convert to datetimes
+datetimes <- mdy_hms(datetimes) #<<
+
+```
+---
+# Extracting specific date or time elements from datetimes 
+
+Let's make a vector of dates and covert them to datetimes. .orange[Extract the months from the character string].
+
+```{r}
+# make a character string
+datetimes<-c("02/24/2021 22:22:20", 
+             "02/25/2021 11:21:10", 
+             "02/26/2021 8:01:52") 
+
+# convert to datetimes
+datetimes <- mdy_hms(datetimes) 
+
+month(datetimes) #<<
+
+```
+---
+
+# Extracting specific date or time elements from datetimes 
+
+Let's make a vector of dates and covert them to datetimes. .orange[Extract the months from the character string]. You can also save it as the month name.
+
+```{r}
+# make a character string
+datetimes<-c("02/24/2021 22:22:20", 
+             "02/25/2021 11:21:10", 
+             "02/26/2021 8:01:52") 
+
+# convert to datetimes
+datetimes <- mdy_hms(datetimes) 
+
+month(datetimes, label = TRUE) #<<
+
+```
+---
+# Extracting specific date or time elements from datetimes 
+
+Let's make a vector of dates and covert them to datetimes. .orange[Extract the months from the character string]. You can also save it as the month name.
+
+```{r}
+# make a character string
+datetimes<-c("02/24/2021 22:22:20", 
+             "02/25/2021 11:21:10", 
+             "02/26/2021 8:01:52") 
+
+# convert to datetimes
+datetimes <- mdy_hms(datetimes) 
+
+month(datetimes, label = TRUE, abbr = FALSE) #Spell it out #<< 
+
+```
+---
+# Extracting specific date or time elements from datetimes 
+
+Let's make a vector of dates and covert them to datetimes. .orange[Extract the days]. 
+
+```{r, eval=FALSE}
+# make a character string
+datetimes<-c("02/24/2021 22:22:20", 
+             "02/25/2021 11:21:10", 
+             "02/26/2021 8:01:52") 
+
+# convert to datetimes
+datetimes <- mdy_hms(datetimes) 
+month(datetimes, label = TRUE, abbr = FALSE) #Spell it out 
+```
+```{r}
+day(datetimes) # extract day #<< 
+wday(datetimes, label = TRUE) # extract day of week #<<
+
+```
+---
+# Extracting specific date or time elements from datetimes 
+
+Let's make a vector of dates and covert them to datetimes. .orange[Extract hour, minute, second]. 
+
+```{r, eval = FALSE}
+# make a character string
+datetimes<-c("02/24/2021 22:22:20", 
+             "02/25/2021 11:21:10", 
+             "02/26/2021 8:01:52") 
+
+# convert to datetimes
+datetimes <- mdy_hms(datetimes) 
+month(datetimes, label = TRUE, abbr = FALSE) #Spell it out 
+day(datetimes) # extract day 
+wday(datetimes, label = TRUE) # extract day of week 
+
+```
+
+```{r, eval = FALSE}
+hour(datetimes) #<<
+minute(datetimes) #<<
+second(datetimes) #<<
+
+```
+
+---
+# Adding dates and times
+
+Let's say you are doing research in Mo'orea and one of your instruments is set to the correct timezone and the other one is not (not from my own experience or anything....).
+
+Let's add 4 hours to all the datetimes
+
+```{r}
+datetimes + hours(4) # this adds 4 hours #<<
+
+```
+
+Notice the **s** in hour**s**
+
+*hour()* extracts the hour component from a time and *hours()* is used to add hours to a datetime
+
+---
+# Adding dates and times
+
+Let's say you are doing research in Mo'orea and one of your instruments is set to the correct timezone and the other one is not (not from my own experience or anything....).
+
+Let's add 2 days to all the datetimes
+
+```{r, eval=FALSE}
+datetimes + hours(4) # this adds 4 hours 
+```
+```{r, eval=TRUE}
+datetimes + days(2) # this adds 2 days #<<
+```
+Notice the **s** in day**s**
+
+*day()* extracts the hour component from a time and *days()* is used to add hours to a datetime  
+
+You can do the same with minutes(), seconds(), months(), years(), etc.
+
+---
+# Rounding dates
+
+Round the dates to the nearest minute and nearest 5 minutes
+
+```{r}
+round_date(datetimes, "minute") # round to nearest minute #<<
+
+
+round_date(datetimes, "5 mins") # round to nearest 5 minute #<<
+
+```
+
+You can do this with any set of times
+
+---
+# Think, pair, share
+
+Read in the conductivity data (CondData.csv) and convert the date column to a datetime. Use the %>% to keep everything clean.
+
+This is temperature and salinity data taken at a site with groundwater while being dragged behind a float. Data were collected every 10 seconds. You will also notice depth data.  That dataset will be used in late during lab. Those data are taken from a pressure sensor, also collected data every 10 seconds. 
+
+---
+# Today's totally awesome R package
+
+Ever wanted to plot with cats? Now you can with {catterplots}!
+
+```{r, eval = FALSE}
+library(devtools)
+install_github("Gibbsdavidl/CatterPlots") # install the data 
+```
+
+```{r, fig.height=4, fig.width=4, message = FALSE, warning=FALSE}
+library(CatterPlots)
+x <-c(1:10)# make up some data
+y<-c(1:10)
+catplot(xs=x, ys=y, cat=3, catcolor='blue')
+
+```
+---
+#Lab
+
+- Read in both the conductivity and depth data.  
+- Convert date columns appropriately  
+- Round the conductivity data to the nearest 10 seconds so that it matches with the depth data  
+- Join the two dataframes together  (in a way where there will be no NAs... i.e. join in a way where only exact matches between the two dataframes are kept)  
+- take averages of date, depth, temperature, and salinity by minute (hint: easiest way to do this is to make a new column where the hours and minutes are extracted)
+- Make any plot using the averaged data 
+- Do the entire thing using mostly pipes (i.e. you should not have a bunch of different dataframes). Keep it clean. 
+- Don't forget to comment!  
+- Save the output, data, and scripts appropriately
+
+
+---
+class: center, middle
+
+# Thanks!
+
+Slides created via the R package [**xaringan**](https://github.com/yihui/xaringan).
+
+
+
+
