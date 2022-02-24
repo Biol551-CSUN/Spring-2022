@@ -1,6 +1,7 @@
 # These are the Tidy Tuesday Repos for the class
 
 [Heather Carstensen](https://github.com/h-carstensen/Carstensen_TidyTuesday)   
+[Alex Dang](https://github.com/adang2011/Tidy-Tuesday)  
 [Robert Dellinger](https://github.com/ROBD1005/Tidy-Tuesday.git)  
 [Diego Gomez](https://github.com/diegryllid/TidyTuesday.git)  
 [Joy Hart](https://github.com/thejline/TidyTuesday_Hart)  
