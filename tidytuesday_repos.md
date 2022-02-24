@@ -8,6 +8,7 @@
 [Vivian Vy Le](https://github.com/vivvle/TidyTuesday_551)  
 [Ashlee Ochoa](https://github.com/ashochoa25/Tidy-Tuesday)  
 [Cynthia Petrossian](https://github.com/cynthiapetrossian/Tidy-Tuesday.git)  
+[Jocelyn Martinex Rico](https://github.com/jmartinezrico/TidyTuesday)  
 [Taylorann Smith](https://github.com/TaylorannSmith/2022TidyTuesday.git)  
 [Tadeo Zungia](https://github.com/Tadeoz/TAZuniga-TidyTuesday_CSUN)  
 
