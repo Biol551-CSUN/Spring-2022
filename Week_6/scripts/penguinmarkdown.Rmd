@@ -1,0 +1,41 @@
+---
+title: "My awesome RMarkdown Doc"
+author: "Nyssa"
+date: "2/27/2022"
+output: 
+  rmdformats::readthedown
+    
+    
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Intro
+Today we are going to work with the Penguin data to learn *RMarkdown*.  
+
+# Load libraries
+
+```{r, warning = FALSE, message= FALSE}
+library(tidyverse)
+library(palmerpenguins)
+library(here)
+```
+
+
+# Inspect the data
+```{r}
+glimpse(penguins)
+```
+
+# Make a plot
+```{r}
+penguins %>%
+  ggplot(aes(x = bill_length_mm, y = bill_depth_mm, color = species))+
+  geom_point()+
+  geom_smooth(method = lm)+
+  labs(x = " Bill Length (mm)",
+       y = "Bill Depth (mm)")+
+  theme_bw()
+```

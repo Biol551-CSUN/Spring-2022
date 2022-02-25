@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Week 6a</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Dr. Nyssa Silbiger" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link href="libs/remark-css/default.css" rel="stylesheet" />
+    <link href="libs/remark-css/default-fonts.css" rel="stylesheet" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Week 6a
+## Intro to RMarkdown
+### Dr. Nyssa Silbiger
+### CSUN Spring 2022
+### (updated: 2022-02-24)
+
+---
+
+
+
+
+&lt;div style = "position:fixed; visibility: hidden"&gt;
+`$$\require{color}\definecolor{yellow}{rgb}{1, 0.8, 0.16078431372549}$$`
+`$$\require{color}\definecolor{orange}{rgb}{0.96078431372549, 0.525490196078431, 0.203921568627451}$$`
+`$$\require{color}\definecolor{green}{rgb}{0, 0.474509803921569, 0.396078431372549}$$`
+&lt;/div&gt;
+
+&lt;script type="text/x-mathjax-config"&gt;
+MathJax.Hub.Config({
+  TeX: {
+    Macros: {
+      yellow: ["{\\color{yellow}{#1}}", 1],
+      orange: ["{\\color{orange}{#1}}", 1],
+      green: ["{\\color{green}{#1}}", 1]
+    },
+    loader: {load: ['[tex]/color']},
+    tex: {packages: {'[+]': ['color']}}
+  }
+});
+&lt;/script&gt;
+
+&lt;style&gt;
+.yellow {color: #FFCC29;}
+.orange {color: #F58634;}
+.green {color: #007965;}
+&lt;/style&gt;
+
+
+
+
+---
+# Outline of class
+
+
+
+.pull-left[
+Working with RMarkdown today
+
+1. What is RMarkdown?
+
+1. RMarkdown metadata and outputs
+
+1. Basic Markdown text
+
+1. Using code chunks
+
+
+
+Lab 
+1. Practice with RMarkdown
+]
+
+.pull-right[
+Next Time
+1. Working with figures
+
+1. Working with tables
+
+1. Themes
+
+1. Advanced outputs
+]
+
+.center[
+[Download this cheatsheet on RMarkdown](https://github.com/rstudio/cheatsheets/raw/master/rmarkdown-2.0.pdf)
+
+[The RMarkdown Definitive Guide](https://bookdown.org/yihui/rmarkdown/)
+
+[RMarkdown RStudio Guide](https://rmarkdown.rstudio.com/)
+]
+---
+# Review
+
+1. If I want to convert Feb 28 2021 10:05:50 to a date, what function do I use?
+---
+# What is R Markdown?
+ ![RMarkdown](https://github.com/allisonhorst/stats-illustrations/raw/master/rstats-artwork/rmarkdown_wizards.png)  
+ 
+---
+ 
+ # What is R Markdown?
+ 
+1.  "An authoring framework for data science." 
+
+--
+
+1. A document format (.Rmd). 
+
+--
+
+1. An R package named rmarkdown. 
+
+--
+
+1. "A file format for making dynamic documents with R." 
+
+--
+
+1. "A tool for integrating text, code, and results." 
+
+--
+
+1. "A computational document." 
+
+--
+
+1. Wizardry. (🧙‍️)
+
+
+---
+# Change your mental mode
+
+.pull-left[
+### Source to Output
+&lt;img src="https://apreshill.github.io/rmd4cdc/images/word.png", width=50%/&gt;
+]
+
+.pull-right[
+### Source to Output
+&lt;img src="https://apreshill.github.io/rmd4cdc/images/rmd-file.png", width=50%/&gt;
+
+]
+
+.center[
+**Take your notes in the same place as your code**]
+
+---
+# What is inside
+
+.center[
+&lt;img src="https://apreshill.github.io/rmd4cdc/images/doc-make.jpg" /&gt;
+]
+---
+# What is inside
+
+.pull-left[
+RMarkdown is broken into 4 major parts:
+- Metadata
+- Text
+- Code
+- Output
+]
+
+.pull-right[
+![markdown](libs/images/markdown1.PNG)
+]
+
+--
+
+Before we code together I will walk you through some of the features. Then I will have you install the package and work with me
+
+---
+# Metadata: YAML
+
+### YAML - *yet another markup language*
+
+
+```r
+---
+key: value
+---
+```
+
+This goes at the top of your RMarkdown document, includes the metadata, style, and type of output for your document.
+
+You only need two pieces for it to work, but there is lots more to add to make it beautiful.
+
+--
+
+
+```r
+---
+title: "My Awesome Markdown File"
+output: html_document
+---
+```
+
+*title* is the title of your markdown document  
+*output* is the format that it will be saved as
+
+
+---
+# Example YAML
+
+![urchin1](libs/images/urchin1.PNG)
+
+---
+
+&lt;video controls&gt;
+  &lt;source src="libs/images/urchinvid.mp4" type="video/mp4"&gt;
+&lt;/video&gt;
+
+
+---
+# Example YAML
+
+![urchin2](libs/images/urchin2.PNG)
+
+---
+
+
+&lt;video controls&gt;
+  &lt;source src="libs/images/urchinvid2.mp4" type="video/mp4"&gt;
+&lt;/video&gt;
+
+
+---
+# Example YAML
+
+![urchin3](libs/images/urchin3.PNG)
+
+---
+# Example YAML
+
+![urchin4](libs/images/urchin4.PNG)
+
+---
+# Let's get started
+
+Create a **week 6** folder and install rmarkdown on your computer
+
+
+```r
+install.packages("rmarkdown")
+install.packages('tinytex') # this will be helpful if you want a PDF doc
+```
+
+.center[
+&lt;img src="https://rmarkdown.rstudio.com/docs/reference/figures/logo.png"/&gt;
+]
+---
+# Start a new RMarkdown document
+
+File -&gt; New File -&gt; RMarkdown
+
+![new rmd](libs/images/NewRmd.png)
+
+---
+# Another way...
+
+&lt;img src = "libs/images/NewRmd2.jpg", width = 50%/&gt;
+
+
+---
+# Enter in some metadata and save the rmd doc in your scripts folder
+
+![new rmd](libs/images/newmd3.PNG)
+
+
+---
+# You create the html document by hitting *knit*
+
+![knit](libs/images/knit.PNG)
+
+---
+# Text
+
+The text is written in the markdown language.  You have already done a lab on markdown and this is the exact language that you use for your readme files.  This is a short review.
+
+---
+# Headers
+
+.pull-left[
+
+```r
+# HEADER 1
+## HEADER 2
+### HEADER 3
+#### HEADER 4
+##### HEADER 5
+###### HEADER 6
+```
+]
+
+.pull-right[
+# HEADER 1
+## HEADER 2
+### HEADER 3
+#### HEADER 4
+##### HEADER 5
+###### HEADER 6
+]
+
+---
+# Text
+
+## Bold
+.pull-left[
+
+```r
+I **love** RMarkdown.
+```
+]
+
+.pull-right[
+I **love** RMarkdown.
+]
+
+--
+
+## Italics
+.pull-left[
+
+```r
+I *love* RMarkdown.
+```
+]
+
+.pull-right[
+I *love* RMarkdown.
+]
+
+---
+# Text
+
+## Add a new line
+You need to hit the space bar twice after a line if you want the following text to be on a new line.  
+
+--
+
+## Lists
+
+.pull-left[
+
+```r
+- item 1
+- item 2
+- item 3
+```
+
+]
+
+.pull-right[
+- item 1
+- item 2
+- item 3
+]
+
+.pull-left[
+
+```r
+1. item 1
+1. item 2
+1. item 3
+```
+
+]
+
+.pull-right[
+1. item 1
+1. item 2
+1. item 3
+]
+
+---
+# Images
+
+.pull-left[
+
+```r
+![CSUN logo](https://www.csun.edu/sites/default/files/styles/slideshow_full/public/field_image/field_slideshow_slides/banner_identity02.png?itok=yItY0d62)
+```
+]
+
+.pull-right[
+![CSUN logo](https://www.csun.edu/sites/default/files/styles/slideshow_full/public/field_image/field_slideshow_slides/banner_identity02.png?itok=yItY0d62)
+]
+
+--
+
+## Links
+.pull-left[
+
+```r
+[Click here](silbigerlab.com)
+```
+]
+
+.pull-right[
+[Click here](silbigerlab.com)
+]
+---
+# Code chunks
+
+You can add a code chunk by pressing  
+- the keyboard shortcut **Ctrl + Alt + I** (OS X: **Cmd + Option + I**)
+- Click **Code** at the top of RStudio then **insert chunk**.
+
+![code chunk](libs/images/codechunk.PNG)
+
+---
+# Code chunks
+
+You can control what you want printed in the html within the code chunks.
+
+![chunk options](libs/images/ChunkOptions.PNG)
+
+[RMarkdown Reference Guide](https://rmarkdown.rstudio.com/)
+
+---
+# Code Chunks
+
+Let's say we want to set options for the entire markdown file.
+
+![global](libs/images/GlobalOptions.PNG)
+
+![global code](libs/images/GlobalCode.PNG)
+
+---
+# Total awesome R package
+
+Play a sound!
+
+
+```r
+install.packages("beepr")
+```
+
+
+```r
+library(beepr)
+
+beep(5)
+beep(9)
+```
+
+---
+class: center, middle
+
+Share a Tidy Tuesday plot
+
+Then a Break 
+
+---
+# Lab
+ We will work together on our first basic RMarkdown doc with Palmer Penguins
+
+---
+class: center, middle
+
+# Thanks!
+
+Slides created via the R package [**xaringan**](https://github.com/yihui/xaringan).  
+Some slides modified from many lectures by [Allison Hill](https://alison.rbind.io/post/2020-05-28-how-i-teach-r-markdown/)
+
+
+
+
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script src="macros.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"highlightSpans": true,
+"countIncrementalSlides": false,
+"ratio": "15:10"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
