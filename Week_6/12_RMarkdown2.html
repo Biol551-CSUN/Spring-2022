@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Week 6b</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Dr. Nyssa Silbiger" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link href="libs/remark-css/default.css" rel="stylesheet" />
+    <link href="libs/remark-css/default-fonts.css" rel="stylesheet" />
+    <script src="libs/kePrint/kePrint.js"></script>
+    <link href="libs/lightable/lightable.css" rel="stylesheet" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Week 6b
+## Intro to RMarkdown 2
+### Dr. Nyssa Silbiger
+### CSUN Spring 2022
+### (updated: 2022-03-01)
+
+---
+
+
+
+
+&lt;div style = "position:fixed; visibility: hidden"&gt;
+`$$\require{color}\definecolor{yellow}{rgb}{1, 0.8, 0.16078431372549}$$`
+`$$\require{color}\definecolor{orange}{rgb}{0.96078431372549, 0.525490196078431, 0.203921568627451}$$`
+`$$\require{color}\definecolor{green}{rgb}{0, 0.474509803921569, 0.396078431372549}$$`
+&lt;/div&gt;
+
+&lt;script type="text/x-mathjax-config"&gt;
+MathJax.Hub.Config({
+  TeX: {
+    Macros: {
+      yellow: ["{\\color{yellow}{#1}}", 1],
+      orange: ["{\\color{orange}{#1}}", 1],
+      green: ["{\\color{green}{#1}}", 1]
+    },
+    loader: {load: ['[tex]/color']},
+    tex: {packages: {'[+]': ['color']}}
+  }
+});
+&lt;/script&gt;
+
+&lt;style&gt;
+.yellow {color: #FFCC29;}
+.orange {color: #F58634;}
+.green {color: #007965;}
+&lt;/style&gt;
+
+
+
+
+---
+# Outline of class
+
+
+Working with RMarkdown today
+
+
+
+1. Working with figures
+
+1. Working with tables
+
+1. Themes
+
+1. Advanced outputs
+
+
+
+Lab 
+1. Practice with RMarkdown
+
+
+.center[
+[Download this cheatsheet on RMarkdown](https://www.rstudio.com/wp-content/uploads/2015/02/rmarkdown-cheatsheet.pdf)
+
+[The RMarkdown Definitive Guide](https://bookdown.org/yihui/rmarkdown/)
+
+[RMarkdown RStudio Guide](https://rmarkdown.rstudio.com/)
+]
+---
+# Review
+
+1. What is the short cut to add a code chunk to an RMarkdown document?
+---
+# Working with figures
+
+We can change lots of aspects of the figure right in our markdown document:
+
+- change size
+- change resolution
+- change "device" (i.e. is it a .png. .pdf, etc.)
+- save it in a specific folder
+
+--
+
+Open a new .rmd file and set it up.
+
+---
+# Change size
+
+Some options:
+
+- out.width="70%"  (makes it 70% of the width)
+- fig.width=3  (makes the width 3 inches)
+- fig.height=4 (makes the width 4 inches) 
+- fig.asp=1.2 (changes the aspect ratio to 1.2)
+- fig.align="center"
+
+We will walk through each of these examples together
+
+{r, out.width="70%"}
+
+[See here for details on figures in rmarkdown.](https://r4ds.had.co.nz/graphics-for-communication.html#figure-sizing)
+
+---
+# Save your figure in rmarkdown
+
+You CAN still use ggsave, but there are also more automated ways to export your figures in rmarkdown
+
+set the file path for your figure using:  
+- fig.path (you can put this in a global option to send all your figures there)
+- name your code chunk (this will be the name of the figure)
+
+Place between curly braces  
+- {r label}
+
+Separated options with commas  
+- {r label, option1=value}
+
+Set a figure caption  
+- fig.cap="This is a boxplot of penguins
+
+If you just want the plot and not the code then set .orange[echo=FALSE]
+
+---
+# Tables
+
+Type out tables by hand
+
+.pull-left[
+
+```r
+| Time  | Session | Topic    |
+|:------|:-------:|---------:|
+| _left_ | _center_| _right_ |
+| 01:00  | 1       | Anatomy |
+| 01:50  |         | *Break* |
+| 02:00  | 2       | Tables  |
+| 02:45  |         | *Break* |
+```
+]
+
+.pull-right[
+| Time          | Session | Topic    |
+|:--------------|:-------:|---------:|
+| _left_        | _center_| _right_  |
+| 01:00  | 1       | Anatomy  |
+| 01:50  |         | *Break*  |
+| 02:00  | 2       | Tables   |
+| 02:45  |         | *Break*  |
+]
+
+---
+# Tables with kable
+
+
+```r
+install.packages("kableExtra")
+```
+
+```r
+library(kableExtra)
+library(palmerpenguins)
+library(tidyverse)
+
+penguins %&gt;%
+  group_by(species) %&gt;%
+  summarise(billmean = mean(bill_length_mm, na.rm = TRUE)) %&gt;%
+  kbl()  # make it a kable table
+```
+
+&lt;table&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; species &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; billmean &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Adelie &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 38.79139 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Chinstrap &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 48.83382 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Gentoo &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 47.50488 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+---
+# Tables with kable
+
+add some style
+
+
+```r
+penguins %&gt;%
+  group_by(species) %&gt;%
+  summarise(billmean = mean(bill_length_mm, na.rm = TRUE)) %&gt;%
+  kbl() %&gt;% # make it a kable table
+  kable_classic()%&gt;% ##&lt;
+  row_spec(2, bold = T, color = "white", background = "red") ##&lt;
+```
+
+&lt;table class=" lightable-classic" style='font-family: "Arial Narrow", "Source Sans Pro", sans-serif; margin-left: auto; margin-right: auto;'&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; species &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; billmean &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Adelie &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 38.79139 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;font-weight: bold;color: white !important;background-color: red !important;"&gt; Chinstrap &lt;/td&gt;
+   &lt;td style="text-align:right;font-weight: bold;color: white !important;background-color: red !important;"&gt; 48.83382 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Gentoo &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 47.50488 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+Look up the kable package for all the things you can do with it
+---
+# Tables
+
+There are **tons** of packages that make cool and beautiful tables in rmarkdown.  
+
+Check out this blog with lots of examples [here](https://rfortherestofus.com/2019/11/how-to-make-beautiful-tables-in-r/).
+
+
+---
+# Themes
+
+There are lots of cool packages themes that you can use to change to aesthetics of your output.
+
+[https://www.datadreaming.org/post/r-markdown-theme-gallery/](https://www.datadreaming.org/post/r-markdown-theme-gallery/)
+
+---
+# Outputs
+
+There are also **tons** of outputs.  
+One of my favorites is [github_document](https://rmarkdown.rstudio.com/github_document_format.html).  This makes a file that is easy to view on github. 
+
+Importantly, every file type has different limitations for the YAML. For example, there are several settings that only work in an html file that will need to be removed when using a github_document or a pdf_document. 
+
+[Here is a list of different types of outputs.](https://rmarkdown.rstudio.com/lesson-9.html)
+
+---
+# Help with YAML
+
+Check out the {ymlthis} package which has a GUI for writing yml code.
+
+
+```r
+install.packages("ymlthis")
+```
+
+Click **Addins** then scroll to "write new RMarkdown or YAML file"
+
+---
+# Today's totally awesome R package
+
+Make a meme in R!
+
+
+```r
+devtools::install_github("sctyner/memer")
+```
+
+
+```r
+library(memer)
+
+meme_get("DistractedBf") %&gt;% 
+  meme_text_distbf("Silly R package", "BIOL 551 students", "actual coding")
+```
+
+&lt;img src="12_RMarkdown2_files/figure-html/unnamed-chunk-7-1.png" width="50%" /&gt;
+
+---
+# Today's totally awesome R package
+
+Make a meme in R!
+
+```r
+library(memer)
+
+meme_get("DosEquisMan") %&gt;% 
+  meme_text_top("I don't always like coding", size = 28) %&gt;% 
+  meme_text_bottom("But when I do\nIt's always today's totally awesome R package", size = 18)
+```
+
+&lt;img src="12_RMarkdown2_files/figure-html/unnamed-chunk-8-1.png" width="25%" /&gt;
+
+---
+# Lab
+
+- Take any of the data sheets you have already worked with in class and create at least one table and one figure in an Rmarkdown file.
+- Create the most beautiful RMarkdown output you can during lab hours in either an html, github doc, or pdf format.  
+- Make sure you have headings with clear explanations of what you are doing.  
+- Practice using markdown formatting with bold, italics, and lists.  
+- Make sure your outputs and scripts are saved in the appropriate folders. Keep proper coding etiquette (figures need to be pub quality as usual).
+
+---
+class: center, middle
+
+# Thanks!
+
+Slides created via the R package [**xaringan**](https://github.com/yihui/xaringan).  
+Some slides modified from many lectures by [Allison Hill](https://alison.rbind.io/post/2020-05-28-how-i-teach-r-markdown/)
+
+
+
+
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script src="macros.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"highlightSpans": true,
+"countIncrementalSlides": false,
+"ratio": "15:10"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
