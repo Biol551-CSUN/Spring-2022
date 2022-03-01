@@ -1,5 +1,6 @@
 # These are the Tidy Tuesday Repos for the class
 
+[Brandon Bonilla](https://github.com/bbonilla21/TidyTuesday.git)
 [Sophia Boyd](https://github.com/sophiaboyd/TidyTuesday.git)  
 [Heather Carstensen](https://github.com/h-carstensen/Carstensen_TidyTuesday)   
 [Alex Dang](https://github.com/adang2011/Tidy-Tuesday)  
