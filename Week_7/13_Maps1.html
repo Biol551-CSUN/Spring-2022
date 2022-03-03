@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Week 7a</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Dr. Nyssa Silbiger" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link href="libs/remark-css/default.css" rel="stylesheet" />
+    <link href="libs/remark-css/default-fonts.css" rel="stylesheet" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Week 7a
+## Intro to Maps part 1
+### Dr. Nyssa Silbiger
+### CSUN Spring 2022
+### (updated: 2022-03-03)
+
+---
+
+
+
+
+&lt;div style = "position:fixed; visibility: hidden"&gt;
+`$$\require{color}\definecolor{yellow}{rgb}{1, 0.8, 0.16078431372549}$$`
+`$$\require{color}\definecolor{orange}{rgb}{0.96078431372549, 0.525490196078431, 0.203921568627451}$$`
+`$$\require{color}\definecolor{green}{rgb}{0, 0.474509803921569, 0.396078431372549}$$`
+&lt;/div&gt;
+
+&lt;script type="text/x-mathjax-config"&gt;
+MathJax.Hub.Config({
+  TeX: {
+    Macros: {
+      yellow: ["{\\color{yellow}{#1}}", 1],
+      orange: ["{\\color{orange}{#1}}", 1],
+      green: ["{\\color{green}{#1}}", 1]
+    },
+    loader: {load: ['[tex]/color']},
+    tex: {packages: {'[+]': ['color']}}
+  }
+});
+&lt;/script&gt;
+
+&lt;style&gt;
+.yellow {color: #FFCC29;}
+.orange {color: #F58634;}
+.green {color: #007965;}
+&lt;/style&gt;
+
+
+
+
+---
+# Outline of class
+
+
+Working with Maps
+
+
+
+1. Highlight some various spatial packages
+
+1. Simple mapping using the {maps} package with ggplot
+
+
+
+Lab 
+1. Make a map
+
+.foot-note[I am NOT a GIS person. Please refer to references on spatial analysis for theory. Today I am going to teach you how to code a simple map.]
+---
+# Cool RMarkdown feature in updated RStudio
+
+New text editor!  
+
+Show me your markdown files!
+
+---
+# Map packages
+
+There are a **ton** of different map packages.  
+
+Today, install the following:
+
+
+```r
+install.packages(c("maps", "mapproj"))
+```
+
+Other very helpful packages:
+- **sf** (This is for the serious GIS people. If you want to do actual spatial analyses this is the package to use)
+- **ggmap** (Uses the google maps API to make maps. Really easy to use, but requires a credit card for the API...)
+- **tmap** (static and interactive maps)
+- **leaflet** (interactive html maps)
+
+Helpful references:
+1. The required reading for today
+1. [Advanced maps](https://geocompr.robinlovelace.net/adv-map.html)
+1. [Bathymetry example](http://ben-williams.github.io/updated_ggplot_figures.html#maps)
+1. [Earth Lab](https://www.earthdatascience.org/courses/earth-analytics/spatial-data-r/understand-epsg-wkt-and-other-crs-definition-file-types/) 
+
+
+---
+
+# Start your script or rmarkdown file
+
+
+```r
+# Load libraries
+library(tidyverse)
+library(here)
+library(maps)
+library(mapdata)
+library(mapproj)
+```
+
+--
+
+# Today's data
+
+
+```r
+# Read in data on population in California by county
+popdata&lt;-read_csv(here("Week_7","data","CApopdata.csv"))
+
+#read in data on number of seastars at different field sites
+stars&lt;-read_csv(here("Week_7","data","stars.csv"))
+```
+
+**Take a minute to explore the data**
+
+---
+# {maps} package
+
+The {maps} package is a combination of functions that pair well with ggplot and base layers for maps (i.e. polygons of regions of interest).
+
+map_data("location") is the function used to pull out whatever base layer that you want. 
+
+--
+
+
+```r
+# get data for the entire world
+*world&lt;-map_data("world")
+
+head(world)
+```
+
+```
+##        long      lat group order region subregion
+## 1 -69.89912 12.45200     1     1  Aruba      &lt;NA&gt;
+## 2 -69.89571 12.42300     1     2  Aruba      &lt;NA&gt;
+## 3 -69.94219 12.43853     1     3  Aruba      &lt;NA&gt;
+## 4 -70.00415 12.50049     1     4  Aruba      &lt;NA&gt;
+## 5 -70.06612 12.54697     1     5  Aruba      &lt;NA&gt;
+## 6 -70.05088 12.59707     1     6  Aruba      &lt;NA&gt;
+```
+
+---
+# {maps} package
+
+You can extract polygons for different .orange[countries].
+
+
+```r
+# get data for the USA
+*usa&lt;-map_data("usa")
+
+head(usa)
+```
+
+```
+##        long      lat group order region subregion
+## 1 -101.4078 29.74224     1     1   main      &lt;NA&gt;
+## 2 -101.3906 29.74224     1     2   main      &lt;NA&gt;
+## 3 -101.3620 29.65056     1     3   main      &lt;NA&gt;
+## 4 -101.3505 29.63911     1     4   main      &lt;NA&gt;
+## 5 -101.3219 29.63338     1     5   main      &lt;NA&gt;
+## 6 -101.3047 29.64484     1     6   main      &lt;NA&gt;
+```
+---
+# {maps} package
+
+You can extract polygons for different .orange[countries].
+
+
+```r
+# get data for italy
+*italy&lt;-map_data("italy")
+
+head(italy)
+```
+
+```
+##       long      lat group order        region subregion
+## 1 11.83295 46.50011     1     1 Bolzano-Bozen      &lt;NA&gt;
+## 2 11.81089 46.52784     1     2 Bolzano-Bozen      &lt;NA&gt;
+## 3 11.73068 46.51890     1     3 Bolzano-Bozen      &lt;NA&gt;
+## 4 11.69115 46.52257     1     4 Bolzano-Bozen      &lt;NA&gt;
+## 5 11.65041 46.50721     1     5 Bolzano-Bozen      &lt;NA&gt;
+## 6 11.63282 46.48045     1     6 Bolzano-Bozen      &lt;NA&gt;
+```
+---
+# {maps} package
+
+You can also extract data and different resolutions.  For example for data that also has polygons for each state in the US use:
+
+
+```r
+# get data for states
+*states&lt;-map_data("state")
+
+head(states)
+```
+
+```
+##        long      lat group order  region subregion
+## 1 -87.46201 30.38968     1     1 alabama      &lt;NA&gt;
+## 2 -87.48493 30.37249     1     2 alabama      &lt;NA&gt;
+## 3 -87.52503 30.37249     1     3 alabama      &lt;NA&gt;
+## 4 -87.53076 30.33239     1     4 alabama      &lt;NA&gt;
+## 5 -87.57087 30.32665     1     5 alabama      &lt;NA&gt;
+## 6 -87.58806 30.32665     1     6 alabama      &lt;NA&gt;
+```
+---
+# {maps} package
+
+You can also extract data and different resolutions.  For example for data that also has polygons for each county in the US use:
+
+
+```r
+# get data for counties
+*counties&lt;-map_data("county")
+
+head(counties)
+```
+
+```
+##        long      lat group order  region subregion
+## 1 -86.50517 32.34920     1     1 alabama   autauga
+## 2 -86.53382 32.35493     1     2 alabama   autauga
+## 3 -86.54527 32.36639     1     3 alabama   autauga
+## 4 -86.55673 32.37785     1     4 alabama   autauga
+## 5 -86.57966 32.38357     1     5 alabama   autauga
+## 6 -86.59111 32.37785     1     6 alabama   autauga
+```
+
+---
+# Structure of the data
+
+- **long** is longitude. Things to the west of the prime meridian are negative.
+
+--
+
+- **lat** is latitude.
+
+--
+
+- **order**. This just shows in which order ggplot should “connect the dots”
+
+--
+
+- **region and subregion** tell what region or subregion a set of points surrounds.
+
+--
+
+- **group**. *This is very important!* ggplot2’s functions can take a group argument which controls (amongst other things) whether adjacent points should be connected by lines. If they are in the same group, then they get connected, but if they are in different groups then they don’t.
+Essentially, having to points in different groups means that ggplot “lifts the pen” when going between them.
+
+---
+# Make a map of the world
+
+
+```r
+ggplot()+
+* geom_polygon(data = world, aes(x = long, y = lat, group = group))
+```
+
+![](13_Maps1_files/figure-html/unnamed-chunk-9-1.png)&lt;!-- --&gt;
+---
+# Make a map of the world
+
+What happens if I forget **group = group**?
+
+```r
+ggplot()+
+* geom_polygon(data = world, aes(x = long, y = lat))
+```
+
+![](13_Maps1_files/figure-html/unnamed-chunk-10-1.png)&lt;!-- --&gt;
+
+---
+
+# Make a map of the world
+.orange[Add color to the lines and fill.]
+
+.pull-left[
+
+```r
+ggplot()+
+  geom_polygon(data = world, 
+               aes(x = long, y = lat, group = group),
+*              color = "black")
+```
+]
+
+.pull-right[
+![](13_Maps1_files/figure-html/plot1-out-1.png)&lt;!-- --&gt;
+]
+
+---
+# Make a map of the world
+.orange[Add color to the lines and fill.]
+
+.pull-left[
+
+```r
+ggplot()+
+  geom_polygon(data = world, 
+               aes(x = long, 
+                   y = lat, 
+                   group = group, 
+*                  fill = region),
+               color = "black") +
+  guides(fill = FALSE)
+```
+]
+
+.pull-right[
+![](13_Maps1_files/figure-html/plot1a-out-1.png)&lt;!-- --&gt;
+]
+---
+# Change the visuals
+.orange[Change the theme.]
+
+.pull-left[
+
+```r
+ggplot()+
+  geom_polygon(data = world, 
+               aes(x = long, 
+                   y = lat,
+                   group = group,
+                   fill = region),
+               color = "black")+
+  guides(fill = FALSE)+
+* theme_minimal()
+```
+]
+
+.pull-right[
+![](13_Maps1_files/figure-html/plot2-out-1.png)&lt;!-- --&gt;
+]
+---
+# Change the visuals
+.orange[Make the ocean blue.]
+
+.pull-left[
+
+```r
+ggplot()+
+  geom_polygon(data = world, 
+               aes(x = long, 
+                   y = lat, 
+                   group = group,
+                   fill = region),
+               color = "black")+
+  theme_minimal()+
+  guides(fill = FALSE)+
+* theme(panel.background = element_rect(fill = "lightblue"))
+```
+]
+.pull-right[
+![](13_Maps1_files/figure-html/plot3-out-1.png)&lt;!-- --&gt;
+]
+---
+# Change the map projection
+
+The earth is NOT flat, but we are attempting to visualize this map in 2D. There are a lot of different projections that you can use. See [here](https://rdrr.io/cran/mapproj/man/mapproject.html) for the different projections included in the {mapproj} package
+
+
+.orange[Use a mercator projection]
+
+.pull-left[
+
+```r
+ggplot()+
+  geom_polygon(data = world, 
+               aes(x = long, 
+                   y = lat, 
+                   group = group,
+                   fill = region),
+               color = "black")+
+  theme_minimal()+
+  guides(fill = FALSE)+
+  theme(panel.background = element_rect(fill = "lightblue"))+
+* coord_map(projection = "mercator",
+*           xlim = c(-180,180))
+```
+]
+.pull-right[
+![](13_Maps1_files/figure-html/plot4-out-1.png)&lt;!-- --&gt;
+]
+
+---
+
+# Change the map projection
+
+.orange[Use a sinusoidal projection.]
+
+.pull-left[
+
+```r
+ggplot()+
+  geom_polygon(data = world, 
+               aes(x = long,
+                   y = lat,
+                   group = group, 
+                   fill = region),
+               color = "black")+
+  theme_minimal()+
+  guides(fill = FALSE)+
+  theme(panel.background = element_rect(fill = "lightblue"))+
+* coord_map(projection = "sinusoidal",
+*           xlim = c(-180,180))
+```
+]
+.pull-right[
+![](13_Maps1_files/figure-html/plot5-out-1.png)&lt;!-- --&gt;
+]
+
+---
+# Let's make a map of just California
+
+
+```r
+# Use the states dataset
+head(states)
+```
+
+```
+##        long      lat group order  region subregion
+## 1 -87.46201 30.38968     1     1 alabama      &lt;NA&gt;
+## 2 -87.48493 30.37249     1     2 alabama      &lt;NA&gt;
+## 3 -87.52503 30.37249     1     3 alabama      &lt;NA&gt;
+## 4 -87.53076 30.33239     1     4 alabama      &lt;NA&gt;
+## 5 -87.57087 30.32665     1     5 alabama      &lt;NA&gt;
+## 6 -87.58806 30.32665     1     6 alabama      &lt;NA&gt;
+```
+
+---
+# Let's make a map of just California
+.orange[Filter out just the California data.]
+
+```r
+# Use the states dataset
+CA_data&lt;-states %&gt;%
+  filter(region == "california")
+```
+
+--
+
+# Think, pair, share
+
+Make a simple map of just California using what you just learned. Do not cheat!!
+
+
+---
+# Map of California
+
+.pull-left[
+
+```r
+ggplot()+
+geom_polygon(data = CA_data, 
+             aes(x = long, 
+                 y = lat, 
+                 group = group), 
+             color = "black")+
+  coord_map()+
+* theme_void()
+```
+]
+
+.pull-right[
+![](13_Maps1_files/figure-html/plot6-out-1.png)&lt;!-- --&gt;
+]
+
+---
+## Adding multiple layers of data
+.orange[Plot the population of every county in California.]
+
+- First, we need to get the county level data and join it with our dataset on population (How do I do it?)
+
+
+```r
+# Look at the county data
+head(counties)[1:3,] # only showing the first 3 rows for space
+```
+
+```
+##        long      lat group order  region subregion
+## 1 -86.50517 32.34920     1     1 alabama   autauga
+## 2 -86.53382 32.35493     1     2 alabama   autauga
+## 3 -86.54527 32.36639     1     3 alabama   autauga
+```
+
+
+
+```r
+# Look at the county data
+head(popdata)
+```
+
+```
+## # A tibble: 6 x 2
+##   County         Population
+##   &lt;chr&gt;               &lt;dbl&gt;
+## 1 los angeles      10081570
+## 2 san diego         3316073
+## 3 orange            3168044
+## 4 riverside         2411439
+## 5 san bernardino    2149031
+## 6 santa clara       1927470
+```
+
+---
+## Adding multiple layers of data
+.orange[Wrangle the data. Make the column names the same to join the two datasets.]
+
+
+
+```r
+CApop_county&lt;-popdata %&gt;%
+  select("subregion" = County, Population)  %&gt;% # rename the county col
+  inner_join(counties) %&gt;%
+  filter(region == "california") # some counties have same names in other states
+```
+
+```
+## Joining, by = "subregion"
+```
+
+--
+
+
+```r
+head(CApop_county)
+```
+
+```
+## # A tibble: 6 x 7
+##   subregion   Population  long   lat group order region    
+##   &lt;chr&gt;            &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;int&gt; &lt;chr&gt;     
+## 1 los angeles   10081570 -119.  34.8   175  7827 california
+## 2 los angeles   10081570 -118.  34.8   175  7828 california
+## 3 los angeles   10081570 -118.  34.8   175  7829 california
+## 4 los angeles   10081570 -118.  34.6   175  7830 california
+## 5 los angeles   10081570 -118.  34.6   175  7831 california
+## 6 los angeles   10081570 -118.  34.5   175  7832 california
+```
+
+---
+# Map of CA population by county
+.pull-left[
+
+```r
+ggplot()+
+geom_polygon(data = CApop_county, 
+             aes(x = long, 
+                 y = lat, 
+                 group = group,
+*                fill = Population),
+             color = "black")+
+  coord_map()+
+  theme_void() 
+```
+]
+
+.pull-right[
+![](13_Maps1_files/figure-html/plot7-out-1.png)&lt;!-- --&gt;
+]
+
+---
+# Map of CA population by county
+.orange[Make it log scale for easier interpretation.]
+.pull-left[
+
+```r
+ggplot()+
+geom_polygon(data = CApop_county, 
+             aes(x = long, 
+                 y = lat, 
+                 group = group,
+                 fill = Population),  
+             color = "black")+
+  coord_map()+
+  theme_void() +
+* scale_fill_gradient(trans = "log10")
+```
+]
+.pull-right[
+![](13_Maps1_files/figure-html/plot8-out-1.png)&lt;!-- --&gt;
+]
+
+---
+# Add a layer of points
+
+Look at the stars dataset. This has the number of seastars per/m2 at different sites in California.
+
+
+```r
+head(stars)
+```
+
+```
+## # A tibble: 6 x 3
+##     lat  long star_no
+##   &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;
+## 1  33.5 -118.      10
+## 2  35.5 -121.       1
+## 3  39.5 -124.      25
+## 4  32.9 -117.      22
+## 5  33.5 -118.       8
+## 6  33.5 -118.       3
+```
+
+---
+# Map of CA population by county with seastars
+.orange[Add a geom_point layer.]
+.pull-left[
+
+```r
+ggplot()+
+geom_polygon(data = CApop_county, 
+             aes(x = long, 
+                 y = lat, 
+                 group = group,
+                 fill = Population),  
+             color = "black")+
+* geom_point(data = stars, # add a point at all my sites
+*            aes(x = long,
+*                y = lat))+
+  coord_map()+
+  theme_void() +
+  scale_fill_gradient(trans = "log10")
+```
+]
+.pull-right[
+![](13_Maps1_files/figure-html/plot9-out-1.png)&lt;!-- --&gt;
+]
+---
+# Map of CA population by county with seastars
+.orange[Make points proportional to number of stars.]
+.pull-left[
+
+```r
+ggplot()+
+geom_polygon(data = CApop_county, 
+             aes(x = long, 
+                 y = lat, 
+                 group = group,
+                 fill = Population),  
+             color = "black")+
+  geom_point(data = stars, # add a point at all my sites 
+             aes(x = long, 
+                 y = lat,
+*                size = star_no))+
+  coord_map()+
+  theme_void() +
+  scale_fill_gradient(trans = "log10")
+```
+]
+.pull-right[
+![](13_Maps1_files/figure-html/plot10-out-1.png)&lt;!-- --&gt;
+]
+
+---
+# Map of CA population by county with seastars
+.orange[Make a better legend label.]
+.pull-left[
+
+```r
+ggplot()+
+geom_polygon(data = CApop_county, 
+             aes(x = long, 
+                 y = lat, 
+                 group = group,
+                 fill = Population),  
+             color = "black")+
+  geom_point(data = stars, # add a point at all my sites 
+             aes(x = long, 
+                 y = lat,
+                 size = star_no))+ 
+  coord_map()+
+  theme_void() +
+  scale_fill_gradient(trans = "log10")+
+* labs(size = "# stars/m2")
+```
+]
+.pull-right[
+![](13_Maps1_files/figure-html/plot11-out-1.png)&lt;!-- --&gt;
+]
+---
+# Map of CA population by county with seastars
+.orange[Save it.]
+.pull-left[
+
+```r
+ggplot()+
+geom_polygon(data = CApop_county, 
+             aes(x = long, 
+                 y = lat, 
+                 group = group,
+                 fill = Population),  
+             color = "black")+
+  geom_point(data = stars, # add a point at all my sites 
+             aes(x = long, 
+                 y = lat,
+                 size = star_no))+ 
+  coord_map()+
+  theme_void() +
+  scale_fill_gradient(trans = "log10")+
+  labs(size = "# stars/m2") 
+* ggsave(here("Week_7","output","CApop.pdf"))
+```
+]
+.pull-right[
+![](13_Maps1_files/figure-html/plot12-out-1.png)&lt;!-- --&gt;
+
+```
+## Saving 7 x 7 in image
+```
+]
+
+---
+# Total Awesome R package
+
+
+```r
+remotes::install_github("R-CoderDotCom/ggdogs@main")
+```
+
+
+```r
+library(ggdogs)
+ggplot(mtcars) +
+  geom_dog(aes(mpg, wt), dog = "pug", size = 5)
+```
+
+![](13_Maps1_files/figure-html/unnamed-chunk-19-1.png)&lt;!-- --&gt;
+
+---
+# Lab
+You need to make a map **using RMarkdown** with one of the following datasets from past Tidy Tuesdays. Make sure, as usual, that you scripts and output are saved appropriately.
+
+[Plastic pollution](https://github.com/rfordatascience/tidytuesday/blob/master/data/2021/2021-01-26/readme.md)
+
+[Trees of San Fransisco](https://github.com/rfordatascience/tidytuesday/blob/master/data/2020/2020-01-28/readme.md)
+
+[Meteorites](https://github.com/rfordatascience/tidytuesday/tree/master/data/2019/2019-06-11)
+
+
+---
+class: center, middle
+
+# Thanks!
+
+Slides created via the R package [**xaringan**](https://github.com/yihui/xaringan).  
+Some slides modified from [Making maps with R](https://eriqande.github.io/rep-res-web/lectures/making-maps-with-R.html/)
+
+
+
+
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script src="macros.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"highlightSpans": true,
+"countIncrementalSlides": false,
+"ratio": "15:10"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
