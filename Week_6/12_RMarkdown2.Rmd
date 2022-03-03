@@ -98,9 +98,12 @@ We can change lots of aspects of the figure right in our markdown document:
 - change "device" (i.e. is it a .png. .pdf, etc.)
 - save it in a specific folder
 
---
+---
+# Start a document
 
-Open a new .rmd file and set it up.
+- Open a new .rmd file and set it up.  
+- Load the appropriate libraries that you need 
+- Make a very simple plot with the penguin package of anything (don't overthink it this is just for practice)
 
 ---
 # Change size
@@ -134,10 +137,15 @@ Place between curly braces
 Separated options with commas  
 - {r label, option1=value}
 
+--
+
 Set a figure caption  
 - fig.cap="This is a boxplot of penguins
 
-If you just want the plot and not the code then set .orange[echo=FALSE]
+If you just want the plot and not the code then set .orange[echo=FALSE]  
+
+Save figure as a pdf instead of png  
+- dev="pdf"
 
 ---
 # Tables
@@ -194,8 +202,25 @@ penguins %>%
   group_by(species) %>%
   summarise(billmean = mean(bill_length_mm, na.rm = TRUE)) %>%
   kbl() %>% # make it a kable table
-  kable_classic()%>% ##<
-  row_spec(2, bold = T, color = "white", background = "red") ##<
+  kable_classic()%>% #<<
+  row_spec(2, bold = T, color = "white", background = "red") #<<
+```
+
+Look up the kable package for all the things you can do with it
+---
+# Tables with kable
+
+add some style
+
+```{r, warning=FALSE, message=FALSE}
+
+penguins %>%
+  group_by(species) %>%
+  summarise(billmean = mean(bill_length_mm, na.rm = TRUE)) %>%
+  kbl() %>% # make it a kable table
+  kable_classic()%>% 
+  row_spec(2, bold = T, color = "white", background = "red") %>%
+  kable_styling(full_width = FALSE) #<<
 ```
 
 Look up the kable package for all the things you can do with it
@@ -204,8 +229,9 @@ Look up the kable package for all the things you can do with it
 
 There are **tons** of packages that make cool and beautiful tables in rmarkdown.  
 
-Check out this blog with lots of examples [here](https://rfortherestofus.com/2019/11/how-to-make-beautiful-tables-in-r/).
+Check out this blog with lots of examples [here](https://rfortherestofus.com/2019/11/how-to-make-beautiful-tables-in-r/).  
 
+I also really like the gt and gtExtras packages
 
 ---
 # Themes
@@ -267,11 +293,11 @@ meme_get("DosEquisMan") %>%
 ---
 # Lab
 
-- Take any of the data sheets you have already worked with in class and create at least one table and one figure in an Rmarkdown file.
+- Take any of the data sheets you have already worked with in class and create **at least one table and one figure in an Rmarkdown file**.
 - Create the most beautiful RMarkdown output you can during lab hours in either an html, github doc, or pdf format.  
 - Make sure you have headings with clear explanations of what you are doing.  
-- Practice using markdown formatting with bold, italics, and lists.  
-- Make sure your outputs and scripts are saved in the appropriate folders. Keep proper coding etiquette (figures need to be pub quality as usual).
+- Practice using markdown formatting with bold, italics, and lists (use each of these at least once).  
+- Make sure your outputs and scripts are saved in the appropriate folders. Keep proper coding etiquette (figures need to be pub quality as usual and you need to comment your code).
 
 ---
 class: center, middle
