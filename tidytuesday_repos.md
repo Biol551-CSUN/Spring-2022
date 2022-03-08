@@ -1,5 +1,6 @@
 # These are the Tidy Tuesday Repos for the class
 
+[Margarita Alfaro](https://github.com/MargaritaH34/TidyTuesday.git)  
 [Manroop Banipal](https://github.com/manroopb/TinyT)  
 [Brandon Bonilla](https://github.com/bbonilla21/TidyTuesday.git)  
 [Sophia Boyd](https://github.com/sophiaboyd/TidyTuesday.git)  
