@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Week 7b</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Dr. Nyssa Silbiger" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link href="libs/remark-css/default.css" rel="stylesheet" />
+    <link href="libs/remark-css/default-fonts.css" rel="stylesheet" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Week 7b
+## Intro to Maps part 2
+### Dr. Nyssa Silbiger
+### CSUN Spring 2022
+### (updated: 2022-03-08)
+
+---
+
+
+
+
+&lt;div style = "position:fixed; visibility: hidden"&gt;
+`$$\require{color}\definecolor{yellow}{rgb}{1, 0.8, 0.16078431372549}$$`
+`$$\require{color}\definecolor{orange}{rgb}{0.96078431372549, 0.525490196078431, 0.203921568627451}$$`
+`$$\require{color}\definecolor{green}{rgb}{0, 0.474509803921569, 0.396078431372549}$$`
+&lt;/div&gt;
+
+&lt;script type="text/x-mathjax-config"&gt;
+MathJax.Hub.Config({
+  TeX: {
+    Macros: {
+      yellow: ["{\\color{yellow}{#1}}", 1],
+      orange: ["{\\color{orange}{#1}}", 1],
+      green: ["{\\color{green}{#1}}", 1]
+    },
+    loader: {load: ['[tex]/color']},
+    tex: {packages: {'[+]': ['color']}}
+  }
+});
+&lt;/script&gt;
+
+&lt;style&gt;
+.yellow {color: #FFCC29;}
+.orange {color: #F58634;}
+.green {color: #007965;}
+&lt;/style&gt;
+
+
+
+
+---
+# Outline of class
+
+
+Working with Maps part 2
+
+
+
+1.  {ggmaps}
+
+
+Lab 
+1. Good plot/Bad plot lab
+
+[ggmap article](http://stat405.had.co.nz/ggmap.pdf)  
+[Making plots with ggmap](https://www.littlemissdata.com/blog/maps)  
+[Setting up ggmap](https://www.findingyourway.io/blog/2018/12/05/2018-12-05-using-ggmap-after-july-2018/)   
+
+---
+# Review
+
+1. If my plot looks like a bunch of crazy lines, what did I likely forget to put in the ggplot code?
+
+---
+# Install ggmaps and ggsn
+
+
+```r
+install.packages("ggmap") # for ggmaps
+install.packages("ggsn") # to add scale bars and compass arrows
+```
+
+
+```r
+library(ggmap)
+library(tidyverse)
+library(here)
+library(ggsn)
+```
+
+
+
+```r
+register_google(key = "YOUR KEY HERE", write = TRUE) ### use your own API
+#IMPORTANT don't put your key to github!! I usually save mine in a text file and import it each time
+
+# Setting write = TRUE will write the API key to your R environment so that you do not have to re register it each time
+```
+
+---
+# Data for today
+
+We will use a snapshot of the Maunalua Chemistry data in this weeks data folder
+
+
+```r
+ChemData&lt;-read_csv(here("Week_7","data","chemicaldata_maunalua.csv"))
+
+glimpse(ChemData)
+```
+
+```
+## Rows: 23
+## Columns: 15
+## $ Waypoint    &lt;dbl&gt; 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17,~
+## $ Zone        &lt;chr&gt; "Transition", "Transition", "Transition", "Transition", "D~
+## $ Lat         &lt;dbl&gt; 21.27531, 21.27523, 21.27504, 21.27449, 21.27503, 21.27485~
+## $ Long        &lt;dbl&gt; -157.7618, -157.7627, -157.7633, -157.7640, -157.7617, -15~
+## $ Site        &lt;chr&gt; "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W"~
+## $ Season      &lt;chr&gt; "SPRING", "SPRING", "SPRING", "SPRING", "SPRING", "SPRING"~
+## $ Tide_time   &lt;chr&gt; "Low_Day", "Low_Day", "Low_Day", "Low_Day", "Low_Day", "Lo~
+## $ Temp_in     &lt;dbl&gt; 23.75506, 23.53256, 22.63450, 24.01982, 23.26102, 24.00517~
+## $ Salinity    &lt;dbl&gt; 27.74029, 30.61192, 28.37008, 32.82124, 29.12293, 34.02018~
+## $ Phosphate   &lt;dbl&gt; 0.54, 0.36, 0.50, 0.25, 0.50, 0.13, 0.28, 0.15, 0.23, 0.11~
+## $ Silicate    &lt;dbl&gt; 157.93, 92.59, 143.60, 42.32, 126.47, 15.04, 56.31, 23.10,~
+## $ NN          &lt;dbl&gt; 7.92, 3.37, 7.29, 0.79, 7.45, 0.46, 1.59, 0.34, 1.91, 0.25~
+## $ pH          &lt;dbl&gt; 7.909, 7.965, 8.023, 7.995, 8.005, 8.019, 8.003, 7.978, 7.~
+## $ TA          &lt;dbl&gt; 2161.482, 2145.828, 2272.391, 2219.583, 2151.826, 2216.758~
+## $ percent_sgd &lt;dbl&gt; 20.4043928, 11.9625323, 18.5529716, 5.4677003, 16.3397933,~
+```
+
+
+---
+# Get base maps from ggmap
+
+*get_map()* is the function to get a basemap from Google Maps. At it's simplest form, you only need to put in a location.  
+
+Location as a string:
+
+
+```r
+Oahu&lt;-get_map("Oahu")
+```
+
+--
+
+### Use ggmap to plot the base layer
+
+
+```r
+ggmap(Oahu)
+```
+
+&lt;img src="14_Maps2_files/figure-html/unnamed-chunk-6-1.png" width="25%" style="display: block; margin: auto;" /&gt;
+
+---
+# Get base maps from ggmap
+
+You can also put in lat and lon coordinates to get a basemap.
+
+**Get coordinates for Wailupe on Oahu.**
+
+```r
+#Make a data frame of lon and lat coordinates
+WP&lt;-data.frame(lon = -157.7621, lat = 21.27427) # coordinates for Wailupe
+
+# Get base layer
+Map1&lt;-get_map(WP)
+
+# plot it
+ggmap(Map1)
+```
+
+&lt;img src="14_Maps2_files/figure-html/unnamed-chunk-7-1.png" width="25%" style="display: block; margin: auto;" /&gt;
+---
+# Get base maps from ggmap
+
+### Zoom in on a location
+
+The *zoom* argument, an integer from **3 to 20** specifying how large the spatial extent should be around the center, with 3 being the **continent level** and 20 being roughly the **single building level**.
+
+
+```r
+Map1&lt;-get_map(WP,zoom = 17)
+
+ggmap(Map1)
+```
+
+&lt;img src="14_Maps2_files/figure-html/unnamed-chunk-8-1.png" width="25%" style="display: block; margin: auto;" /&gt;
+
+---
+# Get base maps from ggmap
+**Change the map type**
+
+
+```r
+*Map1&lt;-get_map(WP,zoom = 17, maptype = "satellite")
+
+ggmap(Map1)
+```
+
+&lt;img src="14_Maps2_files/figure-html/unnamed-chunk-9-1.png" width="40%" style="display: block; margin: auto;" /&gt;
+
+---
+# Get base maps from ggmap
+**Change the map type.** There are lots of different ones. look at ?get_map
+
+
+```r
+*Map1&lt;-get_map(WP,zoom = 17, maptype = "watercolor")
+
+ggmap(Map1)
+```
+
+&lt;img src="14_Maps2_files/figure-html/unnamed-chunk-10-1.png" width="40%" style="display: block; margin: auto;" /&gt;
+---
+# You can use the ggmap base layer in any ggplot
+
+
+```r
+Map1&lt;-get_map(WP,zoom = 17, maptype = "satellite") 
+
+ggmap(Map1)+
+* geom_point(data = ChemData,
+*            aes(x = Long, y = Lat, color = Salinity),
+*            size = 4) +
+  scale_color_viridis_c()
+```
+
+&lt;img src="14_Maps2_files/figure-html/unnamed-chunk-11-1.png" width="40%" style="display: block; margin: auto;" /&gt;
+---
+# Add scale bar
+
+
+```r
+ggmap(Map1)+
+  geom_point(data = ChemData, 
+             aes(x = Long, y = Lat, color = Salinity), 
+             size = 4) + 
+  scale_color_viridis_c()+
+  scalebar( x.min = -157.766, x.max = -157.758,
+           y.min = 21.2715, y.max = 21.2785,
+            dist = 250, dist_unit = "m", model = "WGS84", 
+            transform = TRUE, st.color = "white",
+            box.fill = c("yellow", "white")) 
+```
+
+&lt;img src="14_Maps2_files/figure-html/unnamed-chunk-12-1.png" width="30%" style="display: block; margin: auto;" /&gt;
+
+    
+---
+# Don't know the exact lat and long?
+
+Use *geocode()* to get exact locations that you can then use in the maps.
+
+
+
+```r
+geocode("the white house")
+```
+
+```
+## # A tibble: 1 x 2
+##     lon   lat
+##   &lt;dbl&gt; &lt;dbl&gt;
+## 1 -77.0  38.9
+```
+
+```r
+geocode("California State University, Northridge")
+```
+
+```
+## # A tibble: 1 x 2
+##     lon   lat
+##   &lt;dbl&gt; &lt;dbl&gt;
+## 1 -119.  34.2
+```
+---
+# Totally awesome R Package
+**emojifont!**
+.pull-left[
+
+```r
+install.packages("emojifont")
+```
+
+
+```r
+library(emojifont)
+search_emoji('smile')
+```
+
+```
+## [1] "smiley"      "smile"       "sweat_smile" "smiley_cat"  "smile_cat"
+```
+
+
+[More info here](https://cran.r-project.org/web/packages/emojifont/vignettes/emojifont.html)
+]
+
+.pull-right[
+
+```r
+ggplot() + 
+  geom_emoji('smile_cat', 
+             x=1:5, y=1:5, 
+             size=10)
+```
+
+&lt;img src="14_Maps2_files/figure-html/unnamed-chunk-16-1.png" width="60%" /&gt;
+
+]
+---
+# Share your Tidy Tuesday!
+
+Break
+
+---
+# Good plot Bad plot lab - competition
+[From Dr. Drew Steen]
+
+**Due March 15**
+
+Your homework is to create two version of similar plots, using any dataset you choose. You must create the plots using ggplot2, post-processing with Adobe Illustrator or similar is not allowed. **This homework is a contest, and the winner will win a prize to be disclosed.**  
+
+--
+
+Please submit your homework by posting a markdown document containing the plots, the code you used to create them, and your discussion of the plot within the markdown doc to github. Data also needs to be submitted.   
+
+--
+
+The first plot should be as bad as possible. Your reading from  Claus Wilke’s and Healy's textbook describe the many ways that a plot can become misleading, difficult to interpret, or or just plain ugly, and you should use all of the tools that you can. Please try to make me, a person who cares a great deal about high-quality data visualization, cry.  
+
+--
+
+You should explain in text all of the ways in which the bad plot is bad. Bullet points are fine, but clearly articulate each principle of data visualization that you have broken.  
+
+--
+
+The second plot should be based on the same or similar data to the first plot, but it should be good. Write briefly about why this is a successful plot.
+
+---
+
+# Badplot rules:  
+- All plots must be made in ggplot2, with code visible in the Rmarkdown document.  
+- The data must be visible.  
+- The good plot and the bad plot should be based on the same, or similar, data. 
+- I will post the results on **Twitter**. Please notify me if you would prefer not to have your plots posted publicly. That is fine, but I need to know.  
+
+---
+
+# Example bad plot winner
+
+.pull-left[
+![bladplot1](libs/images/BonusBadPlot.png)]  
+
+.pull-right[
+![goodplot1](libs/images/GoodPlot.png)]
+
+---
+# Example bad plot winner
+
+.pull-left[
+![bladplot1](libs/images/badplot-1.png)]  
+
+.pull-right[
+![goodplot1](libs/images/goodplot-1.png)]
+
+
+
+---
+# Twitter inspiration
+
+[See this thread](https://twitter.com/drdrewsteen/status/1172547872815861760)
+
+---
+
+class: center, middle
+
+# Thanks!
+
+Slides created via the R package [**xaringan**](https://github.com/yihui/xaringan).  
+Some slides modified from [Making maps with R](http://stat405.had.co.nz/ggmap.pdf)
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script src="macros.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"highlightSpans": true,
+"countIncrementalSlides": false,
+"ratio": "15:10"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
