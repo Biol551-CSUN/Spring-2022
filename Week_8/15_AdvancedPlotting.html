@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Week 8a</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Dr. Nyssa Silbiger" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link href="libs/remark-css/default.css" rel="stylesheet" />
+    <link href="libs/remark-css/default-fonts.css" rel="stylesheet" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Week 8a
+## Advanced plotting
+### Dr. Nyssa Silbiger
+### CSUN Spring 2022
+### (updated: 2022-03-11)
+
+---
+
+
+
+
+&lt;div style = "position:fixed; visibility: hidden"&gt;
+`$$\require{color}\definecolor{yellow}{rgb}{1, 0.8, 0.16078431372549}$$`
+`$$\require{color}\definecolor{orange}{rgb}{0.96078431372549, 0.525490196078431, 0.203921568627451}$$`
+`$$\require{color}\definecolor{green}{rgb}{0, 0.474509803921569, 0.396078431372549}$$`
+&lt;/div&gt;
+
+&lt;script type="text/x-mathjax-config"&gt;
+MathJax.Hub.Config({
+  TeX: {
+    Macros: {
+      yellow: ["{\\color{yellow}{#1}}", 1],
+      orange: ["{\\color{orange}{#1}}", 1],
+      green: ["{\\color{green}{#1}}", 1]
+    },
+    loader: {load: ['[tex]/color']},
+    tex: {packages: {'[+]': ['color']}}
+  }
+});
+&lt;/script&gt;
+
+&lt;style&gt;
+.yellow {color: #FFCC29;}
+.orange {color: #F58634;}
+.green {color: #007965;}
+&lt;/style&gt;
+
+
+
+
+---
+# Outline of class
+
+
+Advanced plotting
+
+
+
+1. {patchwork} - bringing plots together
+2. {ggrepel} - repel your labels on your plots
+3. {gganimate} - add some animations to your plots
+4. {magick} - photo processing
+
+
+I am just going to give you a little taste of what each of these packages can do.  Please check out the documentation for each to delve deeper.
+
+Lab 
+1. Good plot/Bad plot lab presentations!
+  
+
+---
+# Install new packages
+
+
+```r
+install.packages("patchwork") # for bringing plots together
+install.packages("ggrepel") # for repelling labels
+install.packages("gganimate") # animations
+install.packages("magick") # for images
+```
+
+
+```r
+library(tidyverse)
+library(here)
+library(patchwork)
+library(ggrepel)
+library(gganimate)
+library(magick)
+library(palmerpenguins)
+```
+---
+# Patchwork
+
+Easily bring your plots together  
+
+&lt;img src = "https://github.com/allisonhorst/stats-illustrations/raw/master/rstats-artwork/patchwork_1.jpg"/, width = 80%&gt;
+
+---
+# Patchwork
+
+.orange[Let's start with two simple plots from the Palmer penguin dataset.]
+
+.pull-left[
+
+```r
+# plot 1
+p1&lt;-penguins %&gt;%
+  ggplot(aes(x = body_mass_g, 
+             y = bill_length_mm, 
+             color = species))+
+  geom_point()
+
+p1
+```
+
+&lt;img src="15_AdvancedPlotting_files/figure-html/unnamed-chunk-3-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+]
+
+.pull-right[
+
+```r
+# plot 2
+p2&lt;-penguins %&gt;%
+  ggplot(aes(x = sex, 
+             y = body_mass_g, 
+             color = species))+
+  geom_jitter(width = 0.2)
+
+
+p2
+```
+
+&lt;img src="15_AdvancedPlotting_files/figure-html/unnamed-chunk-4-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+# Patchwork
+.orange[Bring the plots together using simple operations.]
+
+
+```r
+*p1+p2
+```
+
+&lt;img src="15_AdvancedPlotting_files/figure-html/unnamed-chunk-5-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+---
+# Patchwork
+.orange[Group the legends.]
+
+
+```r
+p1+p2 +
+* plot_layout(guides = 'collect')
+```
+
+&lt;img src="15_AdvancedPlotting_files/figure-html/unnamed-chunk-6-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Patchwork
+.orange[Add labels (A,B).]
+
+
+```r
+p1+p2 +
+  plot_layout(guides = 'collect')+
+* plot_annotation(tag_levels = 'A')
+```
+
+&lt;img src="15_AdvancedPlotting_files/figure-html/unnamed-chunk-7-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+---
+# Patchwork
+.orange[Put one plot on top of the other.]
+.pull-left[
+
+```r
+*p1/p2 +
+  plot_layout(guides = 'collect')+
+  plot_annotation(tag_levels = 'A')
+```
+]
+.pull-right[
+![](15_AdvancedPlotting_files/figure-html/plot1-out-1.png)&lt;!-- --&gt;
+]
+---
+# Patchwork
+
+So many cool ways to bring together and modify plots.  For more info see the many [vignettes here](https://patchwork.data-imaginist.com/articles/patchwork.html).
+
+.center[
+&lt;img src ="https://repository-images.githubusercontent.com/112388106/6e5a3600-6547-11e9-84f6-3656ac797821"/&gt;
+]
+
+---
+# ggrepel
+Easy and clear labels for plots.
+
+.center[
+&lt;img src = "https://ggrepel.slowkow.com/reference/figures/ggrepel-allison_horst.jpg", width=70%/&gt;
+]
+
+---
+# ggrepel
+ Use the mtcars dataset that comes with it.  It is data on cars.
+ 
+
+```r
+View(mtcars)
+```
+
+--
+
+.pull-left[
+
+```r
+ggplot(mtcars, aes(x = wt, 
+                   y = mpg, 
+                   label = rownames(mtcars))) +
+  geom_text() + # creates a text label
+  geom_point(color = 'red') 
+```
+]
+
+.pull-right[
+![](15_AdvancedPlotting_files/figure-html/plot2-out-1.png)&lt;!-- --&gt;
+]
+---
+# ggrepel
+ .orange[Repel the labels.]
+
+.pull-left[
+
+```r
+ggplot(mtcars, aes(x = wt, 
+                   y = mpg, 
+                   label = rownames(mtcars))) +
+  geom_text_repel() + # repel them
+  geom_point(color = 'red') 
+```
+]
+
+.pull-right[
+![](15_AdvancedPlotting_files/figure-html/plot3-out-1.png)&lt;!-- --&gt;
+]
+
+---
+# ggrepel
+ .orange[Use the label function.]
+
+.pull-left[
+
+```r
+ggplot(mtcars, aes(x = wt, 
+                   y = mpg, 
+                   label = rownames(mtcars))) +
+  geom_label_repel() + # repel them
+  geom_point(color = 'red') 
+```
+]
+
+.pull-right[
+![](15_AdvancedPlotting_files/figure-html/plot4-out-1.png)&lt;!-- --&gt;
+]
+---
+# ggrepel
+
+For more cool things you can do with [ggrepel see here](https://ggrepel.slowkow.com/articles/examples.html).
+---
+# gganimate
+Make your figure an animation!
+
+.center[
+&lt;img src = "https://repository-images.githubusercontent.com/50872540/14597080-6547-11e9-9821-271c29481839"/&gt;
+]
+
+---
+# gganimate
+Let's go back to our penguin plot, but animate the figure by year. .orange[Our static plot.]
+
+.pull-left[
+
+```r
+penguins %&gt;%
+ggplot(aes(x = body_mass_g, 
+            y = bill_depth_mm, 
+            color = species)) +
+  geom_point() 
+```
+]
+
+.pull-right[
+![](15_AdvancedPlotting_files/figure-html/plot5-out-1.png)&lt;!-- --&gt;
+]
+
+---
+# gganimiate
+.orange[Add a transition.]
+
+
+.pull-left[
+
+```r
+penguins %&gt;%
+ggplot(aes(x = body_mass_g, 
+            y = bill_depth_mm, 
+            color = species)) +
+  geom_point() +
+* transition_states(
+*    year, # what are we animating by
+*    transition_length = 2, #The relative length of the transition.
+*    state_length = 1 # The length of the pause between transitions
+*  )
+```
+]
+
+.pull-right[
+![gif](output/penguingif.gif)
+]
+---
+# gganimate
+.orange[Change the **ease** aesthetics.]
+
+
+.pull-left[
+
+```r
+penguins %&gt;%
+ggplot(aes(x = body_mass_g, 
+            y = bill_depth_mm, 
+            color = species)) +
+  geom_point() +
+  transition_states(
+     year, # what are we animating by
+     transition_length = 2, #The relative length of the transition.
+     state_length = 1 # The length of the pause between transitions
+   )+
+* ease_aes("bounce-in-out")
+```
+
+A few examples:
+- linear (default)
+- bounce
+- sine
+- circular
+- many more...
+]
+
+
+.pull-right[
+![gif](output/penguinbounce.gif)]
+
+---
+# gganimate
+.orange[Add a transition title.]
+
+
+.pull-left[
+
+```r
+penguins %&gt;%
+ggplot(aes(x = body_mass_g, 
+            y = bill_depth_mm, 
+            color = species)) +
+  geom_point() +
+  transition_states(
+     year, # what are we animating by
+     transition_length = 2, #The relative length of the transition.
+     state_length = 1 # The length of the pause between transitions
+   )+
+  ease_aes("sine-in-out") +
+* ggtitle('Year: {closest_state}')
+```
+]
+
+.pull-right[
+![gif](output/penguintitle.gif)
+]
+---
+.orange[Save it as a .gif.]
+
+
+.pull-left[
+
+```r
+penguins %&gt;%
+ggplot(aes(x = body_mass_g, 
+            y = bill_depth_mm, 
+            color = species)) +
+  geom_point() +
+  transition_states(
+     year, # what are we animating by
+     transition_length = 2, #The relative length of the transition.
+     state_length = 1 # The length of the pause between transitions
+   )+
+  ease_aes("sine-in-out") +
+  ggtitle('Year: {closest_state}') +
+* anim_save(here("Week_8","output","mypengiungif.gif"))
+```
+]
+
+.pull-right[
+![gif](output/penguintitle.gif)]
+
+---
+# gganimate
+
+For more things to do [see here](https://gganimate.com/articles/gganimate.html).
+
+.center[
+&lt;img src="https://gganimate.com/reference/figures/README-unnamed-chunk-4-1.gif"/&gt;
+]
+
+---
+# magick
+Advanced image processing.
+
+.center[
+&lt;img src="https://jeroen.github.io/images/magick.png", width=80%/&gt;
+]
+
+
+---
+# Magick
+.orange[Put a penguin in it.]  
+Read in an image of a pengiun (can be on your computer or the internet).
+
+
+
+```r
+penguin&lt;-image_read("https://pngimg.com/uploads/penguin/pinguin_PNG9.png")
+
+penguin
+```
+
+&lt;img src="15_AdvancedPlotting_files/figure-html/unnamed-chunk-13-1.png" width="1336" /&gt;
+
+---
+# Magick
+To put it on a plot you first need to save your plot as an image.
+
+
+```r
+penguins %&gt;%
+ggplot(aes(x = body_mass_g, 
+            y = bill_depth_mm, 
+            color = species)) +
+  geom_point() 
+```
+
+&lt;img src="15_AdvancedPlotting_files/figure-html/unnamed-chunk-14-1.png" width="50%" style="display: block; margin: auto;" /&gt;
+
+```r
+  ggsave(here("Week_8","output","penguinplot.png"))
+```
+
+
+---
+# Magick
+Read in the plot as a magick image and make a composite plot
+
+```r
+penplot&lt;-image_read(here("Week_8","output","penguinplot.png"))
+out &lt;- image_composite(penplot, penguin, offset = "+70+30")
+out
+```
+
+&lt;img src="15_AdvancedPlotting_files/figure-html/unnamed-chunk-15-1.png" width="40%" style="display: block; margin: auto;" /&gt;
+---
+# Magick
+You can do this with gifs too.
+
+
+```r
+# Read in a penguin gif
+pengif&lt;-image_read("https://media3.giphy.com/media/H4uE6w9G1uK4M/giphy.gif")
+outgif &lt;- image_composite(penplot, pengif, gravity = "center")
+animation &lt;- image_animate(outgif, fps = 10, optimize = TRUE)
+animation
+```
+
+&lt;img src="15_AdvancedPlotting_files/figure-html/unnamed-chunk-16-1.gif" width="40%" style="display: block; margin: auto;" /&gt;
+---
+# Magick
+
+For more magick plotting [see here](https://cran.r-project.org/web/packages/magick/vignettes/intro.html).
+
+.center[
+&lt;img src="https://ropensci.org/blog/2017/11/07/magick-knitr/0E5cqaz.png"/&gt;
+]
+---
+# Today's totally awesome R package
+
+Sourdough recipes in R!
+
+
+&lt;img src="https://i.ytimg.com/vi/yTTynk20KCI/maxresdefault.jpg", width=30%&gt;
+
+
+```r
+remotes::install_github("andrewheiss/sourrr")
+```
+
+
+```r
+library(sourrr)
+
+build_recipe(final_weight = 900, hydration = 0.75)
+```
+
+```
+## 450g flour (514.3g total; 64.3g from starter)
+## 321g water (385.7g total; 64.3g from starter)
+## 129g starter (25%; 100% hydration)
+## 10g salt (2%)
+## ---
+## 75% hydration
+## 910g final loaf
+```
+
+
+
+---
+class: center, middle
+
+# 10 minute break
+
+---
+# Good plot/Bad plot presentations
+
+Order of presentations
+
+.pull-left[
+Margarita Alfaro Hernandez  
+Tadeo Aviles Zuniga  
+Alex Dang  
+Robert Dellinger  
+Lindsay Fisher    
+Joynaline Hart  
+Ashlee Ochoa  
+Cynthia Petrossian  
+Taylorann Smith
+]
+.pull-right[
+Diego Gomez Morales 
+Manroop Banipal  
+Brandon Bonilla  
+Sophia Boyd  
+Heather Carstensen  
+Eun Ha Heo  
+Jessica Hunter  
+Vivian Vy Le  
+Jocelyn Martinez Rico
+]
+
+---
+class: center, middle
+
+# Thanks!
+
+Slides created via the R package [**xaringan**](https://github.com/yihui/xaringan).
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script src="macros.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"highlightSpans": true,
+"countIncrementalSlides": false,
+"ratio": "15:10"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
