@@ -1,0 +1,567 @@
+---
+title: "Week 8b"
+subtitle: "Functional Programming"
+author: "Dr. Nyssa Silbiger"
+institute: "CSUN Spring 2021"
+date: "(updated: `r Sys.Date()`)"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      highlightSpans: true
+      countIncrementalSlides: false
+      beforeInit: "macros.js"
+      ratio: '15:10'
+---
+
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+```
+<div style = "position:fixed; visibility: hidden">
+$$\require{color}\definecolor{yellow}{rgb}{1, 0.8, 0.16078431372549}$$
+$$\require{color}\definecolor{orange}{rgb}{0.96078431372549, 0.525490196078431, 0.203921568627451}$$
+$$\require{color}\definecolor{green}{rgb}{0, 0.474509803921569, 0.396078431372549}$$
+</div>
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  TeX: {
+    Macros: {
+      yellow: ["{\\color{yellow}{#1}}", 1],
+      orange: ["{\\color{orange}{#1}}", 1],
+      green: ["{\\color{green}{#1}}", 1]
+    },
+    loader: {load: ['[tex]/color']},
+    tex: {packages: {'[+]': ['color']}}
+  }
+});
+</script>
+
+<style>
+.yellow {color: #FFCC29;}
+.orange {color: #F58634;}
+.green {color: #007965;}
+</style>
+
+
+```{r flair_color, echo=FALSE}
+library(flair)
+yellow <- "#FFCC29"
+orange <- "#F58634"
+green <- "#007965"
+```
+
+---
+# Outline of class
+
+Functional programming
+
+1. Quiz 4!
+1. When to write a function
+2. How to make a custom function
+
+
+
+Lab 
+1. Practice writing functions
+
+---
+# Why functions?
+
+- Anytime you have a task that you want to use more than once 
+- Keeps your script clean
+- Avoids mistakes with copy and paste
+- Minimizes places where you need to update your code
+
+.center[
+<img src="https://www.dataquest.io/wp-content/uploads/2019/06/r-function-r-programming.jpg", width=80%/>
+]
+---
+# Why functions
+- Anytime you have to do a task more then once...  
+Let's use an example where we want to rescale data in multiple columns (value - min/(max - min))
+
+**First create a dataframe of random numbers**
+```{r, message=FALSE, warning=FALSE, eval=FALSE}
+library(tidyverse)
+```
+
+```{r, message=FALSE, warning=FALSE, echo=FALSE}
+library(tidyverse)
+```
+
+```{r, message=FALSE, warning=FALSE}
+df <- tibble::tibble(
+  a = rnorm(10), # draws 10 random values from a normal distribution
+  b = rnorm(10),
+  c = rnorm(10),
+  d = rnorm(10)
+)
+
+head(df) 
+# Note our values will be different because they are random
+```
+
+---
+# Why functions
+- Anytime you have to do a task more then once...  
+Let's use an example where we want to rescale data in multiple columns (value - min/(max - min))  
+**Rescale every column individually**
+
+```{r}
+df<-df %>%
+  mutate(a = (a-min(a, na.rm = TRUE))/(max(a, na.rm = TRUE)-min(a, na.rm = TRUE)))
+```
+
+--
+
+**Now copy and paste the same code for each column without making any mistakes**
+```{r}
+df<-df %>%
+  mutate(a = (a-min(a, na.rm = TRUE))/(max(a, na.rm = TRUE)-min(a, na.rm = TRUE)),
+         b = (b-min(b, na.rm = TRUE))/(max(a, na.rm = TRUE)-min(b, na.rm = TRUE)),
+         c = (c-min(c, na.rm = TRUE))/(max(c, na.rm = TRUE)-min(c, na.rm = TRUE)),
+         d = (d-min(d, na.rm = TRUE))/(max(d, na.rm = TRUE)-min(d, na.rm = TRUE)))
+```
+
+--
+**Did I make a mistake**?
+
+---
+# We can write a function for this
+
+```{r}
+rescale01 <- function(x) {
+  value<-(x-min(x, na.rm = TRUE))/(max(x, na.rm = TRUE)-min(x, na.rm = TRUE))
+  return(value)
+}
+
+
+df %>%
+  mutate(a = rescale01(a),
+         b = rescale01(b),
+         c = rescale01(c),
+         d = rescale01(d))
+
+```
+
+---
+# Let's break it down
+
+There are three key steps to creating a new function:  
+
+1. You need to pick a name for the function. Here I’ve used **rescale01** because this function rescales a vector to lie between 0 and 1.  
+
+--
+
+2. You list the inputs, or **arguments**, to the function inside function. Here we have just one argument. If we had more the call would look like function(x, y, z). 
+
+--
+
+3. You place the code you have developed in **body of the function**, a { block that immediately follows function(...).
+
+--
+
+4. **return** tells us what values we want returned when you run the function
+
+```{r}
+rescale01 <- function(x) {
+  value<-(x-min(x, na.rm = TRUE))/(max(x, na.rm = TRUE)-min(x, na.rm = TRUE))
+  return(value)
+}
+
+```
+
+Note: It is way easier to create a function when you already wrote the code rather than creating the function from scratch.
+---
+# Let's make a function to covert degrees fahrenheit to celcius.
+
+What is the calculation for F to C?
+
+```{r, eval = FALSE}
+temp_C <- (temp_F - 32) * 5 / 9
+```
+
+--
+Let's make it a function!
+
+Step 1: Name the function
+```{r, eval = FALSE}
+
+fahrenheit_to_celsius <- function() { #<<
+}
+
+```
+
+--
+
+Step 2: Put in the equation
+
+```{r, eval = FALSE}
+
+fahrenheit_to_celsius <- function() { 
+  temp_C <- (temp_F - 32) * 5 / 9 #<<
+}
+
+```
+---
+# Let's make a function to covert degrees fahrenheit to celcius.
+Step 3: Decide what the arguments are
+
+```{r, eval = FALSE}
+
+fahrenheit_to_celsius <- function(temp_F) { #<<
+  temp_C <- (temp_F - 32) * 5 / 9 
+}
+
+```
+
+--
+
+Step 4: Decide what is being returned
+```{r}
+
+fahrenheit_to_celsius <- function(temp_F) { 
+  temp_C <- (temp_F - 32) * 5 / 9 
+  return(temp_C) #<<
+}
+
+```
+
+
+---
+# Let's make a function to covert degrees fahrenheit to celcius.
+Step 5: Test it
+
+```{r}
+fahrenheit_to_celsius(32)
+```
+
+--
+
+```{r}
+fahrenheit_to_celsius(212)
+```
+---
+# Think, Pair, Share
+
+.center[
+Write a function that converts celcius to kelvin. (Remember Kelvin is celcius + 273.15).
+]
+
+---
+# Making plots into a function
+
+Let's say you have a specifically formatted plot that you like and that you plan to use over and over again. By turning it into a function, you only have to code it once.  
+
+Let's use our favorite penguin dataset and make a nice plot line plot.
+
+```{r, warning=FALSE, message=FALSE, eval=FALSE}
+library(palmerpenguins)
+library(PNWColors) # for the PNW color palette 
+
+pal<-pnw_palette("Lake",3, type = "discrete") # my color palette 
+
+ggplot(penguins, aes(x = body_mass_g, y = bill_length_mm, color = island))+
+  geom_point()+
+  geom_smooth(method = "lm")+ # add a linear model
+  scale_color_manual("Island", values=pal)+   # use pretty colors and change the legend title
+  theme_bw()
+  
+
+```
+
+---
+# Making plots into a function
+
+Here is our plot  
+
+```{r p1, warning=FALSE, message=FALSE, echo=FALSE, out.width='50%'}
+library(palmerpenguins)
+library(PNWColors) # for the PNW color palette 
+
+pal<-pnw_palette("Lake",3, type = "discrete") # my color palette 
+
+p1<-ggplot(penguins, aes(x = body_mass_g, y = bill_length_mm, color = island))+
+  geom_point()+
+  geom_smooth(method = "lm")+ # add a linear model
+  scale_color_manual("Island", values=pal)+   # use pretty colors and change the legend title
+  theme_bw()
+
+p1
+  
+
+```
+
+---
+# Making plots into a function
+
+Name and set-up the function
+--
+
+```{r, eval = FALSE}
+
+myplot<-function(){ #<<
+pal<-pnw_palette("Lake",3, type = "discrete") # my color palette 
+
+ggplot(penguins, aes(x = body_mass_g, y = bill_length_mm, color = island))+
+  geom_point()+
+  geom_smooth(method = "lm")+ # add a linear model
+  scale_color_manual("Island", values=pal)+   # use pretty colors and change the legend title
+  theme_bw()
+
+
+} #<<
+```
+
+---
+# Making plots into a function
+What do you think our arguments should be?  
+Make the names broad so it can be applicable to several values
+
+--
+
+```{r}
+myplot<-function(data, x, y){ #<<
+pal<-pnw_palette("Lake",3, type = "discrete") # my color palette 
+
+ggplot(data, aes(x = x, y =y , color = island))+ #<<
+  geom_point()+
+  geom_smooth(method = "lm")+ # add a linear model
+  scale_color_manual("Island", values=pal)+   # use pretty colors and change the legend title
+  theme_bw()
+
+} 
+```
+---
+# Making plots into a function
+
+Test it
+
+Well, shoot, I got an error.... why do we think that is?
+
+```{r, error=TRUE, out.width='50%'}
+myplot(data = penguins, x = body_mass_g, y = bill_length_mm)
+```
+
+
+
+
+---
+# Making plots into functions
+
+Even though *body_mass_g* exists **within** the penguin dataframe, there is still no individual parameter called *body_mass_g* in our environment and R is confused.  There is a solution though from within the {rlang} package (a part of the tidyverse)!  
+
+{rlang} uses what is literally called a"curly-curly" {{}} to help us assign variables that are column names in dataframes. 
+
+Let's add curly-curlies to the column names  
+
+--
+
+```{r}
+myplot<-function(data, x, y){ 
+pal<-pnw_palette("Lake",3, type = "discrete") # my color palette 
+
+ggplot(data, aes(x = {{x}}, y = {{y}} , color = island))+ #<<
+  geom_point()+
+  geom_smooth(method = "lm")+ # add a linear model
+  scale_color_manual("Island", values=pal)+   # use pretty colors and change the legend title
+  theme_bw()
+
+} 
+```
+
+---
+# Test again
+
+```{r, message = FALSE, warning=FALSE, out.width='50%'}
+myplot(data = penguins, x = body_mass_g, y = bill_length_mm)
+```
+
+---
+# Test with new variables
+
+```{r, message = FALSE, warning=FALSE, out.width='50%'}
+myplot(data = penguins, x = body_mass_g, y = flipper_length_mm)
+```
+
+---
+# Adding defualts
+Let's say you want to create a default for the function to always default to the penguins dataset. You can set those directly in the function.
+
+```{r}
+myplot<-function(data = penguins, x, y){ #<<
+pal<-pnw_palette("Lake",3, type = "discrete") # my color palette 
+
+ggplot(data, aes(x = {{x}}, y = {{y}} , color = island))+ #<<
+  geom_point()+
+  geom_smooth(method = "lm")+ # add a linear model
+  scale_color_manual("Island", values=pal)+   # use pretty colors and change the legend title
+  theme_bw()
+
+} 
+
+```
+
+---
+# Defaults
+
+Now, you can just write...
+
+```{r, message = FALSE, warning=FALSE, out.width='50%'}
+myplot(x = body_mass_g, y = flipper_length_mm)
+```
+
+---
+# Layering the plot
+
+You can also layer onto your plot using '+' just like it is a regular ggplot to change things like labels.
+
+```{r, message = FALSE, warning=FALSE, out.width='40%'}
+myplot(x = body_mass_g, y = flipper_length_mm)+
+  labs(x = "Body mass (g)",
+       y = "Flipper length (mm)")
+```
+
+---
+# Add an if-else statement for more flexibility.
+An aside on if-else statements....  
+
+Imagine you want a variable to be equal to a certain value if a condition is met. This is a typical problem that requires the if ... else ... construct. For instance:
+
+```{r}
+a <- 4
+b <- 5
+```
+
+--
+Suppose that *if* a > b then **f** should be = to 20, else **f** should be equal to 10. Using if/else we: 
+
+```{r}
+if (a > b) { # my question
+  f <- 20 # if it is true give me answer 1
+    } else { # else give me answer 2
+  f <- 10
+}
+```
+
+--
+When I type f I get...
+```{r}
+f
+```
+
+---
+# Back to plotting
+
+Using if...else... we can make our function even more flexible.  Let's say we want the option of adding the geom_smooth lines. We can create a variable that if set to TRUE add the geom_smooth, otherwise print without.  
+
+First add a new argument for lines and make the default TRUE for ease
+```{r, eval=FALSE}
+myplot<-function(data = penguins, x, y ,lines=TRUE ){ # add new argument for lines #<<
+pal<-pnw_palette("Lake",3, type = "discrete") # my color palette 
+
+ggplot(data, aes(x = {{x}}, y = {{y}} , color = island))+ #<<
+  geom_point()+
+  geom_smooth(method = "lm")+ # add a linear model
+  scale_color_manual("Island", values=pal)+   # use pretty colors and change the legend title
+  theme_bw()
+
+} 
+```
+
+---
+# If-else
+
+Next, add an if-else statement
+
+```{r}
+myplot<-function(data = penguins, x, y, lines=TRUE ){ # add new argument for lines #<<
+pal<-pnw_palette("Lake",3, type = "discrete") # my color palette 
+
+if(lines==TRUE){
+ggplot(data, aes(x = {{x}}, y = {{y}} , color = island))+ #<<
+  geom_point()+
+  geom_smooth(method = "lm")+ # add a linear model
+  scale_color_manual("Island", values=pal)+   # use pretty colors and change the legend title
+  theme_bw()
+}
+else{
+ggplot(data, aes(x = {{x}}, y = {{y}} , color = island))+ #<<
+  geom_point()+
+  scale_color_manual("Island", values=pal)+   # use pretty colors and change the legend title
+  theme_bw()
+}
+}
+```
+
+---
+# Test it 
+**With lines**
+
+```{r, message = FALSE, warning=FALSE, out.width='50%'}
+myplot(x = body_mass_g, y = flipper_length_mm)
+```
+
+---
+# Test it 
+**Without lines**
+
+```{r, message = FALSE, warning=FALSE, out.width='50%'}
+myplot(x = body_mass_g, y = flipper_length_mm, lines = FALSE)
+```
+
+---
+# Today's totally awesome R package
+
+{fortunes}: Delivers amusing quotes from the R-help mailing list.
+
+```{r, eval=FALSE}
+install.packages("fortunes")
+```
+
+
+```{r}
+library(fortunes)
+fortune()
+```
+
+```{r}
+fortune()
+```
+
+---
+# Bad plot winner is....
+
+.center[
+<img src="https://media1.giphy.com/media/FP56vNcwOVyvu/200.gif"/>
+]
+
+--
+
+First place goes to **Cynthia!!**  
+Second place goes to **Diego!!**
+
+Congrats to everyone on some pretty terrible plots.
+
+Prizes are a picture of your badplot on a coffee mug so you can enjoy the badness every morning.
+
+---
+class: center, middle
+
+10 minute break!
+
+---
+# Lab
+
+Use any of the datasets that we have used in class and make two useful functions. One that is a plot and one that is not. Turn in your functions using RMarkdown with at least 2 examples each showing its flexibility. Due, as always, at 1pm on Tuesday.
+
+---
+class: center, middle
+
+# Thanks!
+
+Slides created via the R package [**xaringan**](https://github.com/yihui/xaringan).

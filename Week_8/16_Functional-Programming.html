@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Week 8b</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Dr. Nyssa Silbiger" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link href="libs/remark-css/default.css" rel="stylesheet" />
+    <link href="libs/remark-css/default-fonts.css" rel="stylesheet" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Week 8b
+## Functional Programming
+### Dr. Nyssa Silbiger
+### CSUN Spring 2021
+### (updated: 2022-03-15)
+
+---
+
+
+
+
+&lt;div style = "position:fixed; visibility: hidden"&gt;
+`$$\require{color}\definecolor{yellow}{rgb}{1, 0.8, 0.16078431372549}$$`
+`$$\require{color}\definecolor{orange}{rgb}{0.96078431372549, 0.525490196078431, 0.203921568627451}$$`
+`$$\require{color}\definecolor{green}{rgb}{0, 0.474509803921569, 0.396078431372549}$$`
+&lt;/div&gt;
+
+&lt;script type="text/x-mathjax-config"&gt;
+MathJax.Hub.Config({
+  TeX: {
+    Macros: {
+      yellow: ["{\\color{yellow}{#1}}", 1],
+      orange: ["{\\color{orange}{#1}}", 1],
+      green: ["{\\color{green}{#1}}", 1]
+    },
+    loader: {load: ['[tex]/color']},
+    tex: {packages: {'[+]': ['color']}}
+  }
+});
+&lt;/script&gt;
+
+&lt;style&gt;
+.yellow {color: #FFCC29;}
+.orange {color: #F58634;}
+.green {color: #007965;}
+&lt;/style&gt;
+
+
+
+
+---
+# Outline of class
+
+Functional programming
+
+1. Quiz 4!
+1. When to write a function
+2. How to make a custom function
+
+
+
+Lab 
+1. Practice writing functions
+
+---
+# Why functions?
+
+- Anytime you have a task that you want to use more than once 
+- Keeps your script clean
+- Avoids mistakes with copy and paste
+- Minimizes places where you need to update your code
+
+.center[
+&lt;img src="https://www.dataquest.io/wp-content/uploads/2019/06/r-function-r-programming.jpg", width=80%/&gt;
+]
+---
+# Why functions
+- Anytime you have to do a task more then once...  
+Let's use an example where we want to rescale data in multiple columns (value - min/(max - min))
+
+**First create a dataframe of random numbers**
+
+```r
+library(tidyverse)
+```
+
+
+
+
+```r
+df &lt;- tibble::tibble(
+  a = rnorm(10), # draws 10 random values from a normal distribution
+  b = rnorm(10),
+  c = rnorm(10),
+  d = rnorm(10)
+)
+
+head(df) 
+```
+
+```
+## # A tibble: 6 x 4
+##        a       b      c      d
+##    &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;
+## 1  0.573  1.36   -1.70  -2.28 
+## 2  0.878  0.682   0.891  0.950
+## 3  0.524  1.24   -0.209  0.659
+## 4 -2.07  -0.0622  0.227 -1.43 
+## 5  0.803  1.08    1.23   0.614
+## 6 -0.262 -1.29    0.706 -1.48
+```
+
+```r
+# Note our values will be different because they are random
+```
+
+---
+# Why functions
+- Anytime you have to do a task more then once...  
+Let's use an example where we want to rescale data in multiple columns (value - min/(max - min))  
+**Rescale every column individually**
+
+
+```r
+df&lt;-df %&gt;%
+  mutate(a = (a-min(a, na.rm = TRUE))/(max(a, na.rm = TRUE)-min(a, na.rm = TRUE)))
+```
+
+--
+
+**Now copy and paste the same code for each column without making any mistakes**
+
+```r
+df&lt;-df %&gt;%
+  mutate(a = (a-min(a, na.rm = TRUE))/(max(a, na.rm = TRUE)-min(a, na.rm = TRUE)),
+         b = (b-min(b, na.rm = TRUE))/(max(a, na.rm = TRUE)-min(b, na.rm = TRUE)),
+         c = (c-min(c, na.rm = TRUE))/(max(c, na.rm = TRUE)-min(c, na.rm = TRUE)),
+         d = (d-min(d, na.rm = TRUE))/(max(d, na.rm = TRUE)-min(d, na.rm = TRUE)))
+```
+
+--
+**Did I make a mistake**?
+
+---
+# We can write a function for this
+
+
+```r
+rescale01 &lt;- function(x) {
+  value&lt;-(x-min(x, na.rm = TRUE))/(max(x, na.rm = TRUE)-min(x, na.rm = TRUE))
+  return(value)
+}
+
+
+df %&gt;%
+  mutate(a = rescale01(a),
+         b = rescale01(b),
+         c = rescale01(c),
+         d = rescale01(d))
+```
+
+```
+## # A tibble: 10 x 4
+##        a     b      c     d
+##    &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;
+##  1 0.747 1     0      0    
+##  2 0.833 0.745 0.884  0.707
+##  3 0.733 0.955 0.508  0.643
+##  4 0     0.464 0.657  0.187
+##  5 0.812 0.896 1      0.633
+##  6 0.511 0     0.821  0.175
+##  7 0.527 0.840 0.329  1    
+##  8 1     0.801 0.0551 0.593
+##  9 0.934 0.449 0.676  0.474
+## 10 0.631 0.171 0.298  0.885
+```
+
+---
+# Let's break it down
+
+There are three key steps to creating a new function:  
+
+1. You need to pick a name for the function. Here I’ve used **rescale01** because this function rescales a vector to lie between 0 and 1.  
+
+--
+
+2. You list the inputs, or **arguments**, to the function inside function. Here we have just one argument. If we had more the call would look like function(x, y, z). 
+
+--
+
+3. You place the code you have developed in **body of the function**, a { block that immediately follows function(...).
+
+--
+
+4. **return** tells us what values we want returned when you run the function
+
+
+```r
+rescale01 &lt;- function(x) {
+  value&lt;-(x-min(x, na.rm = TRUE))/(max(x, na.rm = TRUE)-min(x, na.rm = TRUE))
+  return(value)
+}
+```
+
+Note: It is way easier to create a function when you already wrote the code rather than creating the function from scratch.
+---
+# Let's make a function to covert degrees fahrenheit to celcius.
+
+What is the calculation for F to C?
+
+
+```r
+temp_C &lt;- (temp_F - 32) * 5 / 9
+```
+
+--
+Let's make it a function!
+
+Step 1: Name the function
+
+```r
+*fahrenheit_to_celsius &lt;- function() {
+}
+```
+
+--
+
+Step 2: Put in the equation
+
+
+```r
+fahrenheit_to_celsius &lt;- function() { 
+* temp_C &lt;- (temp_F - 32) * 5 / 9
+}
+```
+---
+# Let's make a function to covert degrees fahrenheit to celcius.
+Step 3: Decide what the arguments are
+
+
+```r
+*fahrenheit_to_celsius &lt;- function(temp_F) {
+  temp_C &lt;- (temp_F - 32) * 5 / 9 
+}
+```
+
+--
+
+Step 4: Decide what is being returned
+
+```r
+fahrenheit_to_celsius &lt;- function(temp_F) { 
+  temp_C &lt;- (temp_F - 32) * 5 / 9 
+* return(temp_C)
+}
+```
+
+
+---
+# Let's make a function to covert degrees fahrenheit to celcius.
+Step 5: Test it
+
+
+```r
+fahrenheit_to_celsius(32)
+```
+
+```
+## [1] 0
+```
+
+--
+
+
+```r
+fahrenheit_to_celsius(212)
+```
+
+```
+## [1] 100
+```
+---
+# Think, Pair, Share
+
+.center[
+Write a function that converts celcius to kelvin. (Remember Kelvin is celcius + 273.15).
+]
+
+---
+# Making plots into a function
+
+Let's say you have a specifically formatted plot that you like and that you plan to use over and over again. By turning it into a function, you only have to code it once.  
+
+Let's use our favorite penguin dataset and make a nice plot line plot.
+
+
+```r
+library(palmerpenguins)
+library(PNWColors) # for the PNW color palette 
+
+pal&lt;-pnw_palette("Lake",3, type = "discrete") # my color palette 
+
+ggplot(penguins, aes(x = body_mass_g, y = bill_length_mm, color = island))+
+  geom_point()+
+  geom_smooth(method = "lm")+ # add a linear model
+  scale_color_manual("Island", values=pal)+   # use pretty colors and change the legend title
+  theme_bw()
+```
+
+---
+# Making plots into a function
+
+Here is our plot  
+
+&lt;img src="16_Functional-Programming_files/figure-html/p1-1.png" width="50%" /&gt;
+
+---
+# Making plots into a function
+
+Name and set-up the function
+--
+
+
+```r
+*myplot&lt;-function(){
+pal&lt;-pnw_palette("Lake",3, type = "discrete") # my color palette 
+
+ggplot(penguins, aes(x = body_mass_g, y = bill_length_mm, color = island))+
+  geom_point()+
+  geom_smooth(method = "lm")+ # add a linear model
+  scale_color_manual("Island", values=pal)+   # use pretty colors and change the legend title
+  theme_bw()
+
+
+*} 
+```
+
+---
+# Making plots into a function
+What do you think our arguments should be?  
+Make the names broad so it can be applicable to several values
+
+--
+
+
+```r
+*myplot&lt;-function(data, x, y){
+pal&lt;-pnw_palette("Lake",3, type = "discrete") # my color palette 
+
+*ggplot(data, aes(x = x, y =y , color = island))+
+  geom_point()+
+  geom_smooth(method = "lm")+ # add a linear model
+  scale_color_manual("Island", values=pal)+   # use pretty colors and change the legend title
+  theme_bw()
+
+} 
+```
+---
+# Making plots into a function
+
+Test it
+
+Well, shoot, I got an error.... why do we think that is?
+
+
+```r
+myplot(data = penguins, x = body_mass_g, y = bill_length_mm)
+```
+
+```
+## Error in FUN(X[[i]], ...): object 'body_mass_g' not found
+```
+
+&lt;img src="16_Functional-Programming_files/figure-html/unnamed-chunk-18-1.png" width="50%" /&gt;
+
+
+
+
+---
+# Making plots into functions
+
+Even though *body_mass_g* exists **within** the penguin dataframe, there is still no individual parameter called *body_mass_g* in our environment and R is confused.  There is a solution though from within the {rlang} package (a part of the tidyverse)!  
+
+{rlang} uses what is literally called a"curly-curly" {{}} to help us assign variables that are column names in dataframes. 
+
+Let's add curly-curlies to the column names  
+
+--
+
+
+```r
+myplot&lt;-function(data, x, y){ 
+pal&lt;-pnw_palette("Lake",3, type = "discrete") # my color palette 
+
+*ggplot(data, aes(x = {{x}}, y = {{y}} , color = island))+
+  geom_point()+
+  geom_smooth(method = "lm")+ # add a linear model
+  scale_color_manual("Island", values=pal)+   # use pretty colors and change the legend title
+  theme_bw()
+
+} 
+```
+
+---
+# Test again
+
+
+```r
+myplot(data = penguins, x = body_mass_g, y = bill_length_mm)
+```
+
+&lt;img src="16_Functional-Programming_files/figure-html/unnamed-chunk-20-1.png" width="50%" /&gt;
+
+---
+# Test with new variables
+
+
+```r
+myplot(data = penguins, x = body_mass_g, y = flipper_length_mm)
+```
+
+&lt;img src="16_Functional-Programming_files/figure-html/unnamed-chunk-21-1.png" width="50%" /&gt;
+
+---
+# Adding defualts
+Let's say you want to create a default for the function to always default to the penguins dataset. You can set those directly in the function.
+
+
+```r
+*myplot&lt;-function(data = penguins, x, y){
+pal&lt;-pnw_palette("Lake",3, type = "discrete") # my color palette 
+
+*ggplot(data, aes(x = {{x}}, y = {{y}} , color = island))+
+  geom_point()+
+  geom_smooth(method = "lm")+ # add a linear model
+  scale_color_manual("Island", values=pal)+   # use pretty colors and change the legend title
+  theme_bw()
+
+} 
+```
+
+---
+# Defaults
+
+Now, you can just write...
+
+
+```r
+myplot(x = body_mass_g, y = flipper_length_mm)
+```
+
+&lt;img src="16_Functional-Programming_files/figure-html/unnamed-chunk-23-1.png" width="50%" /&gt;
+
+---
+# Layering the plot
+
+You can also layer onto your plot using '+' just like it is a regular ggplot to change things like labels.
+
+
+```r
+myplot(x = body_mass_g, y = flipper_length_mm)+
+  labs(x = "Body mass (g)",
+       y = "Flipper length (mm)")
+```
+
+&lt;img src="16_Functional-Programming_files/figure-html/unnamed-chunk-24-1.png" width="40%" /&gt;
+
+---
+# Add an if-else statement for more flexibility.
+An aside on if-else statements....  
+
+Imagine you want a variable to be equal to a certain value if a condition is met. This is a typical problem that requires the if ... else ... construct. For instance:
+
+
+```r
+a &lt;- 4
+b &lt;- 5
+```
+
+--
+Suppose that *if* a &gt; b then **f** should be = to 20, else **f** should be equal to 10. Using if/else we: 
+
+
+```r
+if (a &gt; b) { # my question
+  f &lt;- 20 # if it is true give me answer 1
+    } else { # else give me answer 2
+  f &lt;- 10
+}
+```
+
+--
+When I type f I get...
+
+```r
+f
+```
+
+```
+## [1] 10
+```
+
+---
+# Back to plotting
+
+Using if...else... we can make our function even more flexible.  Let's say we want the option of adding the geom_smooth lines. We can create a variable that if set to TRUE add the geom_smooth, otherwise print without.  
+
+First add a new argument for lines and make the default TRUE for ease
+
+```r
+*myplot&lt;-function(data = penguins, x, y ,lines=TRUE ){ # add new argument for lines
+pal&lt;-pnw_palette("Lake",3, type = "discrete") # my color palette 
+
+*ggplot(data, aes(x = {{x}}, y = {{y}} , color = island))+
+  geom_point()+
+  geom_smooth(method = "lm")+ # add a linear model
+  scale_color_manual("Island", values=pal)+   # use pretty colors and change the legend title
+  theme_bw()
+
+} 
+```
+
+---
+# If-else
+
+Next, add an if-else statement
+
+
+```r
+*myplot&lt;-function(data = penguins, x, y, lines=TRUE ){ # add new argument for lines
+pal&lt;-pnw_palette("Lake",3, type = "discrete") # my color palette 
+
+if(lines==TRUE){
+*ggplot(data, aes(x = {{x}}, y = {{y}} , color = island))+
+  geom_point()+
+  geom_smooth(method = "lm")+ # add a linear model
+  scale_color_manual("Island", values=pal)+   # use pretty colors and change the legend title
+  theme_bw()
+}
+else{
+*ggplot(data, aes(x = {{x}}, y = {{y}} , color = island))+
+  geom_point()+
+  scale_color_manual("Island", values=pal)+   # use pretty colors and change the legend title
+  theme_bw()
+}
+}
+```
+
+---
+# Test it 
+**With lines**
+
+
+```r
+myplot(x = body_mass_g, y = flipper_length_mm)
+```
+
+&lt;img src="16_Functional-Programming_files/figure-html/unnamed-chunk-30-1.png" width="50%" /&gt;
+
+---
+# Test it 
+**Without lines**
+
+
+```r
+myplot(x = body_mass_g, y = flipper_length_mm, lines = FALSE)
+```
+
+&lt;img src="16_Functional-Programming_files/figure-html/unnamed-chunk-31-1.png" width="50%" /&gt;
+
+---
+# Today's totally awesome R package
+
+{fortunes}: Delivers amusing quotes from the R-help mailing list.
+
+
+```r
+install.packages("fortunes")
+```
+
+
+
+```r
+library(fortunes)
+fortune()
+```
+
+```
+## 
+## The problem here is that the $ notation is a magical shortcut and like any
+## other magic if used incorrectly is likely to do the programmatic equivalent of
+## turning yourself into a toad.
+##    -- Greg Snow (in response to a user that wanted to access a column whose
+##       name is stored in y via x$y rather than x[[y]])
+##       R-help (February 2012)
+```
+
+
+```r
+fortune()
+```
+
+```
+## 
+## R will always be arcane to those who do not make a serious effort to learn it.
+## It is **not** meant to be intuitive and easy for casual users to just plunge
+## into. It is far too complex and powerful for that. But the rewards are great
+## for serious data analysts who put in the effort.
+##    -- Berton Gunter
+##       R-help (August 2007)
+```
+
+---
+# Bad plot winner is....
+
+.center[
+&lt;img src="https://media1.giphy.com/media/FP56vNcwOVyvu/200.gif"/&gt;
+]
+
+--
+
+First place goes to **Cynthia!!**  
+Second place goes to **Diego!!**
+
+Congrats to everyone on some pretty terrible plots.
+
+Prizes are a picture of your badplot on a coffee mug so you can enjoy the badness every morning.
+
+---
+class: center, middle
+
+10 minute break!
+
+---
+# Lab
+
+Use any of the datasets that we have used in class and make two useful functions. One that is a plot and one that is not. Turn in your functions using RMarkdown with at least 2 examples each showing its flexibility. Due, as always, at 1pm on Tuesday.
+
+---
+class: center, middle
+
+# Thanks!
+
+Slides created via the R package [**xaringan**](https://github.com/yihui/xaringan).
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script src="macros.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"highlightSpans": true,
+"countIncrementalSlides": false,
+"ratio": "15:10"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
