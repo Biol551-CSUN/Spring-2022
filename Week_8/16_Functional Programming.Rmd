@@ -557,7 +557,9 @@ class: center, middle
 ---
 # Lab
 
-Use any of the datasets that we have used in class and make two useful functions. One that is a plot and one that is not. Turn in your functions using RMarkdown with at least 2 examples each showing its flexibility. Due, as always, at 1pm on Tuesday.
+Use any of the datasets that we have used in class and make two useful functions. One that is a plot and one that is not. Turn in your functions using RMarkdown with at least 2 examples each showing its flexibility. Due, as always, at 1pm on Tuesday.  
+
+Next week is Spring Break!! Woohoo!! Also, reminder that class the Tuesday after Spring break is going to be online.  I will send you the details of that before class and the following Thursday is no class for Chavez Day.  We won't see each other for a few weeks in person.
 
 ---
 class: center, middle

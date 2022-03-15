@@ -106,12 +106,12 @@ head(df)
 ## # A tibble: 6 x 4
 ##        a       b      c      d
 ##    &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;
-## 1  0.573  1.36   -1.70  -2.28 
-## 2  0.878  0.682   0.891  0.950
-## 3  0.524  1.24   -0.209  0.659
-## 4 -2.07  -0.0622  0.227 -1.43 
-## 5  0.803  1.08    1.23   0.614
-## 6 -0.262 -1.29    0.706 -1.48
+## 1 -1.50   1.37    0.340  0.131
+## 2 -0.135 -0.522   2.64   0.541
+## 3 -1.82  -1.45   -0.481 -1.04 
+## 4 -1.99   0.543   1.47   1.97 
+## 5  1.66  -0.453  -1.98  -1.10 
+## 6 -0.499 -0.0929 -0.763 -0.564
 ```
 
 ```r
@@ -165,18 +165,18 @@ df %&gt;%
 
 ```
 ## # A tibble: 10 x 4
-##        a     b      c     d
-##    &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;
-##  1 0.747 1     0      0    
-##  2 0.833 0.745 0.884  0.707
-##  3 0.733 0.955 0.508  0.643
-##  4 0     0.464 0.657  0.187
-##  5 0.812 0.896 1      0.633
-##  6 0.511 0     0.821  0.175
-##  7 0.527 0.840 0.329  1    
-##  8 1     0.801 0.0551 0.593
-##  9 0.934 0.449 0.676  0.474
-## 10 0.631 0.171 0.298  0.885
+##         a     b     c     d
+##     &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+##  1 0.135  0.805 0.502 0.547
+##  2 0.508  0.265 1     0.648
+##  3 0.0475 0     0.324 0.259
+##  4 0      0.570 0.746 1    
+##  5 1      0.285 0     0.243
+##  6 0.408  0.388 0.263 0.375
+##  7 0.355  1     0.691 0    
+##  8 0.560  0.291 0.424 0.428
+##  9 0.167  0.552 0.385 0.386
+## 10 0.391  0.121 0.438 0.663
 ```
 
 ---
@@ -591,12 +591,11 @@ fortune()
 
 ```
 ## 
-## The problem here is that the $ notation is a magical shortcut and like any
-## other magic if used incorrectly is likely to do the programmatic equivalent of
-## turning yourself into a toad.
-##    -- Greg Snow (in response to a user that wanted to access a column whose
-##       name is stored in y via x$y rather than x[[y]])
-##       R-help (February 2012)
+## Anand Patil: Can this be fixed without requiring the user to do anything?
+## Brian D. Ripley: The fix requires 'the user' to read the documentation.
+##    -- Anand Patil and Brian D. Ripley (about some compiler problems under
+##       Windows Vista)
+##       R-help (September 2007)
 ```
 
 
@@ -606,12 +605,13 @@ fortune()
 
 ```
 ## 
-## R will always be arcane to those who do not make a serious effort to learn it.
-## It is **not** meant to be intuitive and easy for casual users to just plunge
-## into. It is far too complex and powerful for that. But the rewards are great
-## for serious data analysts who put in the effort.
-##    -- Berton Gunter
-##       R-help (August 2007)
+## Whoops! I read that e+24 as e-24, so scrub all that I said.
+## (You'd think, that having seen Bill Venables make a similar error -- which he
+## corrected in the follow-up posting to which I was replying -- I would've been
+## more careful. Well, you'd think wrong. Actually it *was* e-24 when I posted;
+## then the Gremlins got in and changed everything. :-) )
+##    -- Rolf Turner (discussing that f.root from uniroot() is (not) almost zero)
+##       R-help (May 2008)
 ```
 
 ---
@@ -638,7 +638,9 @@ class: center, middle
 ---
 # Lab
 
-Use any of the datasets that we have used in class and make two useful functions. One that is a plot and one that is not. Turn in your functions using RMarkdown with at least 2 examples each showing its flexibility. Due, as always, at 1pm on Tuesday.
+Use any of the datasets that we have used in class and make two useful functions. One that is a plot and one that is not. Turn in your functions using RMarkdown with at least 2 examples each showing its flexibility. Due, as always, at 1pm on Tuesday.  
+
+Next week is Spring Break!! Woohoo!! Also, reminder that class the Tuesday after Spring break is going to be online.  I will send you the details of that before class and the following Thursday is no class for Chavez Day.  We won't see each other for a few weeks in person.
 
 ---
 class: center, middle
