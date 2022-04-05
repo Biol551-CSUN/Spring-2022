@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Week 10a</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Dr. Nyssa Silbiger" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link href="libs/remark-css/default.css" rel="stylesheet" />
+    <link href="libs/remark-css/default-fonts.css" rel="stylesheet" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Week 10a
+## Getting help in R
+### Dr. Nyssa Silbiger
+### CSUN Spring 2022
+### (updated: 2022-04-04)
+
+---
+
+
+
+
+&lt;div style = "position:fixed; visibility: hidden"&gt;
+`$$\require{color}\definecolor{yellow}{rgb}{1, 0.8, 0.16078431372549}$$`
+`$$\require{color}\definecolor{orange}{rgb}{0.96078431372549, 0.525490196078431, 0.203921568627451}$$`
+`$$\require{color}\definecolor{green}{rgb}{0, 0.474509803921569, 0.396078431372549}$$`
+&lt;/div&gt;
+
+&lt;script type="text/x-mathjax-config"&gt;
+MathJax.Hub.Config({
+  TeX: {
+    Macros: {
+      yellow: ["{\\color{yellow}{#1}}", 1],
+      orange: ["{\\color{orange}{#1}}", 1],
+      green: ["{\\color{green}{#1}}", 1]
+    },
+    loader: {load: ['[tex]/color']},
+    tex: {packages: {'[+]': ['color']}}
+  }
+});
+&lt;/script&gt;
+
+&lt;style&gt;
+.yellow {color: #FFCC29;}
+.orange {color: #F58634;}
+.green {color: #007965;}
+&lt;/style&gt;
+
+
+
+
+---
+# Getting Help with R
+
+1. Troubleshooting
+2. Common Mistakes
+3. Reproducible examples {reprex}
+4. Copying and pasting {datapasta}
+
+
+Lab 
+1. Make a Reprex
+
+---
+# Help yourself and others
+
+.center[
+&lt;img src ="https://media1.tenor.com/images/1f2ce0a1a27ece72b1cf5def1b12807d/tenor.gif?itemid=7645519" /&gt;
+]
+
+---
+# Help yourself and others
+
+
+- Efficiently finding solutions &amp; useful tools (e.g. R packages &amp; functions)  is an important skill for a data scientist
+
+--
+
+- Troubleshooting is part of every data scientist’s life - there is no programmer in the world who does not have to deal with bugs &amp; errors
+
+--
+
+- See [“Getting Started and Getting Help”](https://rc2e.com/gettingstarted) chapter in the R Cookbook 
+
+--
+
+.orange[**Fun fact:** “...the very first instance of a computer bug was recorded at 3:45 pm (15:45) on the 9th of September 1947. This "bug" was an actual real-life, well ex-moth, that was extracted from the number 70 relay, Panel F, of the Harvard Mark II Aiken Relay Calculator.” [(Christopher McFadden, Interesting Engineering)](https://interestingengineering.com/the-origin-of-the-term-computer-bug)
+]
+
+---
+# If you’re asking: What package or function should I use to do this thing?
+
+- **Google it**: (I ALWAYS have google open when I am coding)  
+  - Search with the keywords and package/function name if known, and include .R in the search keywords (e.g. “dplyr::mutate add column in .R” instead of “mutate variable”)  
+  
+  - “R” is generic - so consider using “R software” or “.R”
+Start learning and using language common in R communities &amp; publications (e.g. R4DS), like data frame instead of spreadsheet  
+  - For now, anything reading, wrangling, ggplot2 related: considering navigating to documentation from [tidyverse.org](https://www.tidyverse.org/), [rdocumentation](https://www.rdocumentation.org/), or [RStudio community](https://community.rstudio.com/). 
+
+---
+# If you’re asking: What package or function should I use to do this thing?
+
+- Don’t know what package/function to use for your purpose? Use [CRAN Task Views](https://cran.r-project.org/web/views/) to help you find it (grouped by topic) to search for packages by keyword
+
+- Use R-specific search tools:  
+[rdocumentation.org](https://rdocumentation.org)  
+[rseek.org](https://rseek.org)  
+
+- For more getting help &amp; searching recommendations, see [Ch. 1 of the R Cookbook 2nd Edition](https://rc2e.com/gettingstarted) by JD Long and Paul Teers  
+
+---
+# Troubleshooting
+
+![tweet](libs/images/tweet.PNG)
+
+---
+# How to know there is an error and where to look for it?
+
+- **When you save a script, lines of code with some errors (e.g. unmatched parentheses) will have a red circle with an x in it next to the line number.**  
+
+.center[
+![error](libs/images/error.PNG)
+]
+
+- **You might also see a red squiggly line under part of your code, indicating a syntax issue.** You can hover over the squiggly to see a pop-up hint about what’s going on.  Also try rainbow parentheses!
+---
+# Error messages will show up* in the Console when you try to run the broken code: 
+
+.center[
+![error](libs/images/error2.PNG)
+]
+---
+# There are multiple types of messages that R will print. Read the message to figure out what it’s trying to tell you. 
+
+**Error:** There’s a fatal error in your code that prevented it from being run through successfully. You need to fix it for the code to run. 
+
+**Warning:** Non-fatal errors (don’t stop the code from running, but this is a potential problem that you should know about).
+
+**Message:** Here’s some helpful information about the code you just ran (you can hide these if you want to)
+
+---
+# When you get an error message in R:
+
+- **Read the error message.** .orange[Did you read the error message?] .green[Read the error message.] Sometimes it will be infuriatingly vague, but often it will tell you exactly how to fix it (e.g. “do you need ==?”). 
+
+.center[
+![Hadley](libs/images/hadley.PNG)
+]
+
+---
+class: center, middle
+
+# Some common errors/issues to keep an eye out for at the beginning (and forever and ever...)
+
+---
+# If R...can’t find a function that you know exists:
+
+- **Symptom:** 
+
+```r
+‘Error in _________: could not find function “_________”
+```
+
+--
+
+**Likely diagnoses:**  
+- The library containing the function you’re trying to use hasn’t been attached  
+- You’ve misspelled or mistyped the function name  
+
+--
+
+**Possible solutions:**  
+- Make sure you’ve attached the required package with library(package_name) - and remember this line should exist in your script before the code that uses a function from that package  
+- Make sure you’ve run the line of code that attaches the necessary package  
+- Check the function spelling/formatting very carefully  
+ 
+---
+# If R...can’t find the pipe operator: 
+- **Symptom:** 
+
+```r
+‘Error in ____ %&gt;% ____ : could not find function "%&gt;%"’
+```
+
+--
+
+**Likely diagnoses:**  
+- Haven’t attached the tidyverse (w/ library(tidyverse)) before using the pipe  
+- Haven’t run the line of code to attach the tidyverse  
+
+--
+
+**Possible solutions:**  
+- Make sure you’ve attached the tidyverse with library(tidyverse) - and remember this line should exist in your script before the code that uses %&gt;%  
+- Make sure you’ve run the line of code that attaches the tidyverse  
+
+---
+# If R...can’t find an object (e.g. an object or variable) that you know you’ve stored: 
+
+**Symptom:** 
+
+```r
+‘Error in ____ : object ‘_____’ not found’
+```
+
+--
+
+**Likely Diagnosis:**  
+- The object hasn’t been created or stored  
+- You’ve mistyped the object name  
+
+--
+
+**Possible Solution:**  
+- Make sure you’ve run the line(s) of code where you read-in or create the object  
+- Make sure you’ve spelled/typed the object name **exactly** as it exists in the Environment  
+- Use ls() to check which objects exist in your current workspace (and if it’s not there, then it hasn’t been created/stored yet)  
+
+---
+# If R…tells you it’s ignoring an argument within a function
+
+**Symptom:**  
+
+```r
+‘Warning: Ignoring unknown parameters: ____’
+```
+
+--
+
+**Possible diagnoses:**  
+- You’ve included an argument that doesn’t exist for that function  
+- You’ve mistyped an argument that does exist for that function   
+
+--
+
+
+**Possible solutions:**  
+- Check to ensure that the argument you’re trying to use for that function (a) exists, and (b) is entered exactly how R expects it to be in your code - especially checking for spelling, abbreviation &amp; capitalization  
+
+--
+
+**How to find out what arguments are accepted by which functions:**  
+- Viewing the R documentation with ?function_name, and look in the ‘Arguments’ section (or ‘Aesthetics’ section for geoms in ggplot2)
+
+---
+# If you…are trying to make a basic ggplot2 graph and you accidentally use %&gt;% between layers instead of a +
+
+**Symptoms:**  
+
+
+```r
+‘Error: `mapping` must be created by `aes()`
+Did you use %&gt;% instead of +?’
+```
+
+--
+
+**Diagnosis:**  
+- Used the pipe operator %&gt;% instead of + to add ggplot2 layers?  
+
+--
+
+**Possible solutions:**   
+- Switch to + for ggplot2! 
+
+
+---
+### If you…think your ggplot code looks perfect and you’re not getting an error message, but only an empty graph is showing up:
+
+&lt;img src="18_GettingHelp_files/figure-html/unnamed-chunk-6-1.png" style="display: block; margin: auto;" /&gt;
+
+--
+
+**Possible diagnoses:**  
+- Did you check what the data you’re trying to plot looks like? For example, did you accidentally filter out all observations in a previous step?   
+- Did you forget a plus sign to add the geom_* layer?   
+
+--
+
+**Possible solutions:**  
+- Make sure there is a plus sign (+) between all ggplot layers  
+- Look at the data you’re trying to plot to ensure it exists  
+
+---
+## If you…are trying to change some aesthetic in a ggplot graph, but you’re getting an error:
+
+**Symptom:**
+
+
+```r
+Error in rep(value[[k]], length.out = n) :
+  			attempt to replicate an object of type 'closure'
+```
+
+--
+
+**Possible diagnoses:**  
+- Did you forget that when you’re referencing a variable in ggplot, it needs to be within an aes() function?
+
+--
+
+**Possible solutions:**   
+- Make sure that when you’re updating a graph aesthetic based on a variable in the data frame, you have that argument within aes().
+
+---
+### If you...are trying to find a summary value for a variable that you know contains numbers, but you’re getting an NA result and/or a warning message:
+
+**Symptom(s):**  
+- NA returned when summary statistic value (e.g. mean) expected
+- ‘In ____ : argument is not numeric or logical: returning NA’
+
+--
+
+**Possible diagnoses:**  
+- The default argument of the function is na.rm = “FALSE”  
+- The class of non-NA values is not numeric (e.g.., there are words in the column or R otherwise doesn’t know the class should be “numeric”)  
+
+--
+
+**Possible solutions:**  
+- If the variable is numeric (check class), update argument to na.rm = “TRUE”  
+- Coerce variable class to “numeric” if appropriate/possible  
+
+---
+## Can’t figure out what’s going on from the error message directly? 
+
+1. Look over code very carefully - character-by-character and space-by-space. Run line-by-line to see where it breaks. Some things to pay close attention to at this point:
+  - Are all parentheses matching pairs?  
+  - Have you typed in all functions, objects, and conditions in exactly correctly?  
+  - If you run something and it doesn’t show up, did you call it to have it show up, or have you just asked R to store it?   
+  - Have you looked at all intermediate data frames during wrangling to make sure data are being subset &amp; transformed as expected?  
+
+  
+--
+
+2 Google the copied &amp; pasted error message. Someone else has encountered and solved it before. Find them (often on [Stack Overflow](https://stackoverflow.com/)). Beware rabbit holes and grumps.
+
+--
+
+3 Take a break and come back to it.
+
+--
+
+4 Make a small, reproducible example (reprex up next!) and see if you can recreate the error. **I realize and resolve many errors by trying to make something work in a simpler, self-contained example.**
+
+---
+# Don’t forget the flip-side!
+
+Just because you don’t get an error message **doesn’t mean that you did things correctly** - it just means that the code is running.  
+
+So **LOOK AT YOUR RAW DATA, INTERMEDIATE DATA AND RESULTS** - especially just after reading it in and after wrangling steps - to ensure that what you *think* your code is supposed to be doing with/to your data is *actually* what your code is doing with/to your data. 
+
+---
+# Supportive R communities
+
+.pull-left[
+- [The RStudio community](https://community.rstudio.com/)
+- [R4DS community on Slack](https://t.co/Tdv5GyDQym?amp=1)
+- "#rstats" on twitter - no seriously, create an account. Some to follow right away for maximum R learning, commentary and community: @dataandme, @hadleywickham, @drob, @RLadiesGlobal, @WeAreRLadies, @R4DScommunity, @allison_horst, @R_LGBTQ, @JennyBryan, @juliasilge, @noamross, @kara_woo, @thomas_mock, @juliesquid, @cedsherer @ellis_hughes @geokaramanis]
+
+.pull-right[
+![rtwitter](libs/images/Rtwitter.PNG)
+]
+
+---
+# Make a reproducible example to ask for help
+
+
+```r
+install.packages('reprex') #reproducible example
+install.packages('datapasta') #copy and paste
+install.packages('styler') # copy and paste in style
+```
+
+
+.pull-left[
+&lt;img src ="https://reprex.tidyverse.org/logo.png"/&gt;
+]
+
+.pull-right[
+&lt;img src="https://raw.githubusercontent.com/milesmcbain/datapasta/master/inst/media/hex_web.png", width=70%/&gt;
+
+]
+
+---
+# Make a reproducible example to ask for help
+
+When asking the R community for help, it is really important to give them enough information to help you.  Remember, they don't have your computer or your data and they are not in your head. **Help them help you.**
+
+By running code with {reprex}, you can create a reproducible example to post to Stack Overflow, Slack, GitHub, or an email to your collaborator.
+
+---
+# Making your first reprex
+
+Let's say you are trying to make a plot with the mpg dataset and you hit an error.
+
+
+```r
+library(tidyverse)
+
+mpg %&gt;%
+  ggplot(aes(x = displ, y = hwy))%&gt;%
+  geom_point(aes(color = class))
+```
+
+```
+## Error: `mapping` must be created by `aes()`
+## Did you use %&gt;% instead of +?
+```
+--
+
+**Go to Addins -&gt; Render Reprex -&gt; Paste to the program you want.  
+Make sure to "append session info"**
+
+---
+# Using real data
+
+Often you are working with real data and run into an issue.  You need the example to be **reproducible** and simple.  Other people on the internet do not have your data so what should we do?
+
+--
+
+Open the *stars.csv* file and copy and paste the first few lines into R.
+
+--
+
+
+```r
+lat	long	star_no
+33.548	-117.805	10
+35.534	-121.083	1
+39.503	-123.743	25
+32.863	-117.24	22
+33.46	-117.671	8
+33.548	-117.805	3
+```
+
+This is not helpful and won't run... 
+
+--
+
+
+{datapasta} helps you copy and past snippets of your data in a reproducible way.  
+
+---
+# datapasta
+
+This time copy the code and got to Addins -&gt; paste as tribble and then name it something.
+
+--
+
+
+```r
+data&lt;-tibble::tribble(
+    ~lat,    ~long, ~star_no,
+  33.548, -117.805,      10L,
+  35.534, -121.083,       1L,
+  39.503, -123.743,      25L,
+  32.863,  -117.24,      22L,
+   33.46, -117.671,       8L,
+  33.548, -117.805,       3L
+  )
+
+
+data
+```
+
+```
+## # A tibble: 6 x 3
+##     lat  long star_no
+##   &lt;dbl&gt; &lt;dbl&gt;   &lt;int&gt;
+## 1  33.5 -118.      10
+## 2  35.5 -121.       1
+## 3  39.5 -124.      25
+## 4  32.9 -117.      22
+## 5  33.5 -118.       8
+## 6  33.5 -118.       3
+```
+
+
+---
+# datapasta
+
+You can now use this with {reprex} to make a reproducible example that can fully run with your own data and code. 
+
+---
+# Do's and don't of reprex
+
+1. Use the smallest, simplest, most built-in data possible.
+  - e.g. using datapasta  
+  
+--
+
+1. Include commands on a strict “need to run” basis.  
+  - Ruthlessly strip out anything unrelated to the specific matter at hand.  
+  - Include every single command that is required, e.g. loading specific packages  
+
+--
+
+1. Pack it in, pack it out, and don’t take liberties with other people’s computers. You are asking people to run this code!  
+  - Don’t start with rm(list = ls()). It is anti-social to clobber other people’s workspaces.  
+  - Don’t start with setwd("C:\Users\jenny\path\that\only\I\have"), because it won’t work on anyone else’s computer.  
+  - Don’t mask built-in functions, i.e. don’t define a new function named c or mean.  
+  - If you change options, store original values at the start, do your thing, then restore them.  
+  - If you create files, delete them when you’re done
+
+--
+
+1. Use good coding style 
+
+---
+# Do's and don't of reprex
+
+The reprex code:  
+- Must run and, therefore, should be run by the person posting. No faking it.  
+- Should be easy for others to digest, so they don’t necessarily have to run it. You are encouraged to include selected bits of output.  
+- Should be easy for others to copy + paste + run, if and only if they so choose. Don’t let inclusion of output break executability.  
+
+.foot-note[https://reprex.tidyverse.org/articles/reprex-dos-and-donts.html]
+
+---
+# Totally awesome R package
+
+Been coding all night in the library and need a ride home?
+
+--
+
+Use the {ubeR} package to hail a ride through R.
+
+[See here for details](https://github.com/datawookie/ubeR)  
+
+.center[
+&lt;img src="https://camo.githubusercontent.com/7167a4b7f45e6c71e81ece2fd439622e614aded1b25789011fddc0cddf15a156/68747470733a2f2f63646e2e7261776769742e636f6d2f44617461576f6f6b69652f756265522f6d61737465722f756265722d6c6f676f2e737667"/, width=35%&gt;
+]
+
+---
+# 10 min break
+---
+# Lab
+
+Make some simple code with your group and add a bug.  Use datapasta and reprex to make a reproducible example and post it to our slack channel. Make sure to add your session info. 
+
+Someone in a different group has to find the error and offer a solution.
+
+---
+class: center, middle
+
+# Thanks!
+
+Slides created via the R package [**xaringan**](https://github.com/yihui/xaringan).  
+Many slides modified from [Allison Horst](https://docs.google.com/presentation/d/1u1DdhU_WTv1b-sbQgqVGAE-bA2Nq_Yym8BzcPW4lS3k/edit#slide=id.g63942ead2d_0_241)
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script src="macros.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"highlightSpans": true,
+"countIncrementalSlides": false,
+"ratio": "15:10"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
