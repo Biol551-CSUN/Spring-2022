@@ -13,3 +13,4 @@ There is one unique folder per week with all the information needed for that wee
 - [Week 6](https://github.com/Biol551-CSUN/Spring-2022/tree/main/Week_6)
 - [Week 7](https://github.com/Biol551-CSUN/Spring-2022/tree/main/Week_7)
 - [Week 8](https://github.com/Biol551-CSUN/Spring-2022/tree/main/Week_8)
+- [Week 10](https://github.com/Biol551-CSUN/Spring-2022/tree/main/Week_10)
