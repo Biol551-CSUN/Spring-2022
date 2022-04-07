@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Week 10b</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Dr. Nyssa Silbiger" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link href="libs/remark-css/default.css" rel="stylesheet" />
+    <link href="libs/remark-css/default-fonts.css" rel="stylesheet" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Week 10b
+## Intro to Shiny Apps
+### Dr. Nyssa Silbiger
+### CSUN Spring 2022
+### (updated: 2022-04-06)
+
+---
+
+
+
+
+&lt;div style = "position:fixed; visibility: hidden"&gt;
+`$$\require{color}\definecolor{yellow}{rgb}{1, 0.8, 0.16078431372549}$$`
+`$$\require{color}\definecolor{orange}{rgb}{0.96078431372549, 0.525490196078431, 0.203921568627451}$$`
+`$$\require{color}\definecolor{green}{rgb}{0, 0.474509803921569, 0.396078431372549}$$`
+&lt;/div&gt;
+
+&lt;script type="text/x-mathjax-config"&gt;
+MathJax.Hub.Config({
+  TeX: {
+    Macros: {
+      yellow: ["{\\color{yellow}{#1}}", 1],
+      orange: ["{\\color{orange}{#1}}", 1],
+      green: ["{\\color{green}{#1}}", 1]
+    },
+    loader: {load: ['[tex]/color']},
+    tex: {packages: {'[+]': ['color']}}
+  }
+});
+&lt;/script&gt;
+
+&lt;style&gt;
+.yellow {color: #FFCC29;}
+.orange {color: #F58634;}
+.green {color: #007965;}
+&lt;/style&gt;
+
+
+
+
+---
+# Intro to Shiny Apps
+
+1. Quiz!
+1. What is Shiny and why use it?
+2. Basics of user interface 
+3. Basics of the server
+4. Reactive objects
+5. Resources for Shiny Themes, dashboard, publishing your app
+  
+
+
+.center[
+&lt;img src ="https://c.tenor.com/I5Q5xcLxmfsAAAAM/shiny-moana.gif"/&gt;
+]
+
+[Cheatsheet](https://shiny.rstudio.com/images/shiny-cheatsheet.pdf)
+
+---
+# What is Shiny?
+
+![whatisshiny](libs/images/whatisshiny.png)
+
+---
+
+# When is Shiny useful?
+
+When we want to make R code accessible outside of an R or RStudio environment. For example,
+
+--
+
+- teaching a package
+
+--
+
+- showing data visualizations to non-experts
+
+--
+
+- streamlining certain code-intensive things (like database queries or visualizing bulky simulation outputs)
+
+---
+# Examples
+
+- Teaching population growth models  
+[Population Dynamics Lab](https://nsilbiger.shinyapps.io/PopulationDynamicsLab/)
+
+--
+
+- Visualize model projections  
+[Marine Mammal Bycatch model](https://msiple.shinyapps.io/mmrefpoints/)  
+Siple et al. (2022) Journal of Open Source Software
+
+--
+- To have fun  
+
+.center[&lt;img src = "https://github.com/mcsiple/shiny-biol551/blob/master/img/catapp.gif?raw=true"&gt;]
+
+---
+# Starting a new Shiny app
+
+Install **shiny**:
+
+
+```r
+install.packages("shiny")
+```
+
+--
+![App template](libs/images/AppTemplate.PNG)
+
+---
+# Each Shiny app has two components
+
+The **`ui`** (user interface) object dictates the appearance of the app. UI functions write HTML. For something to appear in your app, it needs to be in the UI.
+
+--
+
+***
+
+The **`server()`** function contains rendering expressions that create the objects to display. 
+
+
+The server function and UI object are passed to the `shinyApp()` function to create a Shiny app object.
+
+--
+
+***
+
+When saving the script in your app, create a folder with the name of your app and then save the script as **'app.R'**. You MUST save the script with this name for it to work.  Also, all files associted with your app must be in this folder.
+
+---
+# Add elements to your app as arguments to fluid page
+
+
+```r
+library(shiny)
+
+ui&lt;-fluidPage('Hello World')
+
+server&lt;-function(input,output){}
+
+shinyApp(ui = ui, server = server)
+```
+
+### Not a very exciting app, but an app no less!
+
+---
+# Start an app in RStudio
+
+From The RStudio IDE, pick `New File -&gt; Shiny Web App`
+
+You can choose between single (**app.R**) or multiple files (**ui.R** and **server.R**)
+
+*Does it matter which one you choose?*
+&gt;Not really. Some people like the organization of having multiple files. But it really doesn't make a difference!
+
+This has a lot of helpful start code, but we are going to start from scratch today
+
+---
+# Build app around inputs/outputs
+
+.center[![Inputs](libs/images/InputOutput1.PNG)]
+
+
+---
+# Build app around inputs/outputs
+
+.center[![Inputs](libs/images/InputOutput2.PNG)]
+
+---
+# Add elements to your app using fluidPage()
+
+
+```r
+ui&lt;-fluidPage(
+*  # Inputs functions,
+*  # Outputs functions
+)
+```
+
+---
+# Create an input with a *Input function
+
+There are many types of inputs and the syntax for all of them is *type*Input. To make a slider we use `sliderInput()`.  
+
+These inputs make a bunch of html code behind the scene.
+
+--
+
+
+```r
+sliderInput(inputId = "num", # ID name for the input
+            label = "Choose a number", # Label above the input
+            value = 25, min = 1, max = 100 # values for the slider
+            )
+```
+
+Creates this code behind the scenes
+
+```html
+&lt;div class="form-group shiny-input-container"&gt;
+&lt;label class="control-label" for="num"&gt;Choose a number&lt;/label&gt;
+&lt;input class="js-range-slider" id="num" data-min="1" data-max="100"
+data-from="25" data-step="1" data-grid="true" data-grid-num="9.9"
+data-grid-snap="false" data-prettify-separator="," data-keyboard="true"
+data-keyboard-step="1.01010101010101"/&gt;
+&lt;/div&gt;
+```
+
+---
+# Let's create an input with our input function
+
+Start with our blank app. Then we add our slider into the user interface  
+
+```r
+library(shiny)
+
+ui&lt;-fluidPage()
+
+server&lt;-function(input,output){}
+
+shinyApp(ui = ui, server = server)
+```
+
+---
+# Let's create an input with our input function
+
+Start with our blank app. Then we add our slider into the user interface  
+
+```r
+library(shiny)
+
+ui&lt;-fluidPage(
+  sliderInput(inputId = "num", # ID name for the input
+            label = "Choose a number", # Label above the input
+            value = 25, min = 1, max = 100 # values for the slider
+            )
+)
+
+server&lt;-function(input,output){}
+
+shinyApp(ui = ui, server = server)
+```
+--
+.center[ ![slider](libs/images/slider.PNG){width=50px}]
+
+We have a beautiful slider. It doesn't do anything yet, but we made it!
+
+---
+# So many shiny widget options for inputs
+
+[Shiny Widgets with code](https://shiny.rstudio.com/gallery/widget-gallery.html)  
+
+--
+
+## Even more options!
+
+[Shiny widgets package](https://dreamrs.github.io/shinyWidgets/)
+
+---
+# Syntax
+
+.center[
+![Slider syntax](libs/images/slidersyntax.PNG)
+]
+
+---
+# Outputs
+
+.center[![outputs](libs/images/InputOutput2.PNG)]
+---
+# Outputs
+
+.center[![output types](libs/images/outputtypes.PNG)]
+
+---
+# *Output()
+
+### To display an output add it to `fluidPage()` with an *Output() function
+
+.center[![plot output](libs/images/plotoutput.PNG)]
+
+---
+# Let's add it to our UI
+
+**Note, you must add a comma between objects**
+
+
+```r
+library(shiny)
+
+ui&lt;-fluidPage(
+  sliderInput(inputId = "num", # ID name for the input
+            label = "Choose a number", # Label above the input
+            value = 25, min = 1, max = 100 # values for the slider
+*           ),
+* plotOutput("hist") #creates space for a plot called hist
+)
+
+server&lt;-function(input,output){}
+
+shinyApp(ui = ui, server = server)
+```
+
+This code creates the space for a new plot, but nothing happens yet
+---
+# The Server
+
+What is the server? Mostly, R code.  This is where the vegan meat of your app is located.
+
+--
+
+## Use **3 rules** to write the server function
+
+
+```r
+server&lt;-function(input,output){
+  
+  
+  
+}
+```
+
+---
+# 1. Save objects to display to output$
+
+
+```r
+server&lt;-function(input,output){
+* output$hist &lt;- # code
+  
+  
+}
+```
+
+--
+ Look back to the ui, `hist` is spelled identically to the name in the plotOutput() function
+ 
+ .center[![output hist](libs/images/outputhist.PNG)]
+
+---
+# 2. Build objects to display with render*({})
+
+
+```r
+server&lt;-function(input,output){
+  output$hist &lt;- renderPlot({
+    
+    # R code to make the hist output goes here
+  })
+  
+  
+}
+```
+
+---
+# Many types of renders
+
+.center[![renders](libs/images/renders.PNG)]
+---
+# Render a plot
+
+This will create a static plot first. Also we are using ggplot so add in the tidyverse
+
+
+```r
+library(shiny)
+*library(tidyverse)
+
+ui&lt;-fluidPage(
+  sliderInput(inputId = "num", # ID name for the input
+            label = "Choose a number", # Label above the input
+            value = 25, min = 1, max = 100 # values for the slider
+            ),
+  plotOutput("hist") #creates space for a plot called hist  
+)
+
+server&lt;-function(input,output){
+  
+   output$hist &lt;- renderPlot({
+    
+     # {} allows us to put all our R code in one nice chunck
+*   data&lt;-tibble(x = rnorm(100)) # 100 random normal points
+    
+*   ggplot(data, aes(x = x))+ # make a histogram
+*     geom_histogram()
+     
+  })
+}
+
+shinyApp(ui = ui, server = server)
+```
+
+---
+# Rule 3. Access the **input** values with input$
+
+We are going to replace `100` with `input$num`. Notice, that `num` comes from what we put in our inputID. Exact same spelling.  
+
+
+```r
+library(shiny)
+library(tidyverse) 
+
+ui&lt;-fluidPage(
+* sliderInput(inputId = "num", # ID name for the input
+            label = "Choose a number", # Label above the input
+            value = 25, min = 1, max = 100 # values for the slider
+            ),
+  plotOutput("hist") #creates space for a plot called hist  
+)
+
+server&lt;-function(input,output){
+  
+   output$hist &lt;- renderPlot({
+    
+     # {} allows us to put all our R code in one nice chunck
+*   data&lt;-tibble(x = rnorm(input$num)) # 100 random normal points
+    
+    ggplot(data, aes(x = x))+ # make a histogram 
+      geom_histogram() 
+     
+  })
+}
+
+shinyApp(ui = ui, server = server)
+```
+
+---
+# You made your first app!
+
+.center[&lt;img src = "https://c.tenor.com/0jheLvur3C0AAAAC/new-girl-high-five.gif"&gt;]
+
+---
+# 10 min break then back to shiny
+
+---
+# Let's add two types of inputs
+
+Let's say we want to write an input where the user can create whatever title they want by typing it into a box. Let's update our ui to have a textInput.
+
+
+```r
+ui&lt;-fluidPage(
+  sliderInput(inputId = "num", # ID name for the input 
+            label = "Choose a number", # Label above the input
+            value = 25, min = 1, max = 100 # values for the slider
+            ),
+* textInput(inputId = "title", # new Id is title
+*         label = "Write a title",
+*         value = "Histogram of Random Normal Values"), # starting title
+  plotOutput("hist") #creates space for a plot called hist  
+)
+```
+
+---
+# Now let's update the server to change the title of the plot
+
+
+```r
+server&lt;-function(input,output){
+  
+   output$hist &lt;- renderPlot({
+    
+     # {} allows us to put all our R code in one nice chunck
+    data&lt;-tibble(x = rnorm(input$num)) # 100 random normal points 
+    
+    ggplot(data, aes(x = x))+ # make a histogram 
+      geom_histogram() +
+*     labs(title = input$title) #Add a new title
+     
+  })
+}
+```
+
+---
+# Create two *outputs*
+
+Let's say we want to add a data table below the histogram that has all the summary statistics. We need to add another ui that creates a place to put the table. We will use `verbatimTextOutput()`
+
+
+```r
+ui&lt;-fluidPage(
+  sliderInput(inputId = "num", # ID name for the input 
+            label = "Choose a number", # Label above the input
+            value = 25, min = 1, max = 100 # values for the slider
+            ),
+  textInput(inputId = "title", # new Id is title 
+          label = "Write a title",
+          value = "Histogram of Random Normal Values"), # starting title 
+* plotOutput("hist"), #creates space for a plot called hist
+* verbatimTextOutput("stats") # create a space for stats
+  
+)
+```
+
+---
+
+# Now update the server to calculate the summary stats
+
+Here, we will use renderPrint()
+
+
+```r
+server&lt;-function(input,output){
+  
+   output$hist &lt;- renderPlot({
+    
+     # {} allows us to put all our R code in one nice chunck
+    data&lt;-tibble(x = rnorm(input$num)) # 100 random normal points 
+    
+    ggplot(data, aes(x = x))+ # make a histogram 
+      geom_histogram() +
+*     labs(title = input$title) #Add a new title
+     
+  })
+   output$stats &lt;- renderPrint({
+*    summary(rnorm(input$num)) # calculate summary stats based on the numbers
+     })
+   
+}
+```
+
+---
+# Cleaning the code
+
+Here, we used input$num twice: once in the plot and once in the summary stats. This actually created two separate random distributions and the stats actually are not directly related to the plots. We need to build a *reactive* object so the same dataframe is being used throughout all the code.
+
+.center[![reactive](libs/images/reactive.PNG)]
+
+---
+# A reactive object is special in two ways
+
+1. You call a reactive object like a function
+
+
+```r
+data()
+```
+
+---
+# Reactive object
+
+.small[
+
+```r
+library(shiny)
+library(tidyverse)
+
+ui&lt;-fluidPage(
+  sliderInput(inputId = "num", # ID name for the input
+              label = "Choose a number", # Label above the input
+              value = 25, min = 1, max = 100 # values for the slider
+  ), 
+  textInput(inputId = "title", # new Id is title
+            label = "Write a title", #
+            value = "Histogram of Random Normal Values"), # starting title
+  plotOutput("hist"), #creates space for a plot called hist  
+  verbatimTextOutput("stats") # create a space for stats
+)
+
+server&lt;-function(input,output){
+  output$hist &lt;- renderPlot({
+    
+    # {} 
+*   data&lt;-tibble(x = rnorm(input$num)) # 100 random normal points
+    
+    ggplot(data, aes(x = x))+ # make a histogram
+      geom_histogram()+
+      labs(title = input$title) #Add a new title
+    
+  })
+  output$stats &lt;- renderPrint({
+    summary(rnorm(input$num)) # calculate summary stats based on the numbers
+  })
+}
+shinyApp(ui = ui, server = server)
+```
+]
+---
+# Reactive object
+
+
+```r
+library(shiny)
+library(tidyverse)
+
+ui&lt;-fluidPage(
+  sliderInput(inputId = "num", # ID name for the input
+              label = "Choose a number", # Label above the input
+              value = 25, min = 1, max = 100 # values for the slider
+  ), 
+  textInput(inputId = "title", # new Id is title
+            label = "Write a title", #
+            value = "Histogram of Random Normal Values"), # starting title
+  plotOutput("hist"), #creates space for a plot called hist  
+  verbatimTextOutput("stats") # create a space for stats
+)
+
+server&lt;-function(input,output){
+  
+* data&lt;-reactive({
+*    tibble(x = rnorm(input$num)) # 100 random normal points
+* })
+  
+  output$hist &lt;- renderPlot({
+    ggplot(data, aes(x = x))+ # make a histogram
+      geom_histogram()+
+      labs(title = input$title) #Add a new title
+    
+  })
+  output$stats &lt;- renderPrint({
+    summary(rnorm(input$num)) # calculate summary stats based on the numbers
+  })
+}
+shinyApp(ui = ui, server = server)
+```
+
+---
+# Reactive object: Use data()
+
+
+```r
+server&lt;-function(input,output){
+  
+  data&lt;-reactive({ 
+*    tibble(x = rnorm(input$num)) # 100 random normal points
+  }) 
+  
+  output$hist &lt;- renderPlot({
+*   ggplot(data(), aes(x = x))+ # make a histogram
+      geom_histogram()+
+      labs(title = input$title) #Add a new title
+    
+  })
+  output$stats &lt;- renderPrint({
+*   summary(data()) # calculate summary stats based on the numbers
+  })
+}
+shinyApp(ui = ui, server = server)
+```
+
+---
+# A reactive object is special in two ways
+
+1. You call a reactive object like a function  
+
+
+```r
+data()
+```
+
+2. Reactive expressions cache their values making your app run much faster  
+---
+
+# There is SO much more you can do
+
+Check out these resources.
+
+[HIGHLY recommend this video](https://vimeo.com/rstudioinc/review/131218530/212d8a5a7a#t=0m0s)  
+[RStudio Gallery](https://shiny.rstudio.com/gallery/widget-gallery.html)  
+[Shiny Tutorial](https://shiny.rstudio.com/tutorial/)  
+[Shiny Widgets](https://dreamrs.github.io/shinyWidgets/)  
+[Intro to shiny](https://github.com/rstudio/webinars/blob/master/47-introduction-to-shiny/intro-to-shiny.pdf)  
+[More tutorials](https://github.com/rstudio-education/shiny.rstudio.com-tutorial)
+[Mastering Shiny - THE BIBLE OF SHINY](https://mastering-shiny.org/)
+
+--
+
+[See other peoples apps and code](https://shiny.rstudio.com/gallery/)
+---
+# Other cool things
+
+[Shiny themes](https://rstudio.github.io/shinythemes/)  
+[Shiny Dashboards](https://rstudio.github.io/shinydashboard/)  
+[Publish your app on the internet](https://towardsdatascience.com/how-to-publish-a-shiny-app-example-with-shinyapps-io-ec6c6604d8)  
+
+---
+class: center, middle
+
+# Thanks!
+
+Slides created via the R package [**xaringan**](https://github.com/yihui/xaringan).  
+Many slides modified from [mine-cetinkaya-rundel](https://github.com/rstudio-education/shiny.rstudio.com-tutorial)
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script src="macros.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"highlightSpans": true,
+"countIncrementalSlides": false,
+"ratio": "15:10"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
