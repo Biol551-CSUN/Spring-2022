@@ -1,7 +1,7 @@
 library(shiny)
 library(tidyverse)
 
-ui<-fluidPage(
+ui<-fluidPage(  # user interface
   sliderInput(inputId = "num", # ID name for the input
               label = "Choose a number", # Label above the input
               value = 25, min = 1, max = 100 # values for the slider
@@ -13,9 +13,9 @@ ui<-fluidPage(
   verbatimTextOutput("stats") # create a space for stats
 )
 
-server<-function(input,output){
-  data<-reactive({ 
-    tibble(x = rnorm(input$num)) # 100 random normal points #<<
+server<-function(input,output){ # server with R code 
+  data<-reactive({  # make the dataframe reactive 
+    tibble(x = rnorm(input$num)) # 100 random normal points 
   })
   output$hist <- renderPlot({
     
@@ -25,7 +25,7 @@ server<-function(input,output){
     
   })
   output$stats <- renderPrint({
-    summary(data()) # calculate summary stats based on the numbers#
+    summary(data()) # calculate summary stats based on the numbers
   })
 }
 shinyApp(ui = ui, server = server)
