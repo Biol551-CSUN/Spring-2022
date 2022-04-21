@@ -16,7 +16,7 @@ class: center, middle, inverse, title-slide
 ## Working with factors
 ### Dr. Nyssa Silbiger
 ### CSUN Spring 2022
-### (updated: 2022-04-19)
+### (updated: 2022-04-21)
 
 ---
 
@@ -78,26 +78,17 @@ library(here)
 ### load data
 We will use two datasets today. One from an old TidyTuesday and one using starwars data (part of the forcats package).
 
-```
-## 
-## 	Downloading file 1 of 11: `home_owner.csv`
-## 	Downloading file 2 of 11: `income_aggregate.csv`
-## 	Downloading file 3 of 11: `income_distribution.csv`
-## 	Downloading file 4 of 11: `income_limits.csv`
-## 	Downloading file 5 of 11: `income_mean.csv`
-## 	Downloading file 6 of 11: `income_time.csv`
-## 	Downloading file 7 of 11: `lifetime_earn.csv`
-## 	Downloading file 8 of 11: `lifetime_wealth.csv`
-## 	Downloading file 9 of 11: `race_wealth.csv`
-## 	Downloading file 10 of 11: `retirement.csv`
-## 	Downloading file 11 of 11: `student_debt.csv`
-```
-
 
 ```r
-tuesdata &lt;- tidytuesdayR::tt_load(2021, week = 7)
-income_mean&lt;-tuesdata$income_mean
+#tuesdata &lt;- tidytuesdayR::tt_load(2021, week = 7)
+#income_mean&lt;-tuesdata$income_mean
+
+income_mean &lt;- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-02-09/income_mean.csv')
 ```
+
+
+
+
 
 ---
 # What is a factor
@@ -159,7 +150,7 @@ Yikes!
 
 These types of factor booby-traps are why there was a big push to remove the automatic import of strings as factors.  If you read in your data as **read.csv()** then all your strings will be automatically read in as factors, if you use **read_csv()** strings will be read as characters. 
 
-&lt;img src="https://cpl.org/wp-content/uploads/Safe-Place-logo_new_20121.jpg", width=50%/&gt;
+
 
 ---
 # {forcats}
@@ -529,7 +520,7 @@ class: center, middle
 ---
 # Lab
 
-Working with intertidal data. Today you will need to use skills that you have learned in working with words to clean up some issues with the character data and use what you learned today to reorder your factors into orders that make sense.  (Also the column headers could be better...)
+Working with intertidal data. Today you will need to use skills that you have learned in working with words to clean up some issues with the character data and use what you learned today to reorder your factors into orders that make sense.  (Also the column headers could be better...). HINT: New package idea to fix this is using the [janitor package](https://cran.r-project.org/web/packages/janitor/vignettes/janitor.html).
 
 Your goal, as per usual, is to make a plot, any plot where one of the axes is a factor.  Save everything in the appropriate folders.
 
@@ -537,7 +528,7 @@ You have two possible files to play with in the data folder (you don't HAVE to u
 
 Importantly, if you decide to visualize anything by tide height it should go from low to mid to high tide.   
 
-Due Monday, 9am.
+Due Tuesday, 1pm.
 
 
 ---

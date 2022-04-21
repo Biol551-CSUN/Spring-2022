@@ -79,17 +79,23 @@ library(here)
 
 ### load data
 We will use two datasets today. One from an old TidyTuesday and one using starwars data (part of the forcats package).
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
-tuesdata <- tidytuesdayR::tt_load(2021, week = 7)
-income_mean<-tuesdata$income_mean
-
-```
 
 ```{r, warning=FALSE, message=FALSE, eval=FALSE}
-tuesdata <- tidytuesdayR::tt_load(2021, week = 7)
-income_mean<-tuesdata$income_mean
+#tuesdata <- tidytuesdayR::tt_load(2021, week = 7)
+#income_mean<-tuesdata$income_mean
+
+income_mean <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-02-09/income_mean.csv')
 
 ```
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+
+income_mean <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-02-09/income_mean.csv')
+
+
+```
+
+
 
 ---
 # What is a factor
@@ -131,7 +137,7 @@ Yikes!
 
 These types of factor booby-traps are why there was a big push to remove the automatic import of strings as factors.  If you read in your data as **read.csv()** then all your strings will be automatically read in as factors, if you use **read_csv()** strings will be read as characters. 
 
-<img src="https://cpl.org/wp-content/uploads/Safe-Place-logo_new_20121.jpg", width=50%/>
+
 
 ---
 # {forcats}
@@ -363,7 +369,7 @@ class: center, middle
 ---
 # Lab
 
-Working with intertidal data. Today you will need to use skills that you have learned in working with words to clean up some issues with the character data and use what you learned today to reorder your factors into orders that make sense.  (Also the column headers could be better...)
+Working with intertidal data. Today you will need to use skills that you have learned in working with words to clean up some issues with the character data and use what you learned today to reorder your factors into orders that make sense.  (Also the column headers could be better...). HINT: New package idea to fix this is using the [janitor package](https://cran.r-project.org/web/packages/janitor/vignettes/janitor.html).
 
 Your goal, as per usual, is to make a plot, any plot where one of the axes is a factor.  Save everything in the appropriate folders.
 
@@ -371,7 +377,7 @@ You have two possible files to play with in the data folder (you don't HAVE to u
 
 Importantly, if you decide to visualize anything by tide height it should go from low to mid to high tide.   
 
-Due Monday, 9am.
+Due Tuesday, 1pm.
 
 
 ---
