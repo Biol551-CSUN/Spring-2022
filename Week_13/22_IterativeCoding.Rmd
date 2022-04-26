@@ -1,0 +1,533 @@
+---
+title: "Week 13a"
+subtitle: "Iterative coding"
+author: "Dr. Nyssa Silbiger"
+institute: "CSUN Spring 2022"
+date: "(updated: `r Sys.Date()`)"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      highlightSpans: true
+      countIncrementalSlides: false
+      beforeInit: "macros.js"
+      ratio: '15:10'
+---
+
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE, htmltools.preserve.raw = FALSE)
+library(anicon)
+```
+<div style = "position:fixed; visibility: hidden">
+$$\require{color}\definecolor{yellow}{rgb}{1, 0.8, 0.16078431372549}$$
+$$\require{color}\definecolor{orange}{rgb}{0.96078431372549, 0.525490196078431, 0.203921568627451}$$
+$$\require{color}\definecolor{green}{rgb}{0, 0.474509803921569, 0.396078431372549}$$
+</div>
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  TeX: {
+    Macros: {
+      yellow: ["{\\color{yellow}{#1}}", 1],
+      orange: ["{\\color{orange}{#1}}", 1],
+      green: ["{\\color{green}{#1}}", 1]
+    },
+    loader: {load: ['[tex]/color']},
+    tex: {packages: {'[+]': ['color']}}
+  }
+});
+</script>
+
+<style>
+.yellow {color: #FFCC29;}
+.orange {color: #F58634;}
+.green {color: #007965;}
+</style>
+
+
+```{r flair_color, echo=FALSE, warning=FALSE, message=FALSE}
+library(flair)
+yellow <- "#FFCC29"
+orange <- "#F58634"
+green <- "#007965"
+```
+
+---
+# Outline of class
+
+Working with iterative data  
+
+1. for loops
+2. map functions from purrr (more cat puns!)
+
+
+<img src = "https://paulvanderlaken.files.wordpress.com/2018/12/pp550x5501.jpg", width=40%/>
+---
+# Set-up your script
+
+```{r, warning=FALSE, message=FALSE}
+library(tidyverse)
+library(here)
+```
+
+
+---
+# for loops
+
+**for loops** are one way to run an iterative process (do something over and over again). However, with the *tidyverse* you can avoid needing loops for almost any basic coding needs.  Where it does come in handy is in population modeling and Bayesian modeling, for example. Also, it is integral to programming and is happening "under the hood" whether you use them or not.
+
+Also.... people be VERY opinionated on learning for loops.
+
+[Twitter war on for loops](https://twitter.com/NSilbiger/status/1385696966445727748)
+
+
+---
+# for loops
+
+For loops have two major parts: an indexing statement and a command (or set of commands) to repeat.  The coding is in base R.
+
+The command looks like this:  
+`for(index in sequence){`  
+    `command to repeat}`
+
+.center[
+<img src="https://cdn.datamentor.io/wp-content/uploads/2017/11/r-for-loop.jpg"/>]
+
+
+---
+# Simple for loop
+
+Let's ask R to print a statement telling us what year it is along a sequence of years.  
+
+Start with the simple code for one year
+```{r}
+print(paste("The year is", 2000))
+```
+
+--
+
+Put it in a for loop.
+
+```{r}
+years<-c(2015:2021)
+
+for (i in years){ # set up the for loop where i is the index
+  print(paste("The year is", i)) # loop over i
+}
+```
+
+---
+# Simple for loop
+
+What we just did printed something over and over, but it did not save it anywhere.  Let's say you want to save a new vector with all the years.  To do this we need to pre-allocate space and tell R where it is going to be saved.
+
+--
+Create an empty dataframe called `year_data` with columns for `year` and `year_name` .
+
+
+```{r}
+#Pre-allocate space for the for loop
+# empty matrix
+year_data<-data.frame(matrix(ncol = 2, nrow = length(years)))
+
+# add column names
+colnames(year_data)<-c("year", "year_name")
+
+year_data
+```
+---
+# Simple for loop
+
+Add the for loop
+
+One line at a time.  Let's first add in the column that is going to have all the names in it. Notice that I added an index `i` in the column name. I also am having the index go from 1:length(years), which is 1:7.  I use `length()` because it allows me to change the number of years in the vector without having to change the for loop. 
+
+```{r}
+for (i in 1:length(years)){ # set up the for loop where i is the index
+  year_data$year_name[i]<-paste("The year is", years[i]) # loop over i #<<
+}
+
+year_data
+```
+
+---
+# Simple for loop
+
+Fill in the year column too
+
+```{r}
+for (i in 1:length(years)){ # set up the for loop where i is the index
+  year_data$year_name[i]<-paste("The year is", years[i]) # loop over year name
+  year_data$year[i]<-years[i] # loop over year #<<
+}
+
+year_data
+```
+---
+# Using loops to read in multiple .csv files
+
+Let's say you have multiple data files where you want to perform the same action to each. You can use a for loop to do this. 
+
+In the data folder you will see a subfolder called *cond_data*.  Here I have 3 files of salinity and temperature data collected from Mo'orea from a spatial survey.
+
+Read in one of the files so that you can see what it looks like.
+
+```{r}
+testdata<-read_csv(here("Week_13", "data", "cond_data","011521_CT316_1pcal.csv"))
+
+glimpse(testdata)
+```
+
+---
+# list files in a directory
+
+```{r}
+# point to the location on the computer of the folder
+CondPath<-here("Week_13", "data", "cond_data")
+
+# list all the files in that path with a specific pattern
+# In this case we are looking for everything that has a .csv in the filename
+
+# you can use regex to be more specific if you are looking for certain patterns in filenames
+files <- dir(path = CondPath,pattern = ".csv")
+
+files
+
+```
+---
+# pre-allocate space for the loop
+Let's calculate the mean temperature and salinity from each file and save it
+
+```{r}
+# pre-allocate space
+# make an empty dataframe that has one row for each file and 3 columns
+cond_data<-data.frame(matrix(nrow = length(files), ncol = 3))
+# give the dataframe column names
+colnames(cond_data)<-c("filename","mean_temp", "mean_sal")
+
+cond_data
+```
+
+
+
+---
+# for loop
+
+write basic code to calculate a mean and build out
+```{r}
+raw_data<-read_csv(paste0(CondPath,"/",files[1])) # test by reading in the first file and see if it works
+head(raw_data)
+mean_temp<-mean(raw_data$Temperature, na.rm = TRUE) # calculate a mean
+mean_temp
+```
+---
+# Turn it into a for loop
+
+```{r, eval = FALSE}
+for (i in 1:length(files)){ # loop over 1:3 the number of files #<<
+  
+  
+} 
+
+```
+
+--
+
+# Add in the loop over the raw data
+
+```{r}
+for (i in 1:length(files)){ # loop over 1:3 the number of files 
+
+raw_data<-read_csv(paste0(CondPath,"/",files[i])) #<<
+glimpse(raw_data)#<<
+
+} 
+
+```
+
+---
+# Add in the columns
+
+First, add in the filename for each row
+```{r}
+for (i in 1:length(files)){ # loop over 1:3 the number of files 
+
+raw_data<-read_csv(paste0(CondPath,"/",files[i]))
+#glimpse(raw_data)#<<
+
+cond_data$filename[i]<-files[i]#<<
+  
+} 
+
+cond_data
+```
+---
+# Add in means
+
+```{r}
+for (i in 1:length(files)){ # loop over 1:3 the number of files 
+
+raw_data<-read_csv(paste0(CondPath,"/",files[i]))
+#glimpse(raw_data)
+
+cond_data$filename[i]<-files[i]
+cond_data$mean_temp[i]<-mean(raw_data$Temperature, na.rm =TRUE)#<<
+cond_data$mean_sal[i]<-mean(raw_data$Salinity, na.rm =TRUE)#<< 
+} 
+
+cond_data
+```
+---
+# {purrr}
+
+[purrr cheatsheet](https://github.com/rstudio/cheatsheets/blob/master/purrr.pdf)
+
+Now, I will teach you to do the exact same thing, but with tidyverse style language.
+
+*"purrr enhances R’s functional programming (FP) toolkit by providing a complete and consistent set of tools for working with functions and vectors. If you’ve never heard of FP before, the best place to start is the family of map() functions which allow you to replace many for loops with code that is both more succinct and easier to read. The best place to learn about the map() functions is the [iteration chapter](https://r4ds.had.co.nz/iteration.html) in R for data science."*
+
+
+" ...it’s designed to make your pure functions purrr." - Hadley Wickham
+
+.center[
+<img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSKyS_Q6XsvEX9b07wgTLNaQe8yIZRDCqg_1Q&usqp=CAU"/>]
+
+
+---
+# map functions
+
+The pattern of looping over a vector, doing something to each element and saving the results is so common that the purrr package provides a family of functions to do it for you. There is one function for each type of output:
+
+- `map()` makes a list.
+- `map_lgl()` makes a logical vector.
+- `map_int()` makes an integer vector.
+- `map_dbl()` makes a double vector.
+- `map_chr()` makes a character vector.
+- `map_df()` makes a dataframe
+
+Each function takes a vector as input, applies a function to each piece, and then returns a new vector that’s the same length (and has the same names) as the input.
+
+.center[<img src="https://d33wubrfki0l68.cloudfront.net/12f6af8404d9723dff9cc665028a35f07759299d/d0d9a/diagrams/functionals/map-list.png", width=35%/>]
+
+.foot-note[
+[R4DS](https://r4ds.had.co.nz/iteration.html)
+]
+---
+# Simple example
+
+There 3 ways to do the same thing in a map() function
+
+--
+
+**Use a canned function that already exists**
+
+Let's calculate the mean from a set of random numbers and do it 10 times
+
+Create a vector from 1:10
+```{r, eval = FALSE}
+1:10 # a vector from 1 to 10 (we are going to do this 10 times) #<<
+```
+
+--
+for each time 1:10 make a vector of 15 random numbers based on a normal distribution
+```{r}
+1:10 %>% # a vector from 1 to 10 (we are going to do this 10 times) %>% # the vector to iterate over
+  map(rnorm, n = 15) # calculate 15 random numbers based on a normal distribution in a list #<<
+
+```
+
+---
+# Simple example
+
+Calculate the mean from each list
+```{r}
+1:10 %>% # a vector from 1 to 10 (we are going to do this 10 times) %>% # the vector to iterate over
+  map(rnorm, n = 15)  %>% # calculate 15 random numbers based on a normal distribution in a list 
+  map_dbl(mean) # calculate the mean. It is now a vector which is type "double" #<<
+
+```
+
+---
+# Same thing different notation...
+
+**Make your own function**
+
+```{r}
+1:10 %>% # list 1:10
+  map(function(x) rnorm(15, x)) %>% # make your own function
+  map_dbl(mean)
+```
+
+--
+
+**Use a formula when you want to change the arguments within the function**
+
+```{r}
+1:10 %>%
+  map(~ rnorm(15, .x)) %>% # changes the arguments inside the function
+  map_dbl(mean)
+```
+
+
+---
+# Bring in files using purrr instead of a for loop
+
+Reminder: find the files
+```{r}
+# point to the location on the computer of the folder
+CondPath<-here("Week_13", "data", "cond_data")
+files <- dir(path = CondPath,pattern = ".csv")
+
+files
+
+```
+
+--
+Or, we can get the full file names in one less step by doing this...
+
+```{r}
+files <- dir(path = CondPath,pattern = ".csv", full.names = TRUE)
+#save the entire path name
+files
+```
+
+---
+# read in the files
+
+Next, read in the files using map instead of a for loop while retaining the filename as a column. 
+
+
+```{r, warning = FALSE, message = FALSE}
+data<-files %>%
+  set_names()%>% # set's the id of each list to the file name
+  map_df(read_csv,.id = "filename") # map everything to a dataframe and put the id in a column called filename
+
+data
+```
+
+---
+# calculate means
+
+Now we have a regular dataframe and we can calculate means in the way we already know how! group_by filename and use summarize
+
+```{r, warning = FALSE, message=FALSE}
+data<-files %>%
+  set_names()%>% # set's the id of each list to the file name
+  map_df(read_csv,.id = "filename") %>% # map everything to a dataframe and put the id in a column called filename
+  group_by(filename) %>% #<<
+  summarise(mean_temp = mean(Temperature, na.rm = TRUE), #<<
+            mean_sal = mean(Salinity,na.rm = TRUE)) #<<
+
+data
+```
+
+---
+# Other uses
+ 
+Maps and loops are awesome for more complicated processes too. For example, you could plot something and save it automatically from each file using similar code.
+
+Read these chapters in [R4DS](https://r4ds.had.co.nz/iteration.html) and [Advanced R](https://adv-r.hadley.nz/functionals.html) to see all the fancy shortcuts you can do with the purrr package
+---
+# Totally awesome R package
+
+[{gganatogram}](https://r-charts.com/miscellaneous/gganatogram/)
+
+Use R for anatomy!!
+
+```{r, eval=FALSE}
+Sys.setenv(R_REMOTES_NO_ERRORS_FROM_WARNINGS="true")
+## You might get a weird warning from this package about converting a warning to error.  This will get rid of that
+remotes::install_github("jespermaag/gganatogram")
+```
+
+---
+# gganatogram
+
+```{r, warning=FALSE, message=FALSE}
+library(gganatogram)
+gganatogram(data = hgFemale_key,
+            organism = "human", sex = "female",
+            fill = "colour", fillOutline = "#a6bddb") +
+  theme_void() + 
+  coord_fixed()
+```
+
+---
+# gganatogram
+
+Just the nervous system!
+
+```{r}
+hgMale_key %>%
+  filter(type %in% "nervous_system") %>%
+  gganatogram(organism = "human", sex = "male",
+              fill = "colour", outline = FALSE) +
+  theme_void() + 
+  coord_fixed()
+```
+
+
+---
+# gganatogram
+
+A mouse!!
+
+```{r}
+gganatogram(data = mmFemale_key,
+            organism = "mouse", sex = "female", 
+            fillOutline = "#a6bddb", fill = "colour") +
+  theme_void() +
+  coord_fixed()
+```
+
+---
+# gganatogram
+
+A cell!!!
+
+```{r}
+gganatogram(data = cell_key$cell,
+            organism = "cell",
+            fillOutline = "#a6bddb", fill = "colour") +
+  theme_void() +
+  coord_fixed()
+```
+---
+# gganatogram
+
+[See more here](https://github.com/jespermaag/gganatogram)
+---
+# 10 min break
+
+---
+# Lab
+
+You have a set of 4 .csv files in data/homework. Each of these files is a timeseries of temperature and light data collected in tide pools in Oregon by Jenn Fields. Your goal is to bring in all 4 files and calculate the mean and standard deviation of both temperature (Temp.C) and light (Intensity.lux) for each tide pool.  Use **both** a for loop and map() functions in your script. (Basically, do it twice). Due Tuesday at 1pm. 
+
+.center[**Data Dictionary**]
+
+|Variable Name | Description|
+|:----------:|:------------|
+|PoolID| ID of the pool|
+|Foundation_spp| Surfgrass or mussel dominated pool|
+|Removal_Control| Was it a removal or control treatment|
+|Date.Time| Date and time|
+|Temp.C| Temperature in degrees C|
+|Intensity.lux| Light level in lux|
+|LoggerDepth| Depth of the logger in meters|
+
+
+
+
+---
+class: center, middle
+
+# Thanks!
+
+Slides created via the R package [**xaringan**](https://github.com/yihui/xaringan).  
+Many slides modified from the following resources:   
+
+[R4DS](https://r4ds.had.co.nz/iteration.html) and [Advanced R](https://adv-r.hadley.nz/functionals.html)
